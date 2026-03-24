@@ -39,12 +39,42 @@ import anthropic
 # ── CONFIGURATION ─────────────────────────────────────────────────────────────
 
 # Map your actual Tally column names here
-COLUMN_MAP = {
-    "ref":      "Protocol",        # The ?ref= value e.g. H-OS-L1-VOL001
-    "rating":   "Rating",          # 0–10 integer
-    "date":     "Submission date",
-    "type":     "Respondent type", # optional — set to None if not collected
+# ── 1-SECOND SURVEY columns (primary efficacy data) ──────────────────────────
+COLUMN_MAP_1S = {
+    "ref":    "ref",
+    "rating": "After the protocol, how would you describe the situation — for yourself or the person you were listening with ?",
+    "date":   "Submitted at",
+    "type":   None,   # 1-second survey doesn't collect respondent type
 }
+
+# ── 1-MINUTE SURVEY columns (qualitative context) ─────────────────────────────
+# No 0-10 rating — uses categorical improvement scale instead.
+# The pipeline converts it to a numeric proxy:
+#   Significant improvement → 9
+#   Noticeable improvement  → 7
+#   Moderate improvement    → 6
+#   Slight improvement      → 4
+#   No effect               → 2
+#   Made things worse       → 0
+COLUMN_MAP_1M = {
+    "ref":    "ref",
+    "rating": "How would you describe the change following listening ?",
+    "date":   "Submitted at",
+    "type":   "Who was the protocol used for ?",
+}
+
+IMPROVEMENT_TO_SCORE = {
+    "significant improvement": 9,
+    "noticeable improvement":  7,
+    "moderate improvement":    6,
+    "moderate improvement":    6,
+    "slight improvement":      4,
+    "no effect":               2,
+    "it actually made things worse": 0,
+}
+
+# Active column map — change to COLUMN_MAP_1M if processing the 1-minute survey
+COLUMN_MAP = COLUMN_MAP_1S
 
 # Minimum n before a protocol appears in public stats
 MIN_N_PUBLIC = 10
@@ -299,10 +329,23 @@ def parse_tally_csv(csv_path):
     df["code"] = refs.apply(lambda x: x[0])
     df["vol"]  = refs.apply(lambda x: x[1])
 
-    # Parse rating — coerce to int, drop NaN
-    df["rating"] = pd.to_numeric(df[rating_col], errors="coerce")
+    # Parse rating — handle both numeric (1-second) and categorical (1-minute)
+    raw_ratings = df[rating_col].copy()
+    numeric_ratings = pd.to_numeric(raw_ratings, errors="coerce")
+
+    # If mostly NaN, assume categorical (1-minute survey) — convert to numeric proxy
+    if numeric_ratings.isna().mean() > 0.5:
+        print("  Detected categorical rating scale (1-minute survey) — converting to numeric proxy")
+        def cat_to_score(val):
+            if pd.isna(val): return None
+            key = str(val).strip().lower()
+            return IMPROVEMENT_TO_SCORE.get(key, None)
+        df["rating"] = raw_ratings.apply(cat_to_score)
+    else:
+        df["rating"] = numeric_ratings
+
     df = df.dropna(subset=["rating", "code"])
-    df["rating"] = df["rating"].astype(int).clip(0, 10)
+    df["rating"] = df["rating"].astype(float).clip(0, 10)
 
     # Date
     df["date"] = pd.to_datetime(df.get(date_col, pd.NaT), errors="coerce")
