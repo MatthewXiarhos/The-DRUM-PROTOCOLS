@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Drum Protocols — Protocol Adviser</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #FAFAF7; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px 64px; }
+  .container { width: 100%; max-width: 480px; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 24px rgba(0,0,0,0.08); }
+
+  :root {
+    --dp-gold: #B8860B;
+    --dp-gold-light: #D4A017;
+    --dp-gold-pale: #F5EDD0;
+    --dp-gold-faint: #FFFCF0;
+    --dp-slate: #2C3E50;
+    --dp-slate-mid: #4A5568;
+    --dp-slate-light: #718096;
+    --dp-cream: #FAFAF7;
+    --dp-green: #2D6A4F;
+    --dp-green-light: #52B788;
+    --dp-green-pale: #D8F3DC;
+    --dp-healing: #2D6A4F;
+    --dp-thriving: #1A5276;
+    --dp-transforming: #6B2D6A;
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #555;
+    --color-text-tertiary: #888;
+    --color-background-primary: #fff;
+    --color-background-secondary: #f5f5f2;
+    --color-border-tertiary: rgba(0,0,0,0.1);
+    --color-border-secondary: rgba(0,0,0,0.2);
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+  }
+
+  /* ── SCREENS ─────────────────────────── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── ADVISER HEADER ──────────────────── */
+  .adviser-header {
+    background: var(--dp-slate);
+    padding: 28px 32px 24px;
+    position: relative; overflow: hidden;
+  }
+  .adviser-header::before {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 240px; height: 240px; border-radius: 50%;
+    border: 1px solid rgba(184,134,11,0.2);
+  }
+  .adviser-header::after {
+    content: ''; position: absolute; right: -20px; top: -20px;
+    width: 160px; height: 160px; border-radius: 50%;
+    border: 1px solid rgba(184,134,11,0.15);
+  }
+  .adviser-brand { font-size: 10px; letter-spacing: 0.15em; color: var(--dp-gold-light); text-transform: uppercase; margin-bottom: 6px; }
+  .adviser-title { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .adviser-sub { font-size: 13px; color: rgba(255,255,255,0.55); font-weight: 300; }
+
+  /* ── PROGRESS ────────────────────────── */
+  .progress-row { display: flex; align-items: center; gap: 8px; padding: 20px 32px 0; }
+  .progress-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--color-border-tertiary); transition: all 0.3s ease; }
+  .progress-dot.done { background: var(--dp-green-light); }
+  .progress-dot.active { background: var(--dp-gold); width: 24px; border-radius: 4px; }
+  .progress-label { font-size: 11px; color: var(--color-text-tertiary); margin-left: 4px; letter-spacing: 0.05em; }
+
+  /* ── QUESTIONS ───────────────────────── */
+  .question-block { padding: 24px 32px 0; }
+  .q-label { font-size: 10px; letter-spacing: 0.12em; color: var(--dp-gold); text-transform: uppercase; margin-bottom: 10px; }
+  .q-text { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; color: var(--color-text-primary); line-height: 1.35; margin-bottom: 20px; }
+  .options-grid { padding: 0 32px; display: flex; flex-direction: column; gap: 8px; }
+  .option-btn {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-primary);
+    cursor: pointer; text-align: left;
+    transition: all 0.15s ease; color: var(--color-text-primary);
+  }
+  .option-btn:hover { border-color: var(--dp-gold); background: var(--dp-gold-pale); }
+  .option-btn.selected { border-color: var(--dp-gold); background: var(--dp-gold-pale); }
+  .option-icon { font-size: 18px; width: 32px; text-align: center; flex-shrink: 0; }
+  .option-text { font-size: 14px; font-weight: 400; }
+  .option-sub { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+  .nav-row { display: flex; justify-content: flex-end; padding: 20px 32px 24px; }
+  .btn-next {
+    padding: 10px 24px; background: var(--dp-slate); color: #fff;
+    border: none; border-radius: var(--border-radius-md);
+    font-size: 13px; font-family: inherit; cursor: pointer;
+    letter-spacing: 0.05em; transition: background 0.15s;
+  }
+  .btn-next:hover { background: var(--dp-gold); }
+  .btn-next:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── RESULT HEADER ───────────────────── */
+  .result-header {
+    background: var(--dp-green);
+    padding: 28px 32px 24px;
+    position: relative; overflow: hidden;
+  }
+  .result-header::before {
+    content: ''; position: absolute; right: -40px; top: -40px;
+    width: 180px; height: 180px; border-radius: 50%;
+    border: 1px solid rgba(82,183,136,0.25);
+  }
+  .result-match-label { font-size: 10px; letter-spacing: 0.15em; color: var(--dp-green-light); text-transform: uppercase; margin-bottom: 6px; }
+  .result-name { font-family: 'Cormorant Garamond', serif; font-size: 38px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .result-meta { font-size: 12px; color: rgba(255,255,255,0.55); letter-spacing: 0.05em; }
+
+  /* ── SECTION SHARED ──────────────────── */
+  .section-label { font-size: 10px; letter-spacing: 0.12em; color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: 12px; }
+  .section-divider { border: none; border-top: 0.5px solid var(--color-border-tertiary); }
+
+  /* ── CURVE ───────────────────────────── */
+  .curve-section { padding: 24px 32px 20px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  #curve-svg { width: 100%; }
+
+  /* ── STATS ───────────────────────────── */
+  .stats-section { padding: 20px 32px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; text-align: center; }
+  .stat-val { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--color-text-primary); line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--color-text-secondary); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+  .dist-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; }
+  .dist-bars { display: flex; align-items: flex-end; gap: 3px; height: 48px; }
+  .dist-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .dist-bar { width: 100%; border-radius: 2px 2px 0 0; background: var(--dp-slate-light); opacity: 0.4; min-height: 2px; }
+  .dist-bar.highlight { background: var(--dp-gold); opacity: 1; }
+  .dist-num { font-size: 9px; color: var(--color-text-tertiary); }
+  .early-badge { display: inline-block; font-size: 10px; padding: 3px 8px; background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: 20px; color: var(--color-text-secondary); margin-top: 10px; }
+
+  /* ── DESCRIPTION ─────────────────────── */
+  .desc-section { padding: 20px 32px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .desc-text { font-size: 14px; color: var(--color-text-secondary); line-height: 1.7; }
+
+  /* ── YOUTUBE ─────────────────────────── */
+  .youtube-section { padding: 20px 32px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .youtube-placeholder {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-md);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 8px; color: var(--color-text-tertiary);
+    border: 0.5px dashed var(--color-border-tertiary);
+  }
+  .yt-play-icon { font-size: 36px; opacity: 0.3; }
+  .yt-coming-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); }
+  .youtube-embed { width: 100%; aspect-ratio: 16/9; border-radius: var(--border-radius-md); border: none; display: block; }
+
+  /* ── SURVEY CTA ──────────────────────── */
+  .survey-section { padding: 20px 32px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .survey-pair { display: flex; gap: 8px; }
+  .btn-survey-quick {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; gap: 3px; padding: 14px 8px;
+    border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md);
+    background: var(--color-background-primary); text-decoration: none;
+    transition: all 0.15s; cursor: pointer; font-family: inherit;
+  }
+  .btn-survey-quick:hover { border-color: var(--dp-green-light); background: var(--dp-green-pale); }
+  .sq-badge { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dp-green); margin-bottom: 2px; }
+  .sq-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+  .sq-sub { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.4; }
+  .survey-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 10px; line-height: 1.5; }
+
+  /* ── STATISTICIAN COMMENTARY ─────────── */
+  .commentary-section {
+    padding: 20px 32px;
+    border-bottom: 0.5px solid var(--color-border-tertiary);
+    background: var(--dp-gold-faint);
+  }
+  .commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+  .commentary-label { font-size: 10px; letter-spacing: 0.12em; color: var(--dp-gold); text-transform: uppercase; }
+  .commentary-date { font-size: 10px; color: var(--color-text-tertiary); }
+  .commentary-text {
+    font-size: 13px; line-height: 1.75; color: var(--color-text-secondary);
+    border-left: 2px solid rgba(184,134,11,0.3);
+    padding-left: 12px;
+  }
+  .commentary-text.no-data { font-style: italic; color: var(--color-text-tertiary); }
+
+  /* ── RELATED PROTOCOLS ───────────────── */
+  .related-section { padding: 20px 32px 8px; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .related-list { display: flex; flex-direction: column; gap: 8px; }
+  .related-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-md);
+    background: var(--color-background-primary);
+    cursor: pointer; transition: all 0.15s;
+    text-align: left; width: 100%; font-family: inherit;
+  }
+  .related-card:hover { border-color: var(--dp-gold); background: var(--dp-gold-pale); }
+  .related-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .related-dot.healing { background: var(--dp-healing); }
+  .related-dot.thriving { background: var(--dp-thriving); }
+  .related-dot.transforming { background: var(--dp-transforming); }
+  .related-main { flex: 1; min-width: 0; }
+  .related-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .related-meta { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+  .related-score { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--color-text-primary); }
+  .related-score.no-data { font-size: 13px; color: var(--color-text-tertiary); }
+
+  /* ── FOOTER ACTIONS ──────────────────── */
+  .action-section { padding: 20px 32px 32px; display: flex; flex-direction: column; gap: 10px; }
+  .btn-listen {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 14px; background: var(--dp-slate); color: #fff;
+    border: none; border-radius: var(--border-radius-md);
+    font-size: 14px; font-family: inherit; font-weight: 500;
+    cursor: pointer; letter-spacing: 0.04em; transition: background 0.15s;
+    text-decoration: none;
+  }
+  .btn-listen:hover { background: var(--dp-gold); }
+  .btn-listen.disabled { opacity: 0.45; pointer-events: none; }
+  .btn-restart { text-align: center; font-size: 12px; color: var(--color-text-tertiary); cursor: pointer; padding: 4px; background: none; border: none; font-family: inherit; }
+  .btn-restart:hover { color: var(--dp-gold); }
+
+  /* ── INSIGHTS LINK ───────────────────── */
+  .insights-link {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 11px; background: transparent; color: var(--color-text-secondary);
+    border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md);
+    font-size: 12px; font-family: inherit; cursor: pointer; transition: all 0.15s;
+    text-decoration: none; letter-spacing: 0.03em;
+  }
+  .insights-link:hover { border-color: var(--dp-gold-light); color: var(--dp-gold); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ── ADVISER SCREEN ── -->
+  <div id="screen-adviser" class="screen active">
+    <div class="adviser-header">
+      <div class="adviser-brand">The Drum Protocols</div>
+      <div class="adviser-title">Protocol Adviser</div>
+      <div class="adviser-sub">Three questions · Your match is waiting</div>
+    </div>
+    <div class="progress-row">
+      <div class="progress-dot active" id="dot-0"></div>
+      <div class="progress-dot" id="dot-1"></div>
+      <div class="progress-dot" id="dot-2"></div>
+      <span class="progress-label" id="prog-label">Question 1 of 3</span>
+    </div>
+    <div class="question-block">
+      <div class="q-label" id="q-label">Where you are</div>
+      <div class="q-text" id="q-text">Which best describes where you are right now?</div>
+    </div>
+    <div class="options-grid" id="options-grid"></div>
+    <div class="nav-row">
+      <button class="btn-next" id="btn-next" disabled onclick="nextStep()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ── RESULT SCREEN ── -->
+  <div id="screen-result" class="screen">
+
+    <!-- 1. HEADER -->
+    <div class="result-header">
+      <div class="result-match-label">Your match</div>
+      <div class="result-name" id="result-name">—</div>
+      <div class="result-meta" id="result-meta"></div>
+    </div>
+
+    <!-- 2. PHI CURVE -->
+    <div class="curve-section">
+      <div class="section-label">Entrainment curve</div>
+      <svg id="curve-svg" viewBox="0 0 400 100" style="height:100px">
+        <defs>
+          <linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#B8860B" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#B8860B" stop-opacity="0.05"/>
+          </linearGradient>
+        </defs>
+        <path id="curve-fill" fill="url(#curveGrad)"/>
+        <path id="curve-line" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/>
+        <line id="inflect-line" stroke="#B8860B" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.4"/>
+        <text id="label-start" font-size="10" fill="#888" font-family="sans-serif"></text>
+        <text id="label-end" font-size="10" fill="#888" font-family="sans-serif" text-anchor="end"></text>
+        <text id="label-dur" font-size="10" fill="#888" font-family="sans-serif" text-anchor="middle"></text>
+        <text id="label-move" font-size="9" fill="#B8860B" font-family="sans-serif" text-anchor="middle" opacity="0.7"></text>
+      </svg>
+    </div>
+
+    <!-- 3. LISTENER STATS -->
+    <div class="stats-section">
+      <div class="section-label">Listener data</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="stat-n">—</div><div class="stat-label">Responses</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-avg">—</div><div class="stat-label">Avg rating</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-pos">—</div><div class="stat-label">Rated ≥ 7</div></div>
+      </div>
+      <div class="dist-label">Rating distribution (0 – 10)</div>
+      <div class="dist-bars" id="dist-bars"></div>
+      <div class="early-badge" id="early-badge">Early data · results will deepen with more responses</div>
+    </div>
+
+    <!-- 4. DESCRIPTION -->
+    <div class="desc-section">
+      <div class="section-label">About this protocol</div>
+      <div class="desc-text" id="result-desc"></div>
+    </div>
+
+    <!-- 5. YOUTUBE -->
+    <div class="youtube-section">
+      <div class="section-label">Listen</div>
+      <div id="youtube-container"></div>
+    </div>
+
+    <!-- 6. SURVEY LINKS -->
+    <div class="survey-section">
+      <div class="section-label">Complete a survey after listening</div>
+      <div class="survey-pair">
+        <a class="btn-survey-quick" id="survey-quick" href="#" target="_blank">
+          <div class="sq-badge">Quick</div>
+          <div class="sq-title">1-Second Survey</div>
+          <div class="sq-sub">One rating. That's it.</div>
+        </a>
+        <a class="btn-survey-quick" id="survey-full" href="#" target="_blank">
+          <div class="sq-badge">Full</div>
+          <div class="sq-title">1-Minute Survey</div>
+          <div class="sq-sub">Rating + optional context</div>
+        </a>
+      </div>
+      <div class="survey-note">Your data drives protocol development.<br>Every response matters — including ones that didn't work.</div>
+    </div>
+
+    <!-- 7. STATISTICIAN COMMENTARY -->
+    <div class="commentary-section">
+      <div class="commentary-header">
+        <div class="commentary-label">Statistical commentary</div>
+        <div class="commentary-date" id="commentary-date"></div>
+      </div>
+      <div class="commentary-text" id="commentary-text"></div>
+    </div>
+
+    <!-- 8. RELATED PROTOCOLS -->
+    <div class="related-section">
+      <div class="section-label">Related protocols</div>
+      <div class="related-list" id="related-list"></div>
+    </div>
+
+    <!-- 9. FOOTER ACTIONS -->
+    <div class="action-section">
+      <a class="btn-listen" id="btn-listen" href="#" target="_blank">▶ Listen on YouTube</a>
+      <a class="insights-link" href="insights.html">View all protocol data → Data Insights</a>
+      <button class="btn-restart" onclick="restart()">← Start over</button>
+    </div>
+
+  </div><!-- /screen-result -->
+
+</div><!-- /container -->
+
+<script>
+// ── QUESTIONS ─────────────────────────────────────────────────────────────────
+const QUESTIONS = [
+  { label:'Where you are', text:'Which best describes where you are right now?', options:[
+    {icon:'🌊',text:'Overwhelmed or over-stimulated',sub:"Too much input, can't settle",key:'overstim'},
+    {icon:'⚡',text:'Anxious or stressed',sub:'Worry, tension, racing thoughts',key:'anxiety'},
+    {icon:'🆘',text:'In acute distress',sub:'Crisis moment, need help now',key:'crisis'},
+    {icon:'😔',text:'Low energy or flat mood',sub:'Withdrawn, unmotivated, heavy',key:'low'},
+    {icon:'🎯',text:'I want to focus or create',sub:'Need to get into a productive state',key:'focus'},
+    {icon:'😴',text:'Ready for sleep or rest',sub:'Winding down for the night',key:'sleep'},
+  ]},
+  { label:'How much time', text:'How much time do you have?', options:[
+    {icon:'⚡',text:'20 – 30 minutes',sub:'Need results quickly',key:'short'},
+    {icon:'⏱',text:'45 minutes',sub:'Moderate session',key:'mid'},
+    {icon:'🕐',text:'60 minutes or more',sub:'Full session available',key:'long'},
+  ]},
+  { label:'Intensity', text:'How would you describe your current state?', options:[
+    {icon:'🔴',text:"Acute — it's intense right now",sub:'Strong symptoms, need quick shift',key:'acute'},
+    {icon:'🟡',text:'Moderate — noticeable but manageable',sub:'Present but not overwhelming',key:'moderate'},
+    {icon:'🟢',text:'Mild — low background level',sub:'Subtle, maintenance-level',key:'mild'},
+  ]},
+];
+
+// ── PROTOCOL DATA ─────────────────────────────────────────────────────────────
+// zone: situation key → protocols by time/intensity
+// Each protocol carries: name, code, series, entry (zone name), meta, move, start, end, dur, desc, yt, survey1s, survey1m
+const PROTOCOLS = {
+  overstim:{
+    short:{acute:{name:'Pebble',code:'H-OS-L1',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 30 min',move:'DESCENT',start:15,end:8,dur:30,desc:'A rapid descent from 15Hz to 8Hz. Designed for moments when your nervous system needs to come down quickly and time is limited.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L1-VOL001'}},
+    mid:{moderate:{name:'Rainfall',code:'H-OS-L2',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 45 min',move:'DESCENT',start:13,end:9,dur:45,desc:'A measured descent from 13Hz to 9Hz. Gives your nervous system more time and space to follow the signal.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L2-VOL001'}},
+    long:{mild:{name:'Glacier',code:'H-OS-L3',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 60 min',move:'DESCENT',start:12,end:10,dur:60,desc:'The most gradual over-stimulation protocol. Starts lower, descends gently — arriving at a calm but alert resting state.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L3-VOL001'}},
+  },
+  anxiety:{
+    short:{acute:{name:'Meadow',code:'H-AX-L1',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 30 min',move:'DESCENT',start:14,end:7,dur:30,desc:'A deep, rapid descent from 14Hz to 7Hz. Designed for elevated anxiety when time is short.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L1-VOL001'}},
+    mid:{moderate:{name:'Cottage',code:'H-AX-L2',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 45 min',move:'DESCENT',start:12,end:8,dur:45,desc:'A more measured descent for anxiety and stress. Steadier, more comfortable path toward calm.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L2-VOL001'}},
+    long:{mild:{name:'Valley',code:'H-AX-L3',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 60 min',move:'DESCENT',start:11,end:9,dur:60,desc:'The gentlest anxiety protocol. A full hour of gradual, unhurried descent toward calm.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L3-VOL001'}},
+  },
+  crisis:{
+    short:{acute:{name:'Anchor',code:'H-CR-L1',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 20 min',move:'DESCENT',start:16,end:7,dur:20,desc:'The most rapid descent in the library. Use it when the situation calls for immediate intervention.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L1-VOL001'},moderate:{name:'Harbor',code:'H-CR-L2',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 20 min',move:'DESCENT',start:14,end:8,dur:20,desc:'Same short duration as Anchor but starting lower and arriving at a calmer resting state.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L2-VOL001'}},
+    mid:{mild:{name:'Horizon',code:'H-CR-L3',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 30 min',move:'DESCENT',start:13,end:8,dur:30,desc:'The most measured crisis protocol. 30 minutes allows more room to follow the descent.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L3-VOL001'}},
+  },
+  focus:{
+    mid:{acute:{name:'Compass',code:'T-FC-L1',series:'thriving',entry:'Focus & Clarity',meta:'Thriving · Focus & Clarity · 45 min',move:'HOLD',start:12,end:12,dur:45,desc:'A stable 45-minute hold at 12Hz. Alert, engaged, and clear — designed to support sustained attention.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L1-VOL001'}},
+    long:{moderate:{name:'Waypoint',code:'T-FC-L2',series:'thriving',entry:'Focus & Clarity',meta:'Thriving · Focus & Clarity · 60 min',move:'HOLD',start:11,end:11,dur:60,desc:'A full hour at 11Hz. Steady cognitive support for extended work sessions.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L2-VOL001'}},
+    short:{mild:{name:'Ember',code:'T-CF-L1',series:'thriving',entry:'Creative Flow',meta:'Thriving · Creative Flow · 60 min',move:'HOLD',start:9,end:9,dur:60,desc:'60 minutes at 9Hz — the lower edge of alpha. Open, generative, receptive.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L1-VOL001'}},
+  },
+  sleep:{
+    mid:{acute:{name:'Lantern',code:'H-SL-L1',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 45 min',move:'DESCENT',start:11,end:4,dur:45,desc:'A deep descent from 11Hz to 4Hz. Guides the nervous system through the full arc of winding down.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L1-VOL001'}},
+    long:{moderate:{name:'Hammock',code:'H-SL-L2',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 60 min',move:'DESCENT',start:10,end:4.5,dur:60,desc:'A full-hour sleep preparation protocol. Patient, gradual transition toward deep rest.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L2-VOL001'},mild:{name:'Midnight',code:'H-SL-L3',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 60 min',move:'DESCENT',start:9,end:5,dur:60,desc:'The gentlest sleep protocol. Starting lowest, arriving at the softest landing point.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L3-VOL001'}},
+  },
+  low:{
+    short:{acute:{name:'Breeze',code:'T-ME-L1',series:'thriving',entry:'Mood & Energy',meta:'Thriving · Mood & Energy · 30 min',move:'ASCENT',start:4,end:10,dur:30,desc:'A brisk ascent from 4Hz to 10Hz. For moments when mood is low and time is short.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L1-VOL001'}},
+    mid:{moderate:{name:'Sunrise',code:'T-ME-L2',series:'thriving',entry:'Mood & Energy',meta:'Thriving · Mood & Energy · 45 min',move:'ASCENT',start:5,end:10,dur:45,desc:'A measured upward arc from 5Hz to 10Hz. Allows mood and energy to lift gradually.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L2-VOL001'}},
+    long:{mild:{name:'Updraft',code:'T-ME-L3',series:'thriving',entry:'Mood & Energy',meta:'Thriving · Mood & Energy · 60 min',move:'ASCENT',start:6,end:10,dur:60,desc:'A slow, patient ascent. 60 minutes to rise from deep theta to calm alpha.',yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L3-VOL001'}},
+  },
+};
+
+// ── FLAT PROTOCOL INDEX (for related lookups) ─────────────────────────────────
+const ALL_PROTOCOLS = {};
+Object.values(PROTOCOLS).forEach(zone => {
+  Object.values(zone).forEach(timeSlot => {
+    Object.values(timeSlot).forEach(p => { ALL_PROTOCOLS[p.code] = p; });
+  });
+});
+
+// ── ZONE → CODES MAP (for related protocols) ──────────────────────────────────
+const ZONE_CODES = {
+  overstim:  ['H-OS-L1','H-OS-L2','H-OS-L3'],
+  anxiety:   ['H-AX-L1','H-AX-L2','H-AX-L3'],
+  crisis:    ['H-CR-L1','H-CR-L2','H-CR-L3'],
+  focus:     ['T-FC-L1','T-FC-L2','T-CF-L1'],
+  sleep:     ['H-SL-L1','H-SL-L2','H-SL-L3'],
+  low:       ['T-ME-L1','T-ME-L2','T-ME-L3'],
+};
+
+// ── STATS (demo — replace by fetching data.json) ──────────────────────────────
+const STATS = {
+  'H-OS-L1':{n:47,mean:7.3,dist:[0,0,1,2,3,4,6,12,11,6,2],pct:66,commentary:'Pebble is showing strong early signal for acute over-stimulation. The distribution is right-skewed — most responses cluster between 7 and 9, with a modest left tail likely representing listeners who arrived in more extreme dysregulation. Worth watching whether the left tail shrinks as n grows.'},
+  'H-OS-L2':{n:31,mean:7.1,dist:[0,1,1,2,4,3,5,8,4,2,1],pct:61,commentary:'Rainfall is performing consistently within its zone. The wider spread compared to Pebble is expected — moderate-intensity listeners bring more heterogeneous starting states.'},
+  'H-OS-L3':{n:18,mean:6.8,dist:[0,0,1,2,3,2,3,3,2,1,1],pct:50,commentary:'Glacier has early data only. The relatively even distribution suggests it is landing differently for different people — expected for a very gentle protocol where listener expectation plays a larger role.'},
+  'H-AX-L1':{n:63,mean:7.6,dist:[0,0,0,1,2,5,8,16,18,9,4],pct:73,commentary:'Meadow is among the strongest performers in the library at current sample size. The distribution is cleanly right-skewed with a sharp mode at 8. Anxiety protocols tend to over-deliver when population fit is high — this looks like strong fit.'},
+  'H-AX-L2':{n:41,mean:7.4,dist:[0,0,1,1,3,4,6,12,9,4,1],pct:68,commentary:'Cottage is performing closely behind Meadow. The distribution shape is similar but slightly flatter — consistent with a broader listener population or more mixed starting states.'},
+  'H-AX-L3':{n:28,mean:7.2,dist:[0,0,1,2,2,3,4,7,5,3,1],pct:64,commentary:'Valley is developing steadily. The mild-intensity design means it attracts listeners already in a relatively regulated state — a forgiving population for early protocol data.'},
+  'H-CR-L1':{n:22,mean:6.4,dist:[0,1,1,2,4,2,2,4,4,1,1],pct:45,commentary:'Anchor shows a notable bimodal distribution — a cluster near 4–5 and another near 8–9. This is a population-matching signal: it works powerfully for some and not at all for others. The Adviser routing for crisis protocols is worth reviewing as n grows.'},
+  'H-CR-L2':{n:15,mean:6.7,dist:[0,0,1,2,2,2,1,4,2,1,0],pct:47,commentary:'Harbor is early data. The 6.7 mean with this distribution is cautiously positive for an acute-distress protocol — these listeners arrive in high-variance states by definition.'},
+  'H-CR-L3':{n:11,mean:6.9,dist:[0,0,1,1,1,1,2,2,2,1,0],pct:45,commentary:'Horizon has minimal data. No reliable conclusions yet. The early shape is reasonable but n=11 is insufficient for pattern recognition.'},
+  'H-SL-L1':{n:58,mean:7.8,dist:[0,0,0,1,2,3,7,14,18,10,3],pct:78,commentary:'Lantern is the strongest performer among sleep protocols and one of the top performers in the library. The steep right-skew and 78% positive rate suggest excellent population fit. Sleep protocols benefit from clear listener intent — people know what they want.'},
+  'H-SL-L2':{n:44,mean:7.5,dist:[0,0,1,1,2,4,6,12,11,5,2],pct:72,commentary:'Hammock is performing almost as strongly as Lantern. The fuller hour appears to suit listeners who want a more patient transition — the data reflects that.'},
+  'H-SL-L3':{n:29,mean:7.3,dist:[0,0,1,1,2,3,4,8,6,3,1],pct:62,commentary:'Midnight is building well. The gentlest sleep protocol attracts a self-selected population of listeners who prefer minimal intervention — a group that tends to report consistently.'},
+  'T-FC-L1':{n:52,mean:7.7,dist:[0,0,0,1,2,4,7,14,16,6,2],pct:73,commentary:'Compass is the flagship focus protocol and delivering accordingly. The 7.7 mean with a strong mode at 8 is characteristic of a protocol that consistently delivers what it promises. Focus listeners are a motivated, self-aware population.'},
+  'T-FC-L2':{n:38,mean:7.4,dist:[0,0,1,1,3,3,5,11,9,4,1],pct:66,commentary:'Waypoint is slightly behind Compass — which is structurally expected, as the extended format requires more sustained listener engagement. The data is healthy.'},
+  'T-CF-L1':{n:34,mean:7.5,dist:[0,0,0,1,2,4,5,10,8,3,1],pct:65,commentary:'Ember is performing well for a creative-state protocol. The 9Hz hold is a less familiar target frequency than the higher alpha range — yet listeners are responding positively, suggesting the creative flow population finds the lower alpha register effective.'},
+  'T-ME-L1':{n:28,mean:6.9,dist:[0,0,1,2,3,3,4,7,5,2,1],pct:54,commentary:'Breeze is developing. The ascending arc protocols tend to produce wider variance early — listeners arriving in low-mood states bring heterogeneous baselines. The 6.9 mean is solid for this population.'},
+  'T-ME-L2':{n:19,mean:7.4,dist:[0,0,0,1,2,2,3,5,4,2,0],pct:63,commentary:'Sunrise is early data with encouraging signal. The 45-minute arc appears to suit the gradual lift better than the 30-minute Breeze for moderate-intensity listeners.'},
+  'T-ME-L3':{n:14,mean:7.1,dist:[0,0,1,1,1,2,2,3,3,1,0],pct:50,commentary:'Updraft has minimal data. Early shape is reasonable. The 60-minute ascending arc is the most demanding protocol in this zone — requires sustained listener compliance.'},
+};
+
+const DATA_DATE = '2026-03-23';
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let answers = {}, currentQ = 0;
+
+// ── QUESTION ENGINE ───────────────────────────────────────────────────────────
+function renderQuestion() {
+  const q = QUESTIONS[currentQ];
+  document.getElementById('q-label').textContent = q.label;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('prog-label').textContent = `Question ${currentQ + 1} of 3`;
+  for (let i = 0; i < 3; i++) {
+    const d = document.getElementById('dot-' + i);
+    d.className = 'progress-dot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '');
+  }
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-icon">${opt.icon}</span><div><div class="option-text">${opt.text}</div><div class="option-sub">${opt.sub}</div></div>`;
+    btn.onclick = () => selectOption(opt.key, btn);
+    grid.appendChild(btn);
+  });
+  document.getElementById('btn-next').disabled = true;
+}
+
+function selectOption(key, btn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  answers[currentQ] = key;
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextStep() {
+  if (currentQ < 2) { currentQ++; renderQuestion(); }
+  else showResult();
+}
+
+// ── PROTOCOL LOOKUP ───────────────────────────────────────────────────────────
+function findProtocol() {
+  const sit = answers[0], timeKey = answers[1], intensity = answers[2];
+  const bucket = PROTOCOLS[sit];
+  if (!bucket) return null;
+  for (const t of [timeKey, timeKey === 'short' ? 'mid' : 'short', 'long', 'mid']) {
+    if (bucket[t]) for (const iv of [intensity, 'acute', 'moderate', 'mild'])
+      if (bucket[t][iv]) return bucket[t][iv];
+  }
+  return null;
+}
+
+// ── CURVE DRAWING ─────────────────────────────────────────────────────────────
+function drawCurve(p) {
+  const W = 400, H = 100, pad = {l:40,r:40,t:20,b:28};
+  const cW = W - pad.l - pad.r, cH = H - pad.t - pad.b;
+  const {start, end, dur, move} = p;
+  const minF = Math.min(start, end) - 1, maxF = Math.max(start, end) + 1;
+  const toX = t => (t / dur) * cW + pad.l;
+  const toY = f => pad.t + cH - (f - minF) / (maxF - minF) * cH;
+  let pathD = '', fillD = '';
+  for (let i = 0; i <= 80; i++) {
+    const t = i / 80;
+    let f;
+    if (move === 'HOLD') f = start;
+    else { const s = 1 / (1 + Math.exp(-10 * (t - 0.382))); f = move === 'DESCENT' ? start - (start - end) * s : start + (end - start) * s; }
+    const x = toX(t * dur), y = toY(f);
+    pathD += (i === 0 ? `M${x},${y}` : `L${x},${y}`);
+    if (i === 0) fillD = `M${x},${H - pad.b} L${x},${y}`;
+    else fillD += `L${x},${y}`;
+    if (i === 80) fillD += ` L${x},${H - pad.b} Z`;
+  }
+  document.getElementById('curve-line').setAttribute('d', pathD);
+  document.getElementById('curve-fill').setAttribute('d', fillD);
+  const inflX = toX(dur * 0.382);
+  ['x1','x2'].forEach(a => document.getElementById('inflect-line').setAttribute(a, inflX));
+  document.getElementById('inflect-line').setAttribute('y1', pad.t);
+  document.getElementById('inflect-line').setAttribute('y2', H - pad.b);
+  document.getElementById('label-start').setAttribute('x', pad.l);
+  document.getElementById('label-start').setAttribute('y', H - 10);
+  document.getElementById('label-start').textContent = `${start}Hz`;
+  document.getElementById('label-end').setAttribute('x', W - pad.r);
+  document.getElementById('label-end').setAttribute('y', H - 10);
+  document.getElementById('label-end').textContent = `${end}Hz`;
+  document.getElementById('label-dur').setAttribute('x', W / 2);
+  document.getElementById('label-dur').setAttribute('y', H - 10);
+  document.getElementById('label-dur').textContent = `${dur} min`;
+  document.getElementById('label-move').setAttribute('x', W / 2);
+  document.getElementById('label-move').setAttribute('y', pad.t + 8);
+  document.getElementById('label-move').textContent = move;
+}
+
+// ── STATS RENDERING ───────────────────────────────────────────────────────────
+function renderStats(code) {
+  const s = STATS[code] || {n:0, dist:[0,0,0,0,0,0,0,0,0,0,0]};
+  document.getElementById('stat-n').textContent = s.n || '—';
+  if (s.n > 0) {
+    document.getElementById('stat-avg').textContent = s.mean ? s.mean.toFixed(1) : (s.dist.reduce((a,b,i)=>a+b*i,0)/s.dist.reduce((a,b)=>a+b,0)).toFixed(1);
+    document.getElementById('stat-pos').textContent = (s.pct || Math.round(s.dist.slice(7).reduce((a,b)=>a+b,0)/s.dist.reduce((a,b)=>a+b,0)*100)) + '%';
+    const maxD = Math.max(...s.dist, 1);
+    const bars = document.getElementById('dist-bars');
+    bars.innerHTML = '';
+    s.dist.forEach((v, i) => {
+      const h = Math.round((v / maxD) * 40) + 2;
+      bars.innerHTML += `<div class="dist-bar-wrap"><div class="dist-bar${i >= 7 ? ' highlight' : ''}" style="height:${h}px"></div><div class="dist-num">${i}</div></div>`;
+    });
+    document.getElementById('early-badge').style.display = s.n < 20 ? 'inline-block' : 'none';
+  } else {
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-pos').textContent = '—';
+    const eb = document.getElementById('early-badge');
+    eb.style.display = 'inline-block';
+    eb.textContent = 'No data yet · be the first to respond';
+  }
+}
+
+// ── YOUTUBE RENDERING ─────────────────────────────────────────────────────────
+function renderYoutube(p) {
+  const container = document.getElementById('youtube-container');
+  const listenBtn = document.getElementById('btn-listen');
+  if (p.yt && p.yt !== '#') {
+    // Extract video ID for embed
+    const match = p.yt.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    if (match) {
+      container.innerHTML = `<iframe class="youtube-embed" src="https://www.youtube.com/embed/${match[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    } else {
+      container.innerHTML = `<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video available — open on YouTube</div></div>`;
+    }
+    listenBtn.href = p.yt;
+    listenBtn.classList.remove('disabled');
+  } else {
+    container.innerHTML = `<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video coming soon</div></div>`;
+    listenBtn.href = '#';
+    listenBtn.classList.add('disabled');
+  }
+}
+
+// ── COMMENTARY RENDERING ──────────────────────────────────────────────────────
+function renderCommentary(code) {
+  const s = STATS[code];
+  const textEl = document.getElementById('commentary-text');
+  document.getElementById('commentary-date').textContent = `Analysis ${DATA_DATE}`;
+  if (s && s.commentary) {
+    textEl.textContent = s.commentary;
+    textEl.classList.remove('no-data');
+  } else {
+    textEl.textContent = 'No statistical commentary available yet for this protocol. Commentary is generated when n ≥ 10.';
+    textEl.classList.add('no-data');
+  }
+}
+
+// ── RELATED PROTOCOLS ─────────────────────────────────────────────────────────
+function renderRelated(currentCode, situationKey) {
+  const zoneCodes = ZONE_CODES[situationKey] || [];
+  // Get the 3 protocols in this zone, excluding current
+  const related = zoneCodes
+    .filter(code => code !== currentCode)
+    .slice(0, 3)
+    .map(code => ALL_PROTOCOLS[code])
+    .filter(Boolean);
+
+  const list = document.getElementById('related-list');
+  if (related.length === 0) {
+    list.innerHTML = '<div style="font-size:13px;color:#888;padding:8px 0">No related protocols found.</div>';
+    return;
+  }
+  list.innerHTML = related.map(p => {
+    const s = STATS[p.code];
+    const scoreHtml = s && s.n > 0
+      ? `<div class="related-score">${s.mean ? s.mean.toFixed(1) : '—'}</div>`
+      : `<div class="related-score no-data">—</div>`;
+    return `<button class="related-card" onclick="loadRelated('${p.code}')">
+      <div class="related-dot ${p.series}"></div>
+      <div class="related-main">
+        <div class="related-name">${p.name}</div>
+        <div class="related-meta">${p.meta}</div>
+      </div>
+      ${scoreHtml}
+    </button>`;
+  }).join('');
+}
+
+// ── LOAD RELATED (navigate to another protocol without re-running adviser) ────
+function loadRelated(code) {
+  const p = ALL_PROTOCOLS[code];
+  if (!p) return;
+  populateResult(p, answers[0]);
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── POPULATE RESULT SCREEN ────────────────────────────────────────────────────
+function populateResult(p, situationKey) {
+  document.getElementById('result-name').textContent = p.name;
+  document.getElementById('result-meta').textContent = `${p.code} · ${p.meta}`;
+  document.getElementById('result-desc').textContent = p.desc;
+  document.getElementById('survey-quick').href = p.survey1s;
+  document.getElementById('survey-full').href = p.survey1m;
+  drawCurve(p);
+  renderStats(p.code);
+  renderYoutube(p);
+  renderCommentary(p.code);
+  renderRelated(p.code, situationKey);
+}
+
+// ── SHOW RESULT ───────────────────────────────────────────────────────────────
+function showResult() {
+  const p = findProtocol();
+  if (!p) return;
+  document.getElementById('screen-adviser').classList.remove('active');
+  document.getElementById('screen-result').classList.add('active');
+  populateResult(p, answers[0]);
+}
+
+// ── RESTART ───────────────────────────────────────────────────────────────────
+function restart() {
+  answers = {}; currentQ = 0;
+  document.getElementById('screen-result').classList.remove('active');
+  document.getElementById('screen-adviser').classList.add('active');
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
