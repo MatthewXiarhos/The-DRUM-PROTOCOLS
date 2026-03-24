@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Safety, Health Guidance & Privacy · The Drum Protocols</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dp-gold: #B8860B;
+  --dp-gold-light: #D4A017;
+  --dp-gold-pale: #F5EDD0;
+  --dp-gold-faint: #FFFCF0;
+  --dp-slate: #2C3E50;
+  --dp-slate-mid: #4A5568;
+  --dp-slate-light: #718096;
+  --dp-cream: #FAFAF7;
+  --dp-green: #2D6A4F;
+  --dp-green-light: #52B788;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #888;
+  --color-bg: #FAFAF7;
+  --color-surface: #fff;
+  --color-border: rgba(0,0,0,0.08);
+  --color-border-mid: rgba(0,0,0,0.14);
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ── SITE NAV ── */
+.site-nav {
+  background: var(--dp-slate);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+  position: sticky; top: 0; z-index: 200;
+}
+.nav-brand {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dp-gold-light); text-decoration: none; font-weight: 500;
+}
+.nav-links { display: flex; gap: 24px; }
+.nav-link {
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.15s;
+}
+.nav-link:hover { color: #fff; }
+.nav-link.active { color: var(--dp-gold-light); }
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background: var(--dp-slate);
+  padding: 48px 32px 44px;
+  position: relative; overflow: hidden;
+}
+.page-header::before {
+  content: ''; position: absolute; right: -80px; top: -80px;
+  width: 320px; height: 320px; border-radius: 50%;
+  border: 1px solid rgba(184,134,11,0.18);
+}
+.page-header::after {
+  content: ''; position: absolute; right: -30px; top: -30px;
+  width: 200px; height: 200px; border-radius: 50%;
+  border: 1px solid rgba(184,134,11,0.12);
+}
+.header-inner { position: relative; z-index: 1; max-width: 720px; margin: 0 auto; }
+.header-eyebrow {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--dp-gold-light); margin-bottom: 10px;
+}
+.header-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px; font-weight: 600; color: #fff;
+  line-height: 1.15; margin-bottom: 14px;
+}
+.header-intro {
+  font-size: 15px; color: rgba(255,255,255,0.6);
+  font-weight: 300; line-height: 1.7; max-width: 540px;
+}
+.header-date {
+  margin-top: 20px; font-size: 11px;
+  color: rgba(255,255,255,0.3); letter-spacing: 0.06em;
+}
+
+/* ── MAIN ── */
+.main {
+  max-width: 720px; margin: 0 auto;
+  padding: 40px 20px 80px;
+}
+
+/* ── SECTION CARDS ── */
+.section-card {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.section-card-header {
+  padding: 24px 32px 0;
+  border-bottom: 0.5px solid var(--color-border);
+  padding-bottom: 20px;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.section-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 32px; font-weight: 300;
+  color: var(--dp-gold); line-height: 1;
+  flex-shrink: 0; margin-top: 2px;
+}
+.section-title-block {}
+.section-label {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--color-text-tertiary); margin-bottom: 4px;
+}
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px; font-weight: 600;
+  color: var(--color-text-primary); line-height: 1.2;
+}
+.section-body { padding: 24px 32px 28px; }
+
+/* ── PROSE ── */
+.prose p {
+  font-size: 14px; line-height: 1.8;
+  color: var(--color-text-secondary);
+  margin-bottom: 16px;
+}
+.prose p:last-child { margin-bottom: 0; }
+.prose strong { color: var(--color-text-primary); font-weight: 500; }
+.prose a { color: var(--dp-gold); text-decoration: none; }
+.prose a:hover { text-decoration: underline; }
+
+/* ── CONTRAINDICATIONS BOX ── */
+.contra-box {
+  background: #FFF8F8;
+  border: 0.5px solid rgba(220,53,69,0.2);
+  border-left: 3px solid rgba(220,53,69,0.5);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 18px 20px;
+  margin: 20px 0;
+}
+.contra-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(180,40,40,0.7); margin-bottom: 12px; font-weight: 500;
+}
+.contra-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.contra-list li {
+  font-size: 14px; color: var(--color-text-secondary);
+  display: flex; align-items: flex-start; gap: 10px; line-height: 1.5;
+}
+.contra-list li::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(180,40,40,0.4); flex-shrink: 0; margin-top: 6px;
+}
+
+/* ── CONSULT BOX ── */
+.consult-box {
+  background: var(--dp-gold-faint);
+  border: 0.5px solid rgba(184,134,11,0.2);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  margin: 20px 0;
+}
+.consult-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dp-gold); margin-bottom: 10px; font-weight: 500;
+}
+.consult-text {
+  font-size: 14px; color: var(--color-text-secondary); line-height: 1.7;
+}
+
+/* ── PRIVACY POINTS ── */
+.privacy-list { list-style: none; display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.privacy-list li {
+  display: flex; align-items: flex-start; gap: 12px;
+  font-size: 14px; color: var(--color-text-secondary); line-height: 1.6;
+}
+.privacy-check {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--dp-green-pale);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px; font-size: 10px; color: var(--dp-green);
+}
+
+/* ── VERSION FOOTER ── */
+.version-note {
+  text-align: center; padding: 0 20px 16px;
+  font-size: 11px; color: var(--color-text-tertiary); line-height: 1.6;
+}
+.version-note a { color: var(--dp-gold); text-decoration: none; }
+
+/* ── BACK LINK ── */
+.back-strip {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-lg);
+  padding: 18px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+  margin-bottom: 20px;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+.back-strip:hover { border-color: var(--dp-gold-light); }
+.back-text { font-size: 13px; color: var(--color-text-secondary); }
+.back-text strong { color: var(--color-text-primary); font-weight: 500; }
+.back-arrow { font-size: 13px; color: var(--dp-gold); }
+
+/* ── PAGE FOOTER ── */
+.page-footer {
+  background: var(--color-surface);
+  border-top: 0.5px solid var(--color-border-mid);
+  padding: 20px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 12px;
+}
+.footer-brand { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 0.08em; }
+.footer-links { display: flex; gap: 20px; }
+.footer-link {
+  font-size: 11px; color: var(--color-text-tertiary);
+  text-decoration: none; letter-spacing: 0.05em; transition: color 0.15s;
+}
+.footer-link:hover { color: var(--dp-gold); }
+
+@media (max-width: 600px) {
+  .header-title { font-size: 30px; }
+  .site-nav { padding: 0 16px; }
+  .main { padding: 24px 12px 60px; }
+  .section-card-header { padding: 20px 20px 16px; }
+  .section-body { padding: 20px 20px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── SITE NAV ── -->
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <div class="nav-links">
+    <a class="nav-link" href="drum_protocols_adviser_ux.html">Adviser</a>
+    <a class="nav-link" href="insights.html">Data Insights</a>
+    <a class="nav-link active" href="legal.html">Safety</a>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">The Drum Protocols · Faces of Dragonfly</div>
+    <div class="header-title">Safety, Health Guidance<br>& Privacy Policy</div>
+    <div class="header-intro">Everything you need to know before listening — who this is designed for, who should exercise caution, and how your survey responses are handled.</div>
+    <div class="header-date">Last updated: March 2026</div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main">
+
+  <!-- BACK LINKS -->
+  <a class="back-strip" href="drum_protocols_adviser_ux.html">
+    <div class="back-text">Not sure where to start? <strong>Use the Protocol Adviser — three questions, your match is waiting.</strong></div>
+    <div class="back-arrow">→</div>
+  </a>
+
+  <!-- ── SECTION 1: HEALTH & SAFETY ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="section-number">1</div>
+      <div class="section-title-block">
+        <div class="section-label">Health & Safety Guidance</div>
+        <div class="section-title">Who this is for — and who should be careful</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="prose">
+        <p>THE DRUM PROTOCOLS is a rhythmic entrainment system designed to support nervous system regulation through carefully structured audio. It is intended for general wellness use by adults and older adolescents who are in a stable enough state to engage with rhythmic audio safely.</p>
+
+        <p>Most people — including many with ADHD, anxiety, autism, PTSD, bipolar disorder, and related conditions — can use these protocols without concern. The system was designed with neurodivergent and sensitive nervous systems in mind, and the phi-curve architecture is specifically built to move gradually and avoid jarring transitions.</p>
+
+        <p><strong>That said, rhythmic audio entrainment is not appropriate for everyone in all circumstances.</strong> Please read the following before listening for the first time.</p>
+      </div>
+
+      <div class="contra-box">
+        <div class="contra-label">Do not use THE DRUM PROTOCOLS if you have</div>
+        <ul class="contra-list">
+          <li>Epilepsy, seizure disorders, or a history of auditory-triggered seizures</li>
+          <li>Severe auditory hypersensitivity or hyperacusis — if sounds that others tolerate cause you significant pain or distress</li>
+          <li>Active psychosis, or a current episode involving breaks from shared reality</li>
+          <li>A severe acute mental health crisis requiring immediate professional intervention — please seek that support first</li>
+        </ul>
+      </div>
+
+      <div class="consult-box">
+        <div class="consult-label">Consider consulting a professional first if you</div>
+        <div class="consult-text">Are currently working with a psychiatrist or neurologist on a condition involving unusual brain activity patterns, have a history of dissociative episodes triggered by sensory input, are in the early stages of a new medication affecting the central nervous system, or are using these protocols with a child under 12 — consider starting with shorter sessions at low volume.</div>
+      </div>
+
+      <div class="prose">
+        <p>If at any point during a session you feel significantly worse — more agitated, dissociated, distressed, or physically unwell — stop the session immediately. This is not a failure. It is information. Some protocol and population combinations do not work well together, and your honest report of that experience is valuable data.</p>
+
+        <p>Use headphones or earbuds where possible for the full entrainment effect. Keep volume at a comfortable, conversational level — the protocol does not require high volume to work, and listening at excessive levels over time carries real hearing risk.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: RESEARCH DISCLAIMER ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="section-number">2</div>
+      <div class="section-title-block">
+        <div class="section-label">Research Disclaimer</div>
+        <div class="section-title">What this is — and what it is not</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="prose">
+        <p>THE DRUM PROTOCOLS is an independent research project created by Matthew Xiarhos under the Faces of Dragonfly label. It is not a medical device. It is not a clinical treatment. It has not been evaluated by any regulatory body. It is not a substitute for professional mental health care, psychiatric treatment, or medical advice.</p>
+
+        <p>The system is built on a substantial body of existing research into rhythmic entrainment, brainwave frequency, and nervous system regulation — research that is real, peer-reviewed, and growing. The specific implementation — the phi-curve architecture, the spectral clock design, the protocol structure — represents original work applying those principles. But original application is not the same as clinical validation.</p>
+
+        <p><strong>What that means in practice:</strong> the protocols may help you regulate. Many people report that they do. But we do not yet have the clinical evidence base to make that claim with the precision that medicine requires, and we will not pretend otherwise. The listener data this project collects is part of building that evidence base — honestly, transparently, over time.</p>
+
+        <p>If you are in crisis, please contact a crisis service. If you have a mental health condition requiring treatment, please maintain that treatment. These protocols are designed to complement a stable life, not replace professional support when that support is needed.</p>
+
+        <p>Nothing on this site, in any YouTube description, or in any survey communication constitutes medical advice. If something we say sounds like medical advice, please read it again — we have tried very hard to ensure it does not.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: PRIVACY POLICY ── -->
+  <div class="section-card">
+    <div class="section-card-header">
+      <div class="section-number">3</div>
+      <div class="section-title-block">
+        <div class="section-label">Privacy Policy</div>
+        <div class="section-title">Your data — what we collect, what we do with it</div>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="prose">
+        <p>We take this seriously. The people who use THE DRUM PROTOCOLS often come in vulnerable states. That is not a population whose trust should be taken lightly.</p>
+
+        <p><strong>The short version:</strong> we collect no identifying information. Your survey responses are completely anonymous. We cannot connect a response to a person, an IP address, a device, or an account.</p>
+      </div>
+
+      <ul class="privacy-list">
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>No account required.</strong> You never create a profile, log in, or provide an email address to use any part of this system.</div>
+        </li>
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>No IP address collection.</strong> Tally's anonymous response mode does not log or transmit IP addresses. We have configured our surveys to use this mode.</div>
+        </li>
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>No personal identifiers.</strong> The surveys ask about your experience of the protocol — your state before and after, what you were doing, how the rhythm felt. Nothing in those questions can identify you.</div>
+        </li>
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>URL parameters are protocol metadata, not personal data.</strong> The <code>ref</code>, <code>vol</code>, and <code>src</code> parameters in survey links tell us which protocol, which volume, and which page you came from — not who you are.</div>
+        </li>
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>Data is used only for protocol development.</strong> Aggregated, anonymised response data is used to understand which protocols work for which populations, improve the Adviser routing, and guide future protocol design. It is not sold, shared with third parties, or used for advertising of any kind.</div>
+        </li>
+        <li>
+          <div class="privacy-check">✓</div>
+          <div><strong>EU privacy law compliance.</strong> This project complies with GDPR principles. Tally is GDPR-compliant. If you are in the EU or UK, your rights under applicable data protection law are respected — though given that no identifying data is collected, there is in practice nothing to request, correct, or delete.</div>
+        </li>
+      </ul>
+
+      <div class="prose">
+        <p>The Data Insights page on this site displays aggregated, anonymised listener data publicly. Individual responses are never displayed — only aggregate statistics across groups of respondents. If you submitted a survey response, it exists in the aggregate. It cannot be isolated or attributed to you.</p>
+
+        <p>Questions about data handling can be directed to <a href="mailto:MatthewXiarhos@gmail.com">MatthewXiarhos@gmail.com</a>.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSION NOTE -->
+  <div class="version-note">
+    This page is version-controlled at <a href="https://github.com/MatthewXiarhos/The-DRUM-PROTOCOLS" target="_blank">github.com/MatthewXiarhos/The-DRUM-PROTOCOLS</a>.<br>
+    An audit trail of all changes — including what this disclosure said on any given date — is publicly accessible in the repository history.<br>
+    Last updated: March 2026 · Faces of Dragonfly
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── PAGE FOOTER ── -->
+<div class="page-footer">
+  <div class="footer-brand">THE DRUM PROTOCOLS · FACES OF DRAGONFLY</div>
+  <div class="footer-links">
+    <a class="footer-link" href="drum_protocols_adviser_ux.html">Protocol Adviser</a>
+    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="index.html">Home</a>
+  </div>
+</div>
+
+</body>
+</html>
