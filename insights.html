@@ -910,9 +910,14 @@ function renderCommentary(data) {
 }
 
 // ── LOAD DATA ──
-// In production: fetch('data.json').then(r=>r.json()).then(init).catch(() => init(DEMO_DATA));
-// Using demo data directly for this build:
-setTimeout(() => init(DEMO_DATA), 600);
+// Fetch live data.json — fall back to DEMO_DATA if not found (e.g. local dev)
+fetch('data.json')
+  .then(r => { if (!r.ok) throw new Error('no data.json'); return r.json(); })
+  .then(data => init(data))
+  .catch(() => {
+    console.warn('data.json not found — using demo data');
+    setTimeout(() => init(DEMO_DATA), 600);
+  });
 </script>
 
 </body>

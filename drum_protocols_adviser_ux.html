@@ -433,29 +433,34 @@ const ZONE_CODES = {
   low:       ['T-ME-L1','T-ME-L2','T-ME-L3'],
 };
 
-// ── STATS (demo — replace by fetching data.json) ──────────────────────────────
-const STATS = {
-  'H-OS-L1':{n:47,mean:7.3,dist:[0,0,1,2,3,4,6,12,11,6,2],pct:66,commentary:'Pebble is showing strong early signal for acute over-stimulation. The distribution is right-skewed — most responses cluster between 7 and 9, with a modest left tail likely representing listeners who arrived in more extreme dysregulation. Worth watching whether the left tail shrinks as n grows.'},
-  'H-OS-L2':{n:31,mean:7.1,dist:[0,1,1,2,4,3,5,8,4,2,1],pct:61,commentary:'Rainfall is performing consistently within its zone. The wider spread compared to Pebble is expected — moderate-intensity listeners bring more heterogeneous starting states.'},
-  'H-OS-L3':{n:18,mean:6.8,dist:[0,0,1,2,3,2,3,3,2,1,1],pct:50,commentary:'Glacier has early data only. The relatively even distribution suggests it is landing differently for different people — expected for a very gentle protocol where listener expectation plays a larger role.'},
-  'H-AX-L1':{n:63,mean:7.6,dist:[0,0,0,1,2,5,8,16,18,9,4],pct:73,commentary:'Meadow is among the strongest performers in the library at current sample size. The distribution is cleanly right-skewed with a sharp mode at 8. Anxiety protocols tend to over-deliver when population fit is high — this looks like strong fit.'},
-  'H-AX-L2':{n:41,mean:7.4,dist:[0,0,1,1,3,4,6,12,9,4,1],pct:68,commentary:'Cottage is performing closely behind Meadow. The distribution shape is similar but slightly flatter — consistent with a broader listener population or more mixed starting states.'},
-  'H-AX-L3':{n:28,mean:7.2,dist:[0,0,1,2,2,3,4,7,5,3,1],pct:64,commentary:'Valley is developing steadily. The mild-intensity design means it attracts listeners already in a relatively regulated state — a forgiving population for early protocol data.'},
-  'H-CR-L1':{n:22,mean:6.4,dist:[0,1,1,2,4,2,2,4,4,1,1],pct:45,commentary:'Anchor shows a notable bimodal distribution — a cluster near 4–5 and another near 8–9. This is a population-matching signal: it works powerfully for some and not at all for others. The Adviser routing for crisis protocols is worth reviewing as n grows.'},
-  'H-CR-L2':{n:15,mean:6.7,dist:[0,0,1,2,2,2,1,4,2,1,0],pct:47,commentary:'Harbor is early data. The 6.7 mean with this distribution is cautiously positive for an acute-distress protocol — these listeners arrive in high-variance states by definition.'},
-  'H-CR-L3':{n:11,mean:6.9,dist:[0,0,1,1,1,1,2,2,2,1,0],pct:45,commentary:'Horizon has minimal data. No reliable conclusions yet. The early shape is reasonable but n=11 is insufficient for pattern recognition.'},
-  'H-SL-L1':{n:58,mean:7.8,dist:[0,0,0,1,2,3,7,14,18,10,3],pct:78,commentary:'Lantern is the strongest performer among sleep protocols and one of the top performers in the library. The steep right-skew and 78% positive rate suggest excellent population fit. Sleep protocols benefit from clear listener intent — people know what they want.'},
-  'H-SL-L2':{n:44,mean:7.5,dist:[0,0,1,1,2,4,6,12,11,5,2],pct:72,commentary:'Hammock is performing almost as strongly as Lantern. The fuller hour appears to suit listeners who want a more patient transition — the data reflects that.'},
-  'H-SL-L3':{n:29,mean:7.3,dist:[0,0,1,1,2,3,4,8,6,3,1],pct:62,commentary:'Midnight is building well. The gentlest sleep protocol attracts a self-selected population of listeners who prefer minimal intervention — a group that tends to report consistently.'},
-  'T-FC-L1':{n:52,mean:7.7,dist:[0,0,0,1,2,4,7,14,16,6,2],pct:73,commentary:'Compass is the flagship focus protocol and delivering accordingly. The 7.7 mean with a strong mode at 8 is characteristic of a protocol that consistently delivers what it promises. Focus listeners are a motivated, self-aware population.'},
-  'T-FC-L2':{n:38,mean:7.4,dist:[0,0,1,1,3,3,5,11,9,4,1],pct:66,commentary:'Waypoint is slightly behind Compass — which is structurally expected, as the extended format requires more sustained listener engagement. The data is healthy.'},
-  'T-CF-L1':{n:34,mean:7.5,dist:[0,0,0,1,2,4,5,10,8,3,1],pct:65,commentary:'Ember is performing well for a creative-state protocol. The 9Hz hold is a less familiar target frequency than the higher alpha range — yet listeners are responding positively, suggesting the creative flow population finds the lower alpha register effective.'},
-  'T-ME-L1':{n:28,mean:6.9,dist:[0,0,1,2,3,3,4,7,5,2,1],pct:54,commentary:'Breeze is developing. The ascending arc protocols tend to produce wider variance early — listeners arriving in low-mood states bring heterogeneous baselines. The 6.9 mean is solid for this population.'},
-  'T-ME-L2':{n:19,mean:7.4,dist:[0,0,0,1,2,2,3,5,4,2,0],pct:63,commentary:'Sunrise is early data with encouraging signal. The 45-minute arc appears to suit the gradual lift better than the 30-minute Breeze for moderate-intensity listeners.'},
-  'T-ME-L3':{n:14,mean:7.1,dist:[0,0,1,1,1,2,2,3,3,1,0],pct:50,commentary:'Updraft has minimal data. Early shape is reasonable. The 60-minute ascending arc is the most demanding protocol in this zone — requires sustained listener compliance.'},
-};
+// ── LIVE DATA — fetched from data.json ────────────────────────────────────────
+let STATS = {};
+let DATA_DATE = '';
+let SPHERE_OVERVIEW = '';
 
-const DATA_DATE = '2026-03-23';
+// Fetch data.json on load — fall back to empty stats gracefully
+fetch('data.json')
+  .then(r => { if (!r.ok) throw new Error('no data.json'); return r.json(); })
+  .then(data => {
+    DATA_DATE = data.analysis_date || data.generated || '';
+    SPHERE_OVERVIEW = data.sphere_commentary?.overview || '';
+    // Map data.json protocol format → STATS shape expected by renderStats/renderCommentary
+    if (data.protocols) {
+      Object.entries(data.protocols).forEach(([code, p]) => {
+        STATS[code] = {
+          n:           p.n,
+          mean:        p.mean,
+          dist:        p.dist,
+          pct:         p.pct_positive,
+          commentary:  p.sphere || '',
+        };
+      });
+    }
+    console.log('data.json loaded — ' + Object.keys(STATS).length + ' protocols');
+  })
+  .catch(err => {
+    console.warn('data.json not available — stats will show as empty:', err.message);
+  });
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let answers = {}, currentQ = 0;
