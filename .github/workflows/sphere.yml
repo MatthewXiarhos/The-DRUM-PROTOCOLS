@@ -1,0 +1,35 @@
+name: Sphere Pipeline
+
+on:
+  push:
+    paths:
+      - 'tally_export.csv'   # only fires when you push a new CSV
+
+jobs:
+  run-sphere:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pandas numpy anthropic scipy
+
+      - name: Run Sphere pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python sphere_pipeline.py --csv tally_export.csv --output data.json
+
+      - name: Commit data.json
+        run: |
+          git config user.name  "Sphere Pipeline"
+          git config user.email "sphere@faces-of-dragonfly.bot"
+          git add data.json
+          git diff --cached --quiet || git commit -m "data: $(date +%Y-%m-%d) [auto]"
+          git push
