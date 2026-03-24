@@ -233,12 +233,16 @@ def build_sphere_prompt(protocol_stats, series_summary, total_n):
         if s["confidence"] == "early":
             flags.append("EARLY DATA")
         flag_str = " [" + ", ".join(flags) + "]" if flags else ""
+        src_str = " | ".join(f"{k}:{v}" for k,v in s.get("src_counts",{}).items())
+        vol_str = " | ".join(f"{k}:{v}" for k,v in s.get("vol_counts",{}).items())
         lines.append(
             f"{code} | {meta.get('name','?')} | {meta.get('series','?')} | {meta.get('entry','?')} | "
             f"{meta.get('move','?')} | n={s['n']} | mean={s['mean']} | std={s['std']} | "
             f"pct_pos={s['pct_positive']}% | confidence={s['confidence']}{flag_str}"
         )
         lines.append(f"  dist: {s['dist']}")
+        if src_str: lines.append(f"  src: {src_str}")
+        if vol_str: lines.append(f"  vol: {vol_str}")
 
     lines += [
         "",
@@ -302,6 +306,8 @@ def parse_tally_csv(csv_path):
     print(f"  Loaded {len(df)} rows, columns: {list(df.columns)}")
 
     ref_col    = COLUMN_MAP["ref"]
+    vol_col    = COLUMN_MAP.get("vol")
+    src_col    = COLUMN_MAP.get("src")
     rating_col = COLUMN_MAP["rating"]
     date_col   = COLUMN_MAP["date"]
     type_col   = COLUMN_MAP.get("type")
@@ -350,6 +356,12 @@ def parse_tally_csv(csv_path):
     # Date
     df["date"] = pd.to_datetime(df.get(date_col, pd.NaT), errors="coerce")
 
+    # Volume (optional — e.g. VOL001)
+    df["vol"] = df[vol_col].fillna("VOL001") if vol_col and vol_col in df.columns else "VOL001"
+
+    # Traffic source (optional — yt / adviser / site)
+    df["src"] = df[src_col].fillna("unknown") if src_col and src_col in df.columns else "unknown"
+
     # Respondent type (optional)
     df["respondent_type"] = df[type_col] if type_col and type_col in df.columns else "unknown"
 
@@ -384,7 +396,16 @@ def run_pipeline(csv_path, skip_sphere=False, dry_run=False, output_path="data.j
         if s["n"] < MIN_N_PUBLIC:
             print(f"  {code} ({meta['name']}): n={s['n']} — below MIN_N_PUBLIC={MIN_N_PUBLIC}, excluded from public data")
         else:
-            protocol_stats[code] = {**s, "name": meta["name"], "series": meta["series"]}
+            # Source breakdown: how many responses from each traffic source
+            src_counts = df[df["code"] == code]["src"].value_counts().to_dict()
+            vol_counts = df[df["code"] == code]["vol"].value_counts().to_dict()
+            protocol_stats[code] = {
+                **s,
+                "name":       meta["name"],
+                "series":     meta["series"],
+                "src_counts": src_counts,   # {"yt": 30, "adviser": 12, "site": 5}
+                "vol_counts": vol_counts,   # {"VOL001": 40, "VOL002": 7}
+            }
             flag = " [BIMODAL]" if s["bimodal_flag"] else ""
             print(f"  {code} ({meta['name']}): n={s['n']}, mean={s['mean']}, conf={s['confidence']}{flag}")
 
@@ -434,7 +455,8 @@ def run_pipeline(csv_path, skip_sphere=False, dry_run=False, output_path="data.j
                 "confidence":       s["confidence"],
                 "bimodal_flag":     s["bimodal_flag"],
                 "bimodality_coefficient": s["bimodality_coefficient"],
-                # Per-protocol Sphere commentary (if available)
+                "src_counts":       s.get("src_counts", {}),
+                "vol_counts":       s.get("vol_counts", {}),
                 "sphere": sphere_commentary.get("by_protocol", {}).get(code, ""),
             }
             for code, s in protocol_stats.items()

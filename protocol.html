@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Drum Protocols</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --dp-gold: #B8860B;
+  --dp-gold-light: #D4A017;
+  --dp-gold-pale: #F5EDD0;
+  --dp-gold-faint: #FFFCF0;
+  --dp-slate: #2C3E50;
+  --dp-slate-mid: #4A5568;
+  --dp-slate-light: #718096;
+  --dp-cream: #FAFAF7;
+  --dp-green: #2D6A4F;
+  --dp-green-light: #52B788;
+  --dp-green-pale: #D8F3DC;
+  --dp-healing: #2D6A4F;
+  --dp-thriving: #1A5276;
+  --dp-transforming: #6B2D6A;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #555;
+  --color-text-tertiary: #888;
+  --color-bg: #FAFAF7;
+  --color-surface: #fff;
+  --color-border: rgba(0,0,0,0.08);
+  --color-border-mid: rgba(0,0,0,0.14);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ── SITE NAV ──────────────────────── */
+.site-nav {
+  background: var(--dp-slate);
+  padding: 0 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 52px;
+  position: sticky; top: 0; z-index: 200;
+}
+.nav-brand {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--dp-gold-light); text-decoration: none; font-weight: 500;
+}
+.nav-links { display: flex; gap: 24px; }
+.nav-link {
+  font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.55); text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-link:hover { color: #fff; }
+
+/* ── PROTOCOL HEADER ───────────────── */
+.protocol-header {
+  background: var(--dp-slate);
+  padding: 40px 32px 36px;
+  position: relative; overflow: hidden;
+}
+.protocol-header::before {
+  content: ''; position: absolute;
+  right: -80px; top: -80px;
+  width: 320px; height: 320px; border-radius: 50%;
+  border: 1px solid rgba(184,134,11,0.18);
+}
+.protocol-header::after {
+  content: ''; position: absolute;
+  right: -30px; top: -30px;
+  width: 200px; height: 200px; border-radius: 50%;
+  border: 1px solid rgba(184,134,11,0.12);
+}
+.header-inner { position: relative; z-index: 1; max-width: 760px; margin: 0 auto; }
+.header-series {
+  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.header-series.healing    { color: var(--dp-green-light); }
+.header-series.thriving   { color: #5DADE2; }
+.header-series.transforming { color: #C39BD3; }
+.header-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 52px; font-weight: 600; color: #fff;
+  line-height: 1.1; margin-bottom: 8px;
+}
+.header-meta {
+  font-size: 13px; color: rgba(255,255,255,0.5); letter-spacing: 0.04em;
+}
+
+/* ── MAIN CONTENT ──────────────────── */
+.main {
+  max-width: 760px; margin: 0 auto;
+  padding: 32px 20px 72px;
+  display: flex; flex-direction: column; gap: 0;
+}
+
+/* ── SHARED SECTION STYLES ─────────── */
+.section {
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.section-head {
+  padding: 18px 24px 0;
+}
+.section-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--color-text-tertiary); margin-bottom: 14px;
+}
+
+/* ── VIDEO SECTION ─────────────────── */
+.video-section { background: #000; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 16px; }
+.video-embed { width: 100%; aspect-ratio: 16/9; border: none; display: block; }
+.video-placeholder {
+  width: 100%; aspect-ratio: 16/9;
+  background: var(--dp-slate);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+}
+.vp-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; color: rgba(255,255,255,0.5);
+}
+.vp-label { font-size: 13px; color: rgba(255,255,255,0.4); letter-spacing: 0.06em; }
+
+/* ── CURVE SECTION ─────────────────── */
+.curve-wrap { padding: 0 24px 20px; }
+#curve-svg { width: 100%; }
+
+/* ── STATS ─────────────────────────── */
+.stats-wrap { padding: 0 24px 20px; }
+.stats-grid {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  gap: 10px; margin-bottom: 16px;
+}
+.stat-card {
+  background: var(--color-bg);
+  border-radius: var(--radius-md); padding: 14px; text-align: center;
+}
+.stat-val {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 30px; font-weight: 600; line-height: 1;
+  color: var(--color-text-primary);
+}
+.stat-lbl {
+  font-size: 10px; color: var(--color-text-tertiary);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px;
+}
+.dist-label { font-size: 11px; color: var(--color-text-secondary); margin-bottom: 8px; }
+.dist-bars { display: flex; align-items: flex-end; gap: 3px; height: 52px; }
+.dist-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.dist-bar { width: 100%; border-radius: 2px 2px 0 0; background: var(--dp-slate-light); opacity: 0.4; min-height: 2px; }
+.dist-bar.hi { background: var(--dp-gold); opacity: 1; }
+.dist-num { font-size: 9px; color: var(--color-text-tertiary); }
+.early-badge {
+  display: inline-block; font-size: 10px; padding: 3px 10px;
+  background: var(--color-bg); border: 0.5px solid var(--color-border-mid);
+  border-radius: 20px; color: var(--color-text-tertiary); margin-top: 10px;
+}
+
+/* ── DESCRIPTION ───────────────────── */
+.desc-wrap { padding: 0 24px 24px; }
+.desc-text {
+  font-size: 15px; line-height: 1.75;
+  color: var(--color-text-secondary);
+}
+
+/* ── SPHERE COMMENTARY ─────────────── */
+.commentary-wrap {
+  background: var(--dp-gold-faint);
+  border-top: 0.5px solid rgba(184,134,11,0.15);
+  padding: 20px 24px;
+}
+.commentary-header {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.commentary-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dp-gold);
+}
+.commentary-date { font-size: 10px; color: var(--color-text-tertiary); }
+.commentary-text {
+  font-size: 13px; line-height: 1.75; color: var(--color-text-secondary);
+  border-left: 2px solid rgba(184,134,11,0.3); padding-left: 12px;
+}
+.commentary-text.empty { font-style: italic; color: var(--color-text-tertiary); }
+
+/* ── SURVEY SECTION ────────────────── */
+.survey-wrap { padding: 20px 24px 24px; }
+.survey-pair { display: flex; gap: 10px; margin-bottom: 12px; }
+.btn-survey {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  padding: 14px 8px;
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-md);
+  background: var(--color-bg); text-decoration: none;
+  transition: all 0.15s; font-family: inherit; cursor: pointer;
+}
+.btn-survey:hover { border-color: var(--dp-green-light); background: var(--dp-green-pale); }
+.sq-badge {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--dp-green); margin-bottom: 2px;
+}
+.sq-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.sq-sub { font-size: 11px; color: var(--color-text-secondary); text-align: center; }
+.survey-note {
+  font-size: 11px; color: var(--color-text-tertiary);
+  text-align: center; line-height: 1.6;
+}
+
+/* ── SAFETY NOTE ───────────────────── */
+.safety-note {
+  font-size: 11px; color: var(--color-text-tertiary);
+  text-align: center; padding: 0 24px 20px; line-height: 1.6;
+}
+.safety-note a { color: var(--dp-gold); text-decoration: none; }
+.safety-note a:hover { text-decoration: underline; }
+
+/* ── FOOTER ACTIONS ────────────────── */
+.footer-actions {
+  display: flex; flex-direction: column; gap: 10px;
+  padding: 0 0 8px;
+}
+.btn-primary {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  padding: 15px; background: var(--dp-slate); color: #fff;
+  border: none; border-radius: var(--radius-md);
+  font-size: 14px; font-family: inherit; font-weight: 500;
+  cursor: pointer; letter-spacing: 0.04em;
+  transition: background 0.15s; text-decoration: none;
+}
+.btn-primary:hover { background: var(--dp-gold); }
+.btn-primary.disabled { opacity: 0.4; pointer-events: none; }
+.btn-secondary {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; background: transparent;
+  color: var(--color-text-secondary);
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-md);
+  font-size: 13px; font-family: inherit;
+  cursor: pointer; transition: all 0.15s; text-decoration: none;
+}
+.btn-secondary:hover { border-color: var(--dp-gold-light); color: var(--dp-gold); }
+
+/* ── NOT FOUND ─────────────────────── */
+.not-found {
+  max-width: 480px; margin: 80px auto; text-align: center; padding: 0 24px;
+}
+.not-found-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px; font-weight: 600; margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+.not-found-sub { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 24px; }
+
+/* ── PAGE FOOTER ───────────────────── */
+.page-footer {
+  background: var(--color-surface);
+  border-top: 0.5px solid var(--color-border-mid);
+  padding: 20px 32px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.footer-brand { font-size: 11px; color: var(--color-text-tertiary); letter-spacing: 0.08em; }
+.footer-links { display: flex; gap: 20px; }
+.footer-link {
+  font-size: 11px; color: var(--color-text-tertiary);
+  text-decoration: none; letter-spacing: 0.05em; transition: color 0.15s;
+}
+.footer-link:hover { color: var(--dp-gold); }
+
+.vol-selector {
+  padding: 10px 12px;
+  background: rgba(0,0,0,0.4);
+}
+.vol-selector select {
+  width: 100%; padding: 10px 14px;
+  background: rgba(255,255,255,0.08);
+  color: #fff; border: 0.5px solid rgba(255,255,255,0.2);
+  border-radius: var(--radius-sm);
+  font-size: 13px; font-family: inherit;
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.5)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+.vol-selector select:focus { outline: none; border-color: var(--dp-gold-light); }
+.vol-selector select option { background: var(--dp-slate); color: #fff; }
+
+@media (max-width: 600px) {
+  .header-name { font-size: 36px; }
+  .site-nav { padding: 0 16px; }
+  .main { padding: 20px 12px 48px; }
+  .stats-grid { grid-template-columns: repeat(3,1fr); gap: 6px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── SITE NAV ── -->
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <div class="nav-links">
+    <a class="nav-link" href="drum_protocols_adviser_ux.html">Adviser</a>
+    <a class="nav-link" href="insights.html">Data Insights</a>
+    <a class="nav-link" href="legal.html">Safety</a>
+  </div>
+</nav>
+
+<!-- ── PROTOCOL HEADER ── -->
+<div class="protocol-header" id="protocol-header">
+  <div class="header-inner">
+    <div class="header-series" id="header-series"></div>
+    <div class="header-name" id="header-name">Loading…</div>
+    <div class="header-meta" id="header-meta"></div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<div class="main" id="main-content">
+
+  <!-- VIDEO -->
+  <div class="video-section" id="video-section"></div>
+
+  <!-- CURVE + STATS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-label">Entrainment curve</div>
+    </div>
+    <div class="curve-wrap">
+      <svg id="curve-svg" viewBox="0 0 480 100" style="height:100px">
+        <defs>
+          <linearGradient id="cGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#B8860B" stop-opacity="0.15"/>
+            <stop offset="100%" stop-color="#B8860B" stop-opacity="0.04"/>
+          </linearGradient>
+        </defs>
+        <path id="curve-fill" fill="url(#cGrad)"/>
+        <path id="curve-line" fill="none" stroke="#B8860B" stroke-width="2" stroke-linecap="round"/>
+        <line id="inflect-line" stroke="#B8860B" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.4"/>
+        <text id="lbl-start" font-size="10" fill="#888" font-family="sans-serif"></text>
+        <text id="lbl-end"   font-size="10" fill="#888" font-family="sans-serif" text-anchor="end"></text>
+        <text id="lbl-dur"   font-size="10" fill="#888" font-family="sans-serif" text-anchor="middle"></text>
+        <text id="lbl-move"  font-size="9"  fill="#B8860B" font-family="sans-serif" text-anchor="middle" opacity="0.7"></text>
+      </svg>
+    </div>
+
+    <div class="section-head" style="padding-top:0">
+      <div class="section-label">Listener data</div>
+    </div>
+    <div class="stats-wrap">
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="stat-n">—</div><div class="stat-lbl">Responses</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-avg">—</div><div class="stat-lbl">Avg rating</div></div>
+        <div class="stat-card"><div class="stat-val" id="stat-pos">—</div><div class="stat-lbl">Rated ≥ 7</div></div>
+      </div>
+      <div class="dist-label">Rating distribution (0 – 10)</div>
+      <div class="dist-bars" id="dist-bars"></div>
+      <div class="early-badge" id="early-badge" style="display:none">Early data · results will deepen with more responses</div>
+    </div>
+  </div>
+
+  <!-- DESCRIPTION + SPHERE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-label">About this protocol</div>
+    </div>
+    <div class="desc-wrap">
+      <div class="desc-text" id="desc-text"></div>
+    </div>
+    <div class="commentary-wrap">
+      <div class="commentary-header">
+        <div class="commentary-label">Sphere · statistical commentary</div>
+        <div class="commentary-date" id="commentary-date"></div>
+      </div>
+      <div class="commentary-text" id="commentary-text"></div>
+    </div>
+  </div>
+
+  <!-- SURVEY -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-label">Complete a survey after listening</div>
+    </div>
+    <div class="survey-wrap">
+      <div class="survey-pair">
+        <a class="btn-survey" id="survey-1s" href="#" target="_blank">
+          <div class="sq-badge">Quick</div>
+          <div class="sq-title">1-Second Survey</div>
+          <div class="sq-sub">One rating · 10 seconds</div>
+        </a>
+        <a class="btn-survey" id="survey-1m" href="#" target="_blank">
+          <div class="sq-badge">Full</div>
+          <div class="sq-title">1-Minute Survey</div>
+          <div class="sq-sub">Rating + context</div>
+        </a>
+      </div>
+      <div class="survey-note">Your response shapes future protocols.<br>Every report matters — including ones that didn't work.</div>
+    </div>
+    <div class="safety-note">
+      * Safety, health guidance &amp; privacy policy:
+      <a href="legal.html">thedrum protocols.github.io/legal</a>
+    </div>
+  </div>
+
+  <!-- FOOTER ACTIONS -->
+  <div class="footer-actions">
+    <a class="btn-primary" id="btn-yt" href="#" target="_blank">▶ Listen on YouTube</a>
+    <a class="btn-secondary" href="drum_protocols_adviser_ux.html">← Find your protocol · Protocol Adviser</a>
+    <a class="btn-secondary" href="insights.html">View all listener data · Data Insights</a>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ── NOT FOUND (hidden unless needed) ── -->
+<div class="not-found" id="not-found" style="display:none">
+  <div class="not-found-title">Protocol not found</div>
+  <div class="not-found-sub">The protocol code in the URL wasn't recognised. Use the Protocol Adviser to find your match.</div>
+  <a class="btn-primary" href="drum_protocols_adviser_ux.html" style="display:inline-flex;max-width:280px;margin:0 auto">Go to Protocol Adviser</a>
+</div>
+
+<!-- ── PAGE FOOTER ── -->
+<div class="page-footer">
+  <div class="footer-brand">THE DRUM PROTOCOLS · FACES OF DRAGONFLY</div>
+  <div class="footer-links">
+    <a class="footer-link" href="drum_protocols_adviser_ux.html">Protocol Adviser</a>
+    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="legal.html">Safety & Privacy</a>
+    <a class="footer-link" href="index.html">Home</a>
+  </div>
+</div>
+
+<script>
+// ── ALL PROTOCOLS (flat index keyed by code) ──────────────────────────────────
+const PROTOCOLS = {
+  'H-OS-L1':{name:'Pebble',    series:'healing',     entry:'Over-stimulation',        meta:'Healing · Over-stimulation · 30 min',    move:'DESCENT',start:15,end:8,  dur:30, desc:'A rapid descent from 15Hz to 8Hz. Designed for moments when your nervous system needs to come down quickly and time is limited.',                                            yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L1-VOL001'},
+  'H-OS-L2':{name:'Rainfall',  series:'healing',     entry:'Over-stimulation',        meta:'Healing · Over-stimulation · 45 min',    move:'DESCENT',start:13,end:9,  dur:45, desc:'A measured descent from 13Hz to 9Hz. Gives your nervous system more time and space to follow the signal.',                                                                   yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L2-VOL001'},
+  'H-OS-L3':{name:'Glacier',   series:'healing',     entry:'Over-stimulation',        meta:'Healing · Over-stimulation · 60 min',    move:'DESCENT',start:12,end:10, dur:60, desc:'The most gradual over-stimulation protocol. Starts lower, descends gently — arriving at a calm but alert resting state.',                                                     yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L3-VOL001'},
+  'H-AX-L1':{name:'Meadow',    series:'healing',     entry:'Anxiety & Stress',        meta:'Healing · Anxiety & Stress · 30 min',    move:'DESCENT',start:14,end:7,  dur:30, desc:'A deep, rapid descent from 14Hz to 7Hz. Designed for elevated anxiety when time is short.',                                                                                   yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L1-VOL001'},
+  'H-AX-L2':{name:'Cottage',   series:'healing',     entry:'Anxiety & Stress',        meta:'Healing · Anxiety & Stress · 45 min',    move:'DESCENT',start:12,end:8,  dur:45, desc:'A more measured descent for anxiety and stress. Steadier, more comfortable path toward calm.',                                                                                 yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L2-VOL001'},
+  'H-AX-L3':{name:'Valley',    series:'healing',     entry:'Anxiety & Stress',        meta:'Healing · Anxiety & Stress · 60 min',    move:'DESCENT',start:11,end:9,  dur:60, desc:'The gentlest anxiety protocol. A full hour of gradual, unhurried descent toward calm.',                                                                                       yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L3-VOL001'},
+  'H-CR-L1':{name:'Anchor',    series:'healing',     entry:'Acute Distress / Crisis', meta:'Healing · Acute Distress · 20 min',      move:'DESCENT',start:16,end:7,  dur:20, desc:'The most rapid descent in the library. Use it when the situation calls for immediate intervention.',                                                                            yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L1-VOL001'},
+  'H-CR-L2':{name:'Harbor',    series:'healing',     entry:'Acute Distress / Crisis', meta:'Healing · Acute Distress · 20 min',      move:'DESCENT',start:14,end:8,  dur:20, desc:'Same short duration as Anchor but starting lower and arriving at a calmer resting state.',                                                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L2-VOL001'},
+  'H-CR-L3':{name:'Horizon',   series:'healing',     entry:'Acute Distress / Crisis', meta:'Healing · Acute Distress · 30 min',      move:'DESCENT',start:13,end:8,  dur:30, desc:'The most measured crisis protocol. 30 minutes allows more room to follow the descent.',                                                                                       yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L3-VOL001'},
+  'H-SL-L1':{name:'Lantern',   series:'healing',     entry:'Sleep & Rest',            meta:'Healing · Sleep & Rest · 45 min',        move:'DESCENT',start:11,end:4,  dur:45, desc:'A deep descent from 11Hz to 4Hz. Guides the nervous system through the full arc of winding down.',                                                                            yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L1-VOL001'},
+  'H-SL-L2':{name:'Hammock',   series:'healing',     entry:'Sleep & Rest',            meta:'Healing · Sleep & Rest · 60 min',        move:'DESCENT',start:10,end:4.5,dur:60, desc:'A full-hour sleep preparation protocol. Patient, gradual transition toward deep rest.',                                                                                        yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L2-VOL001'},
+  'H-SL-L3':{name:'Midnight',  series:'healing',     entry:'Sleep & Rest',            meta:'Healing · Sleep & Rest · 60 min',        move:'DESCENT',start:9, end:5,  dur:60, desc:'The gentlest sleep protocol. Starting lowest, arriving at the softest landing point.',                                                                                         yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L3-VOL001'},
+  'T-FC-L1':{name:'Compass',   series:'thriving',    entry:'Focus & Clarity',         meta:'Thriving · Focus & Clarity · 45 min',    move:'HOLD',   start:12,end:12, dur:45, desc:'A stable 45-minute hold at 12Hz. Alert, engaged, and clear — designed to support sustained attention.',                                                                       yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L1-VOL001'},
+  'T-FC-L2':{name:'Waypoint',  series:'thriving',    entry:'Focus & Clarity',         meta:'Thriving · Focus & Clarity · 60 min',    move:'HOLD',   start:11,end:11, dur:60, desc:'A full hour at 11Hz. Steady cognitive support for extended work sessions.',                                                                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L2-VOL001'},
+  'T-FC-L3':{name:'Summit',    series:'thriving',    entry:'Focus & Clarity',         meta:'Thriving · Focus & Clarity · 90 min',    move:'HOLD',   start:13,end:13, dur:90, desc:'The most sustained focus protocol. 90 minutes of high-beta hold for deep work sessions requiring extended concentration.',                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L3-VOL001'},
+  'T-CF-L1':{name:'Ember',     series:'thriving',    entry:'Creative Flow',           meta:'Thriving · Creative Flow · 60 min',      move:'HOLD',   start:9, end:9,  dur:60, desc:'60 minutes at 9Hz — the lower edge of alpha. Open, generative, receptive.',                                                                                                   yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L1-VOL001'},
+  'T-CF-L2':{name:'Current',   series:'thriving',    entry:'Creative Flow',           meta:'Thriving · Creative Flow · 45 min',      move:'HOLD',   start:10,end:10, dur:45, desc:'A 45-minute alpha hold with more energy than Ember. For creative work that benefits from slightly higher arousal.',                                                           yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L2-VOL001'},
+  'T-CF-L3':{name:'Aurora',    series:'thriving',    entry:'Creative Flow',           meta:'Thriving · Creative Flow · 30 min',      move:'HOLD',   start:11,end:11, dur:30, desc:'A short, bright creative ignition. 30 minutes at 11Hz — ideal before a creative session begins.',                                                                              yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L3-VOL001'},
+  'T-MB-L1':{name:'Stone',     series:'thriving',    entry:'Maintenance & Balance',   meta:'Thriving · Maintenance & Balance · 30 min',move:'HOLD',  start:10,end:10, dur:30, desc:'A grounding 30-minute hold at 10Hz. For days when the aim is simply to stay level.',                                                                                          yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L1-VOL001'},
+  'T-MB-L2':{name:'Axis',      series:'thriving',    entry:'Maintenance & Balance',   meta:'Thriving · Maintenance & Balance · 45 min',move:'HOLD',  start:10,end:10, dur:45, desc:'45 minutes of balanced alpha. A maintenance protocol for those already regulated who want to stay that way.',                                                                 yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L2-VOL001'},
+  'T-MB-L3':{name:'Orbit',     series:'thriving',    entry:'Maintenance & Balance',   meta:'Thriving · Maintenance & Balance · 60 min',move:'HOLD',  start:10,end:10, dur:60, desc:'A full-hour maintenance protocol. The most patient of the balance protocols — ideal as a daily practice.',                                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L3-VOL001'},
+  'T-ME-L1':{name:'Breeze',    series:'thriving',    entry:'Mood & Energy',           meta:'Thriving · Mood & Energy · 30 min',      move:'ASCENT', start:4, end:10, dur:30, desc:'A brisk ascent from 4Hz to 10Hz. For moments when mood is low and time is short.',                                                                                             yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L1-VOL001'},
+  'T-ME-L2':{name:'Sunrise',   series:'thriving',    entry:'Mood & Energy',           meta:'Thriving · Mood & Energy · 45 min',      move:'ASCENT', start:5, end:10, dur:45, desc:'A measured upward arc from 5Hz to 10Hz. Allows mood and energy to lift gradually.',                                                                                           yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L2-VOL001'},
+  'T-ME-L3':{name:'Updraft',   series:'thriving',    entry:'Mood & Energy',           meta:'Thriving · Mood & Energy · 60 min',      move:'ASCENT', start:6, end:10, dur:60, desc:'A slow, patient ascent. 60 minutes to rise from deep theta to calm alpha.',                                                                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-ME-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-ME-L3-VOL001'},
+  'X-MD-L1':{name:'Footpath',  series:'transforming',entry:'Motivation & Drive',      meta:'Transforming · Motivation & Drive · 30 min',move:'ASCENT',start:4,end:9, dur:30, desc:'A short ascending arc for low-motivation states. Gets the signal moving without demanding too much.',                                                                          yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L1-VOL001'},
+  'X-MD-L2':{name:'Trail',     series:'transforming',entry:'Motivation & Drive',      meta:'Transforming · Motivation & Drive · 45 min',move:'ASCENT',start:5,end:10,dur:45, desc:'A longer motivational ascent. 45 minutes to build sustainable drive from a low baseline.',                                                                                    yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L2-VOL001'},
+  'X-MD-L3':{name:'Switchback',series:'transforming',entry:'Motivation & Drive',      meta:'Transforming · Motivation & Drive · 60 min',move:'ASCENT',start:6,end:11,dur:60, desc:'The most demanding motivational protocol. A sustained 60-minute climb — for deep low-affect states requiring a full recovery arc.',                                          yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L3-VOL001'},
+  'T-MC-L1':{name:'Cavern',    series:'thriving',    entry:'Meditation & Contemplation',meta:'Thriving · Meditation · 30 min',        move:'HOLD',   start:7, end:7,  dur:30, desc:'A 30-minute theta hold at 7Hz. Still, inward, spacious. For those who want to arrive at a meditative state quickly.',                                                       yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MC-L1-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MC-L1-VOL001'},
+  'T-MC-L2':{name:'Starlight', series:'thriving',    entry:'Meditation & Contemplation',meta:'Thriving · Meditation · 45 min',        move:'HOLD',   start:7, end:7,  dur:45, desc:'45 minutes of deep theta. A longer journey into stillness for experienced meditators or extended contemplative sessions.',                                                  yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MC-L2-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MC-L2-VOL001'},
+  'T-MC-L3':{name:'Cosmos',    series:'thriving',    entry:'Meditation & Contemplation',meta:'Thriving · Meditation · 60 min',        move:'HOLD',   start:7, end:7,  dur:60, desc:'A full hour at 7Hz. The deepest meditation protocol in the library. For those who have found their way to stillness and want to stay.',                                      yt:'#',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MC-L3-VOL001',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MC-L3-VOL001'},
+};
+
+// ── VOLUME REGISTRY ──────────────────────────────────────────────────────────
+// Add new volumes here as they are produced.
+// Each entry: vol code → { label, groove, yt }
+// groove: short description of the drum style for this volume
+// yt: YouTube URL (use '#' until published)
+const VOLUMES = {
+  '001': { label:'Vol. 1', groove:'DnB · 100 BPM · Attack Roller',       yt:'#' },
+  // '002': { label:'Vol. 2', groove:'Afro-Latin · 96 BPM · Clave groove', yt:'#' },
+  // Add more volumes as produced
+};
+
+const DEFAULT_VOL = '001';
+
+// ── LIVE STATS (from data.json) ───────────────────────────────────────────────
+let STATS = {};
+let DATA_DATE = '';
+
+fetch('data.json')
+  .then(r => { if (!r.ok) throw new Error('no data.json'); return r.json(); })
+  .then(data => {
+    DATA_DATE = data.analysis_date || data.generated || '';
+    if (data.protocols) {
+      Object.entries(data.protocols).forEach(([code, p]) => {
+        STATS[code] = { n: p.n, mean: p.mean, dist: p.dist, pct: p.pct_positive, sphere: p.sphere || '' };
+      });
+    }
+    // Re-render stats if protocol already loaded
+    const code = getCodeFromURL();
+    if (code && PROTOCOLS[code]) renderStats(code);
+  })
+  .catch(() => {});
+
+// ── URL PARSING ───────────────────────────────────────────────────────────────
+function getCodeFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return (params.get('id') || '').toUpperCase();
+}
+
+function getVolFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const v = (params.get('vol') || DEFAULT_VOL).replace(/^0+/, '').padStart(3, '0');
+  return VOLUMES[v] ? v : DEFAULT_VOL;
+}
+
+function updateVolInURL(vol) {
+  const params = new URLSearchParams(window.location.search);
+  params.set('vol', vol);
+  window.history.replaceState({}, '', '?' + params.toString());
+}
+
+// ── CURVE DRAWING ─────────────────────────────────────────────────────────────
+function drawCurve(p) {
+  const W=480, H=100, pad={l:40,r:40,t:20,b:28};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const {start,end,dur,move} = p;
+  const minF=Math.min(start,end)-1, maxF=Math.max(start,end)+1;
+  const toX=t=>(t/dur)*cW+pad.l;
+  const toY=f=>pad.t+cH-(f-minF)/(maxF-minF)*cH;
+  let pathD='', fillD='';
+  for (let i=0; i<=80; i++) {
+    const t=i/80; let f;
+    if (move==='HOLD') f=start;
+    else { const s=1/(1+Math.exp(-10*(t-0.382))); f=move==='DESCENT'?start-(start-end)*s:start+(end-start)*s; }
+    const x=toX(t*dur), y=toY(f);
+    pathD+=(i===0?`M${x},${y}`:`L${x},${y}`);
+    if(i===0) fillD=`M${x},${H-pad.b} L${x},${y}`; else fillD+=`L${x},${y}`;
+    if(i===80) fillD+=` L${x},${H-pad.b} Z`;
+  }
+  document.getElementById('curve-line').setAttribute('d',pathD);
+  document.getElementById('curve-fill').setAttribute('d',fillD);
+  const ix=toX(dur*0.382);
+  ['x1','x2'].forEach(a=>document.getElementById('inflect-line').setAttribute(a,ix));
+  document.getElementById('inflect-line').setAttribute('y1',pad.t);
+  document.getElementById('inflect-line').setAttribute('y2',H-pad.b);
+  document.getElementById('lbl-start').setAttribute('x',pad.l);
+  document.getElementById('lbl-start').setAttribute('y',H-10);
+  document.getElementById('lbl-start').textContent=`${start}Hz`;
+  document.getElementById('lbl-end').setAttribute('x',W-pad.r);
+  document.getElementById('lbl-end').setAttribute('y',H-10);
+  document.getElementById('lbl-end').textContent=`${end}Hz`;
+  document.getElementById('lbl-dur').setAttribute('x',W/2);
+  document.getElementById('lbl-dur').setAttribute('y',H-10);
+  document.getElementById('lbl-dur').textContent=`${dur} min`;
+  document.getElementById('lbl-move').setAttribute('x',W/2);
+  document.getElementById('lbl-move').setAttribute('y',pad.t+8);
+  document.getElementById('lbl-move').textContent=move;
+}
+
+// ── STATS RENDERING ───────────────────────────────────────────────────────────
+function renderStats(code) {
+  const s = STATS[code];
+  if (!s || s.n === 0) {
+    document.getElementById('stat-n').textContent = '—';
+    document.getElementById('stat-avg').textContent = '—';
+    document.getElementById('stat-pos').textContent = '—';
+    const eb = document.getElementById('early-badge');
+    eb.style.display = 'inline-block';
+    eb.textContent = 'No data yet · be the first to respond';
+    const bars = document.getElementById('dist-bars');
+    bars.innerHTML = [0,1,2,3,4,5,6,7,8,9,10].map(i =>
+      `<div class="dist-col"><div class="dist-bar${i>=7?' hi':''}" style="height:2px"></div><div class="dist-num">${i}</div></div>`
+    ).join('');
+    return;
+  }
+  document.getElementById('stat-n').textContent   = s.n;
+  document.getElementById('stat-avg').textContent = s.mean ? s.mean.toFixed(1) : '—';
+  document.getElementById('stat-pos').textContent = s.pct ? s.pct + '%' : '—';
+  const maxD = Math.max(...s.dist, 1);
+  document.getElementById('dist-bars').innerHTML = s.dist.map((v,i) => {
+    const h = Math.round((v/maxD)*44)+2;
+    return `<div class="dist-col"><div class="dist-bar${i>=7?' hi':''}" style="height:${h}px"></div><div class="dist-num">${i}</div></div>`;
+  }).join('');
+  const eb = document.getElementById('early-badge');
+  if (s.n < 20) { eb.style.display='inline-block'; eb.textContent='Early data · results will deepen with more responses'; }
+  else eb.style.display = 'none';
+
+  // Commentary
+  const ct = document.getElementById('commentary-text');
+  if (s.sphere) {
+    ct.textContent = s.sphere;
+    ct.classList.remove('empty');
+  } else {
+    ct.textContent = 'Commentary generates when sufficient listener data is available for this protocol.';
+    ct.classList.add('empty');
+  }
+  if (DATA_DATE) document.getElementById('commentary-date').textContent = `Analysis ${DATA_DATE}`;
+}
+
+// ── YOUTUBE + VOLUME SELECTOR ────────────────────────────────────────────────
+function renderVideo(p, volCode) {
+  const volData = VOLUMES[volCode] || VOLUMES[DEFAULT_VOL];
+  const container = document.getElementById('video-section');
+  const btn = document.getElementById('btn-yt');
+
+  // Build volume dropdown HTML
+  const volKeys = Object.keys(VOLUMES);
+  const dropdownHTML = volKeys.length > 1 ? `
+    <div class="vol-selector">
+      <select id="vol-select" onchange="switchVolume(this.value, '${p.code}')">
+        ${volKeys.map(v => `<option value="${v}"${v===volCode?' selected':''}>${VOLUMES[v].label} — ${VOLUMES[v].groove}</option>`).join('')}
+      </select>
+    </div>` : '';
+
+  const ytUrl = volData.yt;
+  if (ytUrl && ytUrl !== '#') {
+    const match = ytUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    const embedHTML = match
+      ? `<iframe class="video-embed" src="https://www.youtube.com/embed/${match[1]}" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      : `<div class="video-placeholder"><div class="vp-icon">▶</div><div class="vp-label">Open on YouTube</div></div>`;
+    container.innerHTML = dropdownHTML + embedHTML;
+    btn.href = ytUrl;
+    btn.classList.remove('disabled');
+    btn.textContent = `▶ Listen on YouTube · ${volData.label}`;
+  } else {
+    container.innerHTML = dropdownHTML + `<div class="video-placeholder"><div class="vp-icon">▶</div><div class="vp-label">${volData.label} — coming soon</div></div>`;
+    btn.href = '#';
+    btn.classList.add('disabled');
+    btn.textContent = `▶ Listen on YouTube · ${volData.label}`;
+  }
+
+  // Update survey links to use current vol
+  const volNum = volCode.padStart(3,'0');
+  document.getElementById('survey-1s').href = `https://tally.so/r/1AMk7b/?ref=${p.code}&vol=VOL${volNum}&src=site`;
+  document.getElementById('survey-1m').href = `https://tally.so/r/rjKPY5/?ref=${p.code}&vol=VOL${volNum}&src=site`;
+}
+
+function switchVolume(volCode, protocolCode) {
+  updateVolInURL(volCode);
+  const p = PROTOCOLS[protocolCode];
+  if (p) renderVideo(p, volCode);
+}
+
+// ── MAIN INIT ─────────────────────────────────────────────────────────────────
+function init() {
+  const code = getCodeFromURL();
+  const p = PROTOCOLS[code];
+
+  if (!p) {
+    document.getElementById('protocol-header').style.display = 'none';
+    document.getElementById('main-content').style.display = 'none';
+    document.getElementById('not-found').style.display = 'block';
+    document.title = 'Protocol Not Found · The Drum Protocols';
+    return;
+  }
+
+  // Title
+  document.title = `${p.name} · The Drum Protocols`;
+
+  // Header
+  const seriesEl = document.getElementById('header-series');
+  seriesEl.textContent = `${p.series.toUpperCase()} · ${p.entry}`;
+  seriesEl.className = `header-series ${p.series}`;
+  document.getElementById('header-name').textContent = p.name;
+  document.getElementById('header-meta').textContent = `${p.meta} · ${code}`;
+
+  // Protocol header color by series
+  const header = document.getElementById('protocol-header');
+  if (p.series === 'healing')      header.style.background = 'var(--dp-healing)';
+  else if (p.series === 'thriving') header.style.background = 'var(--dp-thriving)';
+  else                              header.style.background = 'var(--dp-transforming)';
+
+  // Curve
+  drawCurve(p);
+
+  // Video
+  const volCode = getVolFromURL();
+  renderVideo(p, volCode);
+
+  // Description
+  document.getElementById('desc-text').textContent = p.desc;
+
+  // Survey links
+  document.getElementById('survey-1s').href = p.survey1s;
+  document.getElementById('survey-1m').href = p.survey1m;
+
+  // Stats (may update again when data.json loads)
+  renderStats(code);
+}
+
+init();
+</script>
+</body>
+</html>
