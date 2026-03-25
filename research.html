@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Library · The Drum Protocols</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root {
+  --dp-gold:#B8860B;
+  --dp-gold-light:#D4A017;
+  --dp-gold-faint:#FFFCF0;
+  --dp-slate:#2C3E50;
+  --dp-slate-deep:#223244;
+  --dp-cream:#FAFAF7;
+  --color-text-primary:#1a1a1a;
+  --color-text-secondary:#555;
+  --color-text-tertiary:#888;
+  --color-bg:#FAFAF7;
+  --color-surface:#fff;
+  --color-border:rgba(0,0,0,0.08);
+  --color-border-mid:rgba(0,0,0,0.14);
+  --radius-sm:6px;
+  --radius-md:10px;
+  --radius-lg:16px;
+  --radius-xl:22px;
+  --shadow-soft:0 10px 30px rgba(17,24,32,0.08);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--color-bg);color:var(--color-text-primary);min-height:100vh}
+a{color:inherit}
+.site-nav{background:var(--dp-slate);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200}
+.nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);text-decoration:none;font-weight:500}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-link{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);text-decoration:none;transition:color .15s}
+.nav-link:hover,.nav-link.active{color:#fff}
+.page-header{background:var(--dp-slate);position:relative;overflow:hidden}
+.page-header::before{content:'';position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;border:1px solid rgba(184,134,11,.18)}
+.page-header::after{content:'';position:absolute;right:-20px;top:-20px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(184,134,11,.12)}
+.hero{max-width:1120px;margin:0 auto;padding:40px 24px 44px;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);gap:18px;align-items:end;position:relative;z-index:1}
+.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:12px}
+.hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(42px,5vw,64px);line-height:.98;color:#fff;font-weight:600;margin-bottom:14px;max-width:760px}
+.hero-sub{font-size:15px;line-height:1.75;color:rgba(255,255,255,.72);max-width:680px}
+.hero-meta{display:grid;gap:12px}
+.meta-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-radius:var(--radius-lg);padding:18px 18px 20px;backdrop-filter:blur(4px)}
+.meta-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.55);margin-bottom:8px}
+.meta-value{font-family:'Cormorant Garamond',serif;font-size:27px;line-height:1.08;color:#fff;margin-bottom:6px}
+.meta-copy{font-size:13px;line-height:1.65;color:rgba(255,255,255,.68)}
+.main{max-width:1120px;margin:0 auto;padding:32px 24px 84px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.stack{display:grid;gap:14px}
+.card{background:var(--color-surface);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft)}
+.card-pad{padding:22px 24px}
+.section-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.08;margin-bottom:10px}
+.section-sub{font-size:14px;line-height:1.75;color:var(--color-text-secondary)}
+.orientation-card{padding:22px 24px;border-radius:var(--radius-lg);border:.5px solid var(--color-border-mid);box-shadow:var(--shadow-soft);background:var(--color-surface)}
+.orientation-card.parent{background:linear-gradient(180deg,var(--dp-gold-faint) 0%, #fff 100%);border-left:3px solid var(--dp-gold)}
+.orientation-card.researcher{background:linear-gradient(180deg,#f7f9fb 0%, #fff 100%);border-left:3px solid var(--dp-slate)}
+.orientation-card h3{font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1.08;margin-bottom:10px}
+.orientation-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary);margin-bottom:14px}
+.quick-list{display:grid;gap:10px;padding-left:18px}
+.quick-list li{font-size:13px;line-height:1.7;color:var(--color-text-secondary)}
+.path-strip{display:flex;flex-wrap:wrap;gap:10px 12px;margin-top:16px}
+.path-chip{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:999px;background:var(--dp-gold-faint);border:1px solid rgba(184,134,11,.2);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-slate)}
+.highlight-card{padding:20px 22px}
+.highlight-card h3{font-size:15px;line-height:1.45;margin-bottom:8px}
+.highlight-card p{font-size:13px;line-height:1.72;color:var(--color-text-secondary)}
+.sequence-list{display:grid;gap:10px}
+.sequence-item{display:grid;grid-template-columns:36px 1fr;gap:12px;padding:10px 0;border-top:1px solid rgba(0,0,0,.06)}
+.sequence-item:first-child{border-top:none;padding-top:2px}
+.sequence-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--dp-gold-faint);border:1px solid rgba(184,134,11,.22);font-size:12px;letter-spacing:.08em;color:var(--dp-gold);font-weight:500}
+.sequence-item h3{font-size:14px;line-height:1.45;margin-bottom:4px}
+.sequence-item p{font-size:13px;line-height:1.65;color:var(--color-text-secondary)}
+.library-grid{display:grid;gap:14px}
+.doc-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;padding:22px 24px;align-items:start}
+.doc-meta{display:flex;flex-wrap:wrap;gap:8px 10px;margin-bottom:10px}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;border:1px solid rgba(184,134,11,.18);background:var(--dp-gold-faint);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--dp-gold)}
+.doc-card h3{font-family:'Cormorant Garamond',serif;font-size:32px;line-height:1.05;margin-bottom:10px}
+.doc-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary);max-width:760px}
+.doc-actions{display:flex;flex-direction:column;gap:10px;min-width:210px}
+.btn-primary,.btn-secondary,.btn-tertiary{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:var(--radius-md);text-decoration:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s ease;white-space:nowrap}
+.btn-primary{background:var(--dp-gold);color:#fff;border:1px solid var(--dp-gold)}
+.btn-primary:hover{background:var(--dp-gold-light);border-color:var(--dp-gold-light)}
+.btn-secondary{color:var(--dp-slate);border:1px solid rgba(44,62,80,.14);background:#fff}
+.btn-secondary:hover,.btn-tertiary:hover{border-color:rgba(184,134,11,.35)}
+.btn-tertiary{color:var(--dp-slate);border:1px dashed rgba(44,62,80,.18);background:var(--dp-gold-faint)}
+.note-card{background:linear-gradient(180deg,var(--dp-gold-faint) 0%, #fff 100%);border:.5px solid rgba(184,134,11,.22);border-left:3px solid var(--dp-gold);border-radius:var(--radius-lg);padding:20px 22px}
+.note-card p,.side-list li{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+.side-list{padding-left:18px;display:grid;gap:8px}
+.section-spacer{height:18px}
+.page-footer{background:var(--dp-slate);padding:28px 24px 34px;text-align:center;margin-top:28px}
+.footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:12px}
+.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:18px}
+.footer-link{font-size:12px;color:rgba(255,255,255,.58);text-decoration:none}
+.footer-link:hover{color:#fff}
+@media (max-width: 980px){.hero,.grid-2,.grid-3,.doc-card{grid-template-columns:1fr}.doc-actions{min-width:0;flex-direction:row;flex-wrap:wrap}}
+@media (max-width: 720px){.site-nav{padding:0 16px}.nav-links{gap:14px}.nav-link{font-size:11px}.hero{padding:28px 16px 34px}.main{padding:22px 16px 64px}.section-title{font-size:28px}.doc-card h3{font-size:28px}.orientation-card h3{font-size:24px}}
+@media (max-width: 520px){.nav-links{display:none}.hero-title{font-size:44px}.doc-actions{flex-direction:column}.btn-primary,.btn-secondary,.btn-tertiary{width:100%}}
+</style>
+</head>
+<body>
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <div class="nav-links">
+    <a class="nav-link active" href="research.html">Research</a>
+    <a class="nav-link" href="drum_protocols_adviser_ux.html">Adviser</a>
+    <a class="nav-link" href="protocol.html">Protocols</a>
+    <a class="nav-link" href="insights.html">Data Insights</a>
+    <a class="nav-link" href="legal.html">Safety</a>
+  </div>
+</nav>
+<header class="page-header">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">Research library · clinical orientation · technical depth</div>
+      <h1 class="hero-title">A research page that speaks to both worried families and serious investigators.</h1>
+      <p class="hero-sub">The Drum Protocols papers all point toward the same central idea: a dysregulated nervous system may benefit from a stable external rhythm it can synchronize to. This page is designed to help anxious parents find the safest first read, while also helping neuroscience researchers move directly to the mechanistic, implementation, and evidence layers.</p>
+    </div>
+    <div class="hero-meta">
+      <div class="meta-card">
+        <div class="meta-label">For families</div>
+        <div class="meta-value">Start with orientation</div>
+        <div class="meta-copy">Begin with the Clinical Overview Brief, then review the Safety page before choosing any listening pathway.</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">For researchers</div>
+        <div class="meta-value">Mechanism to validation</div>
+        <div class="meta-copy">Move from the full Reference to the Validation Plan and then into the topic-organized citation map.</div>
+      </div>
+    </div>
+  </div>
+</header>
+<main class="main">
+  <section class="grid-2">
+    <article class="orientation-card parent">
+      <div class="section-label">For anxious parents</div>
+      <h3>What this library is trying to answer.</h3>
+      <p>This section is meant to reduce uncertainty, not increase it. The papers describe a structured rhythmic audio system designed to offer the nervous system a predictable timing scaffold rather than a harsh or artificial stimulus. The intended framing is supportive: the rhythm does not force the brain into a state, but may help create conditions in which regulation becomes easier.</p>
+      <ul class="quick-list">
+        <li>Start with the <strong>Clinical Overview Brief</strong> for plain-language orientation.</li>
+        <li>Then read the <strong>Safety</strong> page before listening, especially for children, seizure history, extreme sound sensitivity, or acute psychiatric instability.</li>
+        <li>Use the longer technical papers only when you want more depth on how the system is designed and why percussion was chosen.</li>
+      </ul>
+      <div class="path-strip">
+        <span class="path-chip">1 · Clinical Overview</span>
+        <span class="path-chip">2 · Safety Guidance</span>
+        <span class="path-chip">3 · Adviser / Protocol Match</span>
+      </div>
+    </article>
+    <article class="orientation-card researcher">
+      <div class="section-label">For neuroscience researchers</div>
+      <h3>What is most likely to matter scientifically.</h3>
+      <p>The strongest implementation claims in the document set concern full-pathway auditory timing, broadband percussive onset salience, a spectrally derived carrier extracted from the groove itself, and a constrained protocol-design space built around a fixed phi-governed transition curve. The validation materials then propose a phased path from structured listener outcomes toward HRV and EEG when feasible.</p>
+      <ul class="quick-list">
+        <li>Read the <strong>Reference</strong> for auditory pathway, entrainment mechanism, and comparative method arguments.</li>
+        <li>Read the <strong>Experimental Validation Plan</strong> for tractable pilot structure and variable isolation.</li>
+        <li>Use the <strong>Research Citations Guide</strong> as the literature map for the system's claims and context.</li>
+      </ul>
+      <div class="path-strip">
+        <span class="path-chip">Mechanism</span>
+        <span class="path-chip">Implementation</span>
+        <span class="path-chip">Validation</span>
+        <span class="path-chip">Evidence map</span>
+      </div>
+    </article>
+  </section>
+
+  <div class="section-spacer"></div>
+
+  <section class="stack">
+    <article class="card card-pad">
+      <div class="section-label">Design highlights from across the paper set</div>
+      <h2 class="section-title">The implementation logic in one place.</h2>
+      <p class="section-sub">Across the Clinical Overview, Reference, Validation Plan, and Citations Guide, several design decisions recur. These are the points most likely to help a parent understand what makes the system different and help a researcher see what is being claimed, tested, and operationalized.</p>
+    </article>
+    <div class="grid-3">
+      <article class="card highlight-card">
+        <h3>The rhythm is treated as the therapy, not as decoration.</h3>
+        <p>The papers consistently define the Perceived Rhythmic Cycle as the direct entraining frequency. In practical terms, the groove is not background accompaniment to a hidden therapy signal; the rhythmic event stream itself is the central intervention layer.</p>
+      </article>
+      <article class="card highlight-card">
+        <h3>Percussion was chosen because onset timing is neurologically potent.</h3>
+        <p>The reference argues that broadband drum transients are especially effective at driving precise onset encoding through the auditory pathway, from peripheral transduction through brainstem timing structures and into cortex.</p>
+      </article>
+      <article class="card highlight-card">
+        <h3>The carrier is extracted from the music's own spectrum.</h3>
+        <p>Rather than adding a foreign noise bed, the system derives a spectral clock from the active drum groove itself, aiming for timbral continuity between the entraining pulse and the surrounding musical texture.</p>
+      </article>
+      <article class="card highlight-card">
+        <h3>The system is built for speakers, groups, and longer listening.</h3>
+        <p>The clinical overview contrasts this with headphone-dependent approaches. The implementation goal is a more natural listening experience that can remain tolerable over sustained sessions without requiring intense directed attention.</p>
+      </article>
+      <article class="card highlight-card">
+        <h3>Protocol geometry is deliberately constrained.</h3>
+        <p>By fixing the transition curve with the golden ratio, protocol design reduces to three primary inputs: PRC start, PRC end, and duration. That simplification is presented as a research advantage because it makes controlled comparisons cleaner.</p>
+      </article>
+      <article class="card highlight-card">
+        <h3>Validation begins with structured lived experience.</h3>
+        <p>The validation plan does not leap directly to expensive instrumentation. It begins with repeated survey-based outcomes, then leaves room for later HRV and EEG work once the protocol space is better understood and narrowed.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="section-spacer"></div>
+
+  <section class="grid-2">
+    <article class="card card-pad">
+      <div class="section-label">Reading order</div>
+      <h2 class="section-title">Start broad, then move deeper.</h2>
+      <p class="section-sub">The sequence below helps a first-time visitor move from reassurance and orientation into mechanism, study design, and literature review without guessing which paper to open first.</p>
+    </article>
+    <article class="card card-pad">
+      <div class="sequence-list">
+        <div class="sequence-item"><div class="sequence-num">01</div><div><h3>Clinical Overview Brief</h3><p>Best first read for caregivers, clinicians, journalists, and new visitors.</p></div></div>
+        <div class="sequence-item"><div class="sequence-num">02</div><div><h3>Reference</h3><p>The full conceptual and technical system explanation.</p></div></div>
+        <div class="sequence-item"><div class="sequence-num">03</div><div><h3>Experimental Validation Plan</h3><p>How the research program can be tested in phases.</p></div></div>
+        <div class="sequence-item"><div class="sequence-num">04</div><div><h3>Research Citations Guide</h3><p>The structured evidence base and reference map.</p></div></div>
+      </div>
+    </article>
+  </section>
+
+  <div class="section-spacer"></div>
+
+  <section class="library-grid">
+    <article class="card doc-card">
+      <div>
+        <div class="doc-meta">
+          <span class="badge">Clinical</span>
+          <span class="badge">Introductory</span>
+          <span class="badge">Best first read</span>
+        </div>
+        <h3>Clinical Overview Brief</h3>
+        <p>A concise front-door document for readers who want the system premise, the spectral clock architecture, the phi-based protocol structure, and the external temporal scaffolding model without having to start in the deeper neuroscience sections.</p>
+      </div>
+      <div class="doc-actions">
+        <a class="btn-primary" href="research-viewer.html?doc=clinical-overview-brief">Read in site</a>
+        <a class="btn-secondary" href="research/clinical-overview-brief.pdf" target="_blank" rel="noopener">Open PDF</a>
+        <a class="btn-tertiary" href="research/clinical-overview-brief.pdf" download>Download</a>
+      </div>
+    </article>
+
+    <article class="card doc-card">
+      <div>
+        <div class="doc-meta">
+          <span class="badge">Core reference</span>
+          <span class="badge">Technical</span>
+          <span class="badge">Mechanism</span>
+        </div>
+        <h3>Reference</h3>
+        <p>The principal technical paper for the system. This is where the auditory pathway, phase-locking argument, subcortical entrainment logic, comparative analysis versus binaural beats and isochronic tones, and the spectral clock implementation are laid out in detail.</p>
+      </div>
+      <div class="doc-actions">
+        <a class="btn-primary" href="research-viewer.html?doc=reference">Read in site</a>
+        <a class="btn-secondary" href="research/reference.pdf" target="_blank" rel="noopener">Open PDF</a>
+        <a class="btn-tertiary" href="research/reference.pdf" download>Download</a>
+      </div>
+    </article>
+
+    <article class="card doc-card">
+      <div>
+        <div class="doc-meta">
+          <span class="badge">Validation</span>
+          <span class="badge">Study design</span>
+          <span class="badge">Roadmap</span>
+        </div>
+        <h3>Experimental Validation Plan</h3>
+        <p>A phased validation framework that moves from structured listener reports and protocol comparisons toward more instrumented measures over time. This is the best starting point for researchers asking how the system could be tested without overreaching early.</p>
+      </div>
+      <div class="doc-actions">
+        <a class="btn-primary" href="research-viewer.html?doc=experimental-validation-plan">Read in site</a>
+        <a class="btn-secondary" href="research/experimental-validation-plan.pdf" target="_blank" rel="noopener">Open PDF</a>
+        <a class="btn-tertiary" href="research/experimental-validation-plan.pdf" download>Download</a>
+      </div>
+    </article>
+
+    <article class="card doc-card">
+      <div>
+        <div class="doc-meta">
+          <span class="badge">References</span>
+          <span class="badge">Evidence base</span>
+          <span class="badge">Annotated</span>
+        </div>
+        <h3>Research Citations Guide</h3>
+        <p>An organized literature map covering foundational neuroscience, timing and synchrony deficits, rhythm-based intervention studies, reviews, biomarker work, and neurodiversity-affirming perspectives. Best used as the trace-back layer for specific claims.</p>
+      </div>
+      <div class="doc-actions">
+        <a class="btn-primary" href="research-viewer.html?doc=research-citations-guide">Read in site</a>
+        <a class="btn-secondary" href="research/research-citations-guide.pdf" target="_blank" rel="noopener">Open PDF</a>
+        <a class="btn-tertiary" href="research/research-citations-guide.pdf" download>Download</a>
+      </div>
+    </article>
+  </section>
+
+  <div class="section-spacer"></div>
+
+  <section class="grid-2">
+    <aside class="note-card">
+      <div class="section-label">For families</div>
+      <p>This library should lower the emotional burden of “where do I begin?” The intended first step is orientation, not technical overload. Parents can safely ignore the more detailed mechanistic material until they want it.</p>
+    </aside>
+    <article class="card card-pad">
+      <div class="section-label">Current local file paths</div>
+      <ul class="side-list">
+        <li><code>research/clinical-overview-brief.pdf</code></li>
+        <li><code>research/reference.pdf</code></li>
+        <li><code>research/experimental-validation-plan.pdf</code></li>
+        <li><code>research/research-citations-guide.pdf</code></li>
+      </ul>
+    </article>
+  </section>
+</main>
+<footer class="page-footer">
+  <div class="footer-brand">THE DRUM PROTOCOLS · FACES OF DRAGONFLY</div>
+  <div class="footer-links">
+    <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="drum_protocols_adviser_ux.html">Protocol Adviser</a>
+    <a class="footer-link" href="protocol.html">Protocol Page</a>
+    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="legal.html">Safety &amp; Privacy</a>
+  </div>
+</footer>
+</body>
+</html>
