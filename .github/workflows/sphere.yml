@@ -3,7 +3,8 @@ name: Sphere Pipeline
 on:
   push:
     paths:
-      - 'tally_export.csv'   # only fires when you push a new CSV
+      - 'tally_export.csv'   # fires automatically when you push a new CSV
+  workflow_dispatch:         # allows manual trigger from Actions tab (for testing)
 
 jobs:
   run-sphere:
