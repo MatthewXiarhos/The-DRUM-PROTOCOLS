@@ -270,6 +270,33 @@ body {
 }
 .not-found-sub { font-size: 14px; color: var(--color-text-secondary); line-height: 1.6; margin-bottom: 24px; }
 
+
+/* ── RELATED PROTOCOLS ─────────────────── */
+.related-section { margin-bottom: 16px; }
+.related-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.related-card {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border-mid);
+  border-radius: var(--radius-md);
+  text-decoration: none; cursor: pointer;
+  transition: all 0.15s; font-family: inherit; text-align: left; width: 100%;
+}
+.related-card:hover { border-color: var(--dp-gold-light); background: var(--dp-gold-faint); }
+.related-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.related-dot.healing     { background: var(--dp-healing); }
+.related-dot.thriving    { background: var(--dp-thriving); }
+.related-dot.transforming{ background: var(--dp-transforming); }
+.related-info { flex: 1; min-width: 0; }
+.related-name { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.related-meta { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.related-label {
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--color-text-tertiary); margin-bottom: 10px;
+}
+@media (max-width: 480px) { .related-grid { grid-template-columns: 1fr; } }
+
 /* ── PAGE FOOTER ───────────────────── */
 .page-footer {
   background: var(--color-surface);
@@ -420,6 +447,13 @@ body {
       * Safety, health guidance &amp; privacy policy:
       <a href="legal.html">thedrum protocols.github.io/legal</a>
     </div>
+  </div>
+
+
+  <!-- RELATED PROTOCOLS -->
+  <div class="related-section" id="related-section" style="display:none">
+    <div class="related-label">Also in this series</div>
+    <div class="related-grid" id="related-grid"></div>
   </div>
 
   <!-- FOOTER ACTIONS -->
@@ -627,7 +661,8 @@ function renderVideo(p, volCode) {
       </select>
     </div>` : '';
 
-  const ytUrl = volData.yt;
+  // Use the protocol's own yt URL for the embed
+  const ytUrl = p.yt;
   if (ytUrl && ytUrl !== '#') {
     const match = ytUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
     const embedHTML = match
@@ -654,6 +689,42 @@ function switchVolume(volCode, protocolCode) {
   updateVolInURL(volCode);
   const p = PROTOCOLS[protocolCode];
   if (p) renderVideo(p, volCode);
+}
+
+
+// ── RELATED PROTOCOLS ────────────────────────────────────────────────────────
+// Groups protocols by their entry category for sibling lookups
+function buildSiblings() {
+  const groups = {};
+  Object.entries(PROTOCOLS).forEach(([code, p]) => {
+    const key = p.series + '|' + p.entry;
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(code);
+  });
+  return groups;
+}
+const SIBLINGS = buildSiblings();
+
+function renderRelated(currentCode) {
+  const p = PROTOCOLS[currentCode];
+  if (!p) return;
+  const key = p.series + '|' + p.entry;
+  const siblings = (SIBLINGS[key] || []).filter(c => c !== currentCode);
+  if (siblings.length === 0) return;
+  const section = document.getElementById('related-section');
+  const grid = document.getElementById('related-grid');
+  section.style.display = 'block';
+  grid.innerHTML = siblings.map(code => {
+    const r = PROTOCOLS[code];
+    if (!r) return '';
+    return `<a class="related-card" href="protocol.html?id=${code}&vol=VOL001&src=site">
+      <div class="related-dot ${r.series}"></div>
+      <div class="related-info">
+        <div class="related-name">${r.name}</div>
+        <div class="related-meta">${r.meta}</div>
+      </div>
+    </a>`;
+  }).join('');
 }
 
 // ── MAIN INIT ─────────────────────────────────────────────────────────────────
@@ -701,6 +772,9 @@ function init() {
 
   // Stats (may update again when data.json loads)
   renderStats(code);
+
+  // Related protocols
+  renderRelated(code);
 }
 
 init();
