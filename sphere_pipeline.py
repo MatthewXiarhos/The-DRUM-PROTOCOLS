@@ -67,7 +67,6 @@ IMPROVEMENT_TO_SCORE = {
     "significant improvement": 9,
     "noticeable improvement":  7,
     "moderate improvement":    6,
-    "moderate improvement":    6,
     "slight improvement":      4,
     "no effect":               2,
     "it actually made things worse": 0,
@@ -134,15 +133,15 @@ PROTOCOL_META = {
     "T-MB-L1": {"name":"Stone",      "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
     "T-MB-L2": {"name":"Axis",       "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
     "T-MB-L3": {"name":"Orbit",      "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
-    "T-ME-L1": {"name":"Breeze",     "series":"THRIVING",     "entry":"Mood & Energy",           "move":"ASCENT"},
-    "T-ME-L2": {"name":"Sunrise",    "series":"THRIVING",     "entry":"Mood & Energy",           "move":"ASCENT"},
-    "T-ME-L3": {"name":"Updraft",    "series":"THRIVING",     "entry":"Mood & Energy",           "move":"ASCENT"},
     "X-MD-L1": {"name":"Footpath",   "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
     "X-MD-L2": {"name":"Trail",      "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
     "X-MD-L3": {"name":"Switchback", "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
-    "T-MC-L1": {"name":"Cavern",     "series":"THRIVING",     "entry":"Meditation & Contemplation","move":"HOLD"},
-    "T-MC-L2": {"name":"Starlight",  "series":"THRIVING",     "entry":"Meditation & Contemplation","move":"HOLD"},
-    "T-MC-L3": {"name":"Cosmos",     "series":"THRIVING",     "entry":"Meditation & Contemplation","move":"HOLD"},
+    "X-ME-L1": {"name":"Breeze",     "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
+    "X-ME-L2": {"name":"Sunrise",    "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
+    "X-ME-L3": {"name":"Updraft",    "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
+    "X-MC-L1": {"name":"Cavern",     "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
+    "X-MC-L2": {"name":"Starlight",  "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
+    "X-MC-L3": {"name":"Cosmos",     "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
 }
 
 # ── STAT HELPERS ──────────────────────────────────────────────────────────────
@@ -322,14 +321,25 @@ def parse_tally_csv(csv_path):
 
     # Parse ref → code + vol
     # Expected format: H-OS-L1-VOL001 or just H-OS-L1
+    # Legacy code aliases: old T-ME/T-MC refs map to canonical X-ME/X-MC
+    CODE_ALIASES = {
+        "T-ME-L1": "X-ME-L1", "T-ME-L2": "X-ME-L2", "T-ME-L3": "X-ME-L3",
+        "T-MC-L1": "X-MC-L1", "T-MC-L2": "X-MC-L2", "T-MC-L3": "X-MC-L3",
+    }
+
     def extract_code(ref_val):
         if pd.isna(ref_val):
             return None, None
         s = str(ref_val).strip()
         if "-VOL" in s:
             parts = s.rsplit("-VOL", 1)
-            return parts[0], "VOL" + parts[1]
-        return s, None
+            code_raw = parts[0]
+            vol_raw = "VOL" + parts[1]
+        else:
+            code_raw, vol_raw = s, None
+        # Apply alias mapping for legacy codes
+        code_raw = CODE_ALIASES.get(code_raw, code_raw)
+        return code_raw, vol_raw
 
     refs = df[ref_col].apply(extract_code)
     df["code"] = refs.apply(lambda x: x[0])
