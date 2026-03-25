@@ -337,6 +337,16 @@ body {
   .main { padding: 20px 12px 48px; }
   .stats-grid { grid-template-columns: repeat(3,1fr); gap: 6px; }
 }
+
+/* ── SITE BANNER ── */
+.site-banner {
+  width: 100%; display: block; overflow: hidden;
+  max-height: 160px; line-height: 0;
+}
+.site-banner img {
+  width: 100%; display: block; object-fit: cover; object-position: center;
+  max-height: 160px;
+}
 </style>
 </head>
 <body>
@@ -352,6 +362,11 @@ body {
     <a class="nav-link" href="legal.html">Safety</a>
   </div>
 </nav>
+<!-- ── SITE BANNER ── -->
+<div class="site-banner">
+  <img src="banner2_upscaled_cropped.jpg" alt="The Drum Protocols — Regulation Through Rhythm">
+</div>
+
 
 <!-- ── PROTOCOL HEADER ── -->
 <div class="protocol-header" id="protocol-header">
@@ -799,7 +814,7 @@ function init() {
     document.getElementById('protocol-header').style.display = 'none';
     document.getElementById('main-content').style.display = 'none';
     document.getElementById('not-found').style.display = 'block';
-    document.title = 'Protocol Not Found · The Drum Protocols';
+    document.title = 'Protocol Library · The Drum Protocols';
     return;
   }
 

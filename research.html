@@ -99,6 +99,16 @@ a{color:inherit}
 @media (max-width: 980px){.hero,.grid-2,.grid-3,.doc-card{grid-template-columns:1fr}.doc-actions{min-width:0;flex-direction:row;flex-wrap:wrap}}
 @media (max-width: 720px){.site-nav{padding:0 16px}.nav-links{gap:14px}.nav-link{font-size:11px}.hero{padding:28px 16px 34px}.main{padding:22px 16px 64px}.section-title{font-size:28px}.doc-card h3{font-size:28px}.orientation-card h3{font-size:24px}}
 @media (max-width: 520px){.nav-links{display:none}.hero-title{font-size:44px}.doc-actions{flex-direction:column}.btn-primary,.btn-secondary,.btn-tertiary{width:100%}}
+
+/* ── SITE BANNER ── */
+.site-banner {
+  width: 100%; display: block; overflow: hidden;
+  max-height: 160px; line-height: 0;
+}
+.site-banner img {
+  width: 100%; display: block; object-fit: cover; object-position: center;
+  max-height: 160px;
+}
 </style>
 </head>
 <body>
@@ -112,6 +122,11 @@ a{color:inherit}
     <a class="nav-link" href="legal.html">Safety</a>
   </div>
 </nav>
+<!-- ── SITE BANNER ── -->
+<div class="site-banner">
+  <img src="banner2_upscaled_cropped.jpg" alt="The Drum Protocols — Regulation Through Rhythm">
+</div>
+
 <header class="page-header">
   <div class="hero">
     <div>
