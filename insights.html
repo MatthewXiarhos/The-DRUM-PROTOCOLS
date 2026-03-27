@@ -5,281 +5,235 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Insights · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --dp-gold:#B8860B; --dp-gold-light:#D4A017; --dp-gold-pale:#F5EDD0; --dp-gold-faint:#FBF6E8;
-  --dp-slate:#2C3E50; --dp-slate-mid:#4A5568; --dp-slate-light:#718096;
-  --dp-cream:#FAFAF7; --dp-green:#2D6A4F; --dp-green-light:#52B788; --dp-green-pale:#D8F3DC;
-  --dp-healing:#2D6A4F; --dp-thriving:#1A5276; --dp-transforming:#6B2D6A;
-  --dp-healing-pale:#D8F3DC; --dp-thriving-pale:#D6EAF8; --dp-transforming-pale:#F5D5F4;
-  --color-text-primary:#1a1a1a; --color-text-secondary:#555; --color-text-tertiary:#888;
-  --color-bg:#FAFAF7; --color-surface:#fff;
-  --color-border:rgba(0,0,0,0.08); --color-border-mid:rgba(0,0,0,0.14);
-  --radius-sm:6px; --radius-md:10px; --radius-lg:16px;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dp-gold:#B8860B;--dp-gold-light:#D4A017;--dp-gold-pale:#3a2e10;--dp-gold-faint:#251f0a;
+  --dp-slate:#2C3E50;--dp-slate-mid:#243345;--dp-slate-dark:#1a2633;--dp-slate-deeper:#131e28;--dp-slate-deepest:#0d1720;
+  --dp-slate-light:#4A5F72;--dp-slate-muted:#5a7085;
+  --dp-healing:#1a4a35;--dp-healing-accent:#52B788;
+  --dp-thriving:#0f3a5c;--dp-thriving-accent:#4a9eca;
+  --dp-transforming:#3d1a3c;--dp-transforming-accent:#b06ab0;
+  --color-text-primary:#e8e4dc;--color-text-secondary:#9aabb8;--color-text-tertiary:#607080;
+  --color-border:rgba(255,255,255,0.06);--color-border-mid:rgba(255,255,255,0.10);--color-border-gold:rgba(184,134,11,0.22);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --shadow-soft:0 10px 30px rgba(0,0,0,0.3);--shadow-card:0 4px 16px rgba(0,0,0,0.25);
 }
-body { font-family:'DM Sans',sans-serif; background:var(--color-bg); color:var(--color-text-primary); min-height:100vh; }
+body{font-family:'DM Sans',sans-serif;background:var(--dp-slate-deepest);color:var(--color-text-primary);min-height:100vh}
+a{color:inherit;text-decoration:none}
 
-/* ── SITE NAV ── */
-.site-nav { background:var(--dp-slate); padding:0 32px; display:flex; align-items:center; justify-content:space-between; height:52px; position:sticky; top:0; z-index:200; }
-.nav-brand { font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--dp-gold-light); text-decoration:none; font-weight:500; }
-.nav-links { display:flex; gap:24px; align-items:center; }
-.nav-link { font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.55); text-decoration:none; transition:color .15s; }
-.nav-link:hover, .nav-link.active { color:#fff; }
-@media(max-width:720px){ .site-nav{padding:0 16px;} .nav-links{gap:14px;} .nav-link{font-size:11px;} }
-@media(max-width:520px){ .nav-links{display:none;} }
-
-/* ── SITE BANNER ── */
-.site-banner { width:100%; display:block; overflow:hidden; max-height:160px; line-height:0; }
-.site-banner img { width:100%; display:block; object-fit:cover; object-position:center; max-height:160px; }
+/* ── NAV ── */
+.site-nav{background:var(--dp-slate-deeper);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--color-border)}
+.nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);font-weight:500}
+.nav-links{display:flex;gap:24px;align-items:center}
+.nav-link{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);transition:color .15s}
+.nav-link:hover{color:#fff}
+.nav-link.active{color:var(--dp-gold-light)}
+@media(max-width:720px){.site-nav{padding:0 16px}.nav-links{gap:14px}}
+@media(max-width:520px){.nav-links{display:none}}
 
 /* ── PAGE HEADER ── */
-.page-header {
-  background-image:url('DI_final.jpg');
-  background-size:cover; background-position:center;
-  position:relative; overflow:hidden;
-  aspect-ratio:4/1; display:flex; align-items:stretch; min-height:140px;
-}
-.header-panel {
-  position:relative; z-index:2; width:19%;
-  background:rgba(12,15,22,0.84); backdrop-filter:blur(10px);
-  border-right:1px solid rgba(184,134,11,0.3);
-  display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
-  padding:16px 18px; gap:6px;
-}
-.header-logo { width:32px; height:32px; object-fit:contain; opacity:.9; margin-bottom:2px; }
-.header-brand { font-size:9px; letter-spacing:.18em; color:var(--dp-gold-light); text-transform:uppercase; line-height:1.4; }
-.header-title { font-family:'Cormorant Garamond',serif; font-size:clamp(18px,2vw,28px); font-weight:600; color:#fff; line-height:1.15; }
-.header-sub { font-size:clamp(10px,.9vw,12px); color:rgba(255,255,255,.5); font-weight:300; line-height:1.5; }
-.header-meta { margin-top:4px; display:flex; flex-direction:column; gap:5px; }
-.meta-chip { font-size:10px; letter-spacing:.05em; color:rgba(255,255,255,.72); background:rgba(255,255,255,.07); border:0.5px solid rgba(255,255,255,.15); border-radius:20px; padding:3px 9px; width:fit-content; }
-.meta-chip.live { color:var(--dp-green-light); border-color:rgba(82,183,136,.35); background:rgba(82,183,136,.08); }
-.meta-chip.live::before { content:'● '; font-size:7px; vertical-align:middle; }
-.header-art { flex:1; }
+.page-header{background:var(--dp-slate-deeper);position:relative;overflow:hidden;padding:18px 24px 0}
+.page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(184,134,11,.12);pointer-events:none}
+.page-header::after{content:'';position:absolute;top:-40px;right:-40px;width:260px;height:260px;border-radius:50%;border:1px solid rgba(184,134,11,.08);pointer-events:none}
+.header-banner-wrap{border-radius:18px;border:1px solid var(--color-border-mid);box-shadow:0 16px 44px rgba(0,0,0,.35);overflow:hidden;max-height:260px}
+.header-banner-wrap img{width:100%;height:260px;object-fit:cover;object-position:center 40%;display:block}
+.page-intro{padding:24px 0 28px;max-width:1320px}
+.page-eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,4vw,52px);font-weight:600;color:#fff;line-height:1}
+.page-subtitle{font-size:14px;line-height:1.75;color:rgba(255,255,255,.55);max-width:580px;margin-top:8px}
+.page-meta{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.meta-chip{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-secondary);background:rgba(255,255,255,.04);border:.5px solid var(--color-border-mid);border-radius:20px;padding:4px 10px}
+.meta-chip.live{color:var(--dp-healing-accent);border-color:rgba(82,183,136,.3);background:rgba(82,183,136,.06)}
+.meta-chip.live::before{content:'● ';font-size:7px;vertical-align:middle}
+@media(max-width:720px){.header-banner-wrap img{height:180px}}
 
-/* ── TAB NAV ── */
-.nav-bar { background:var(--color-surface); border-bottom:.5px solid var(--color-border-mid); padding:0 24px; display:flex; gap:0; overflow-x:auto; position:sticky; top:52px; z-index:100; }
-.nav-tab { padding:14px 18px; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:var(--color-text-tertiary); cursor:pointer; border:none; background:none; font-family:inherit; white-space:nowrap; border-bottom:2px solid transparent; transition:all .15s; }
-.nav-tab.active { color:var(--dp-gold); border-bottom-color:var(--dp-gold); }
-.nav-tab:hover:not(.active) { color:var(--color-text-secondary); }
+/* ── TAB BAR ── */
+.tab-bar{background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border);padding:0 24px;display:flex;gap:0;overflow-x:auto;position:sticky;top:52px;z-index:100}
+.tab-btn{padding:14px 18px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-tertiary);cursor:pointer;border:none;background:none;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s}
+.tab-btn.active{color:var(--dp-gold-light);border-bottom-color:var(--dp-gold-light)}
+.tab-btn:hover:not(.active){color:var(--color-text-secondary)}
 
 /* ── MAIN ── */
-.main { max-width:900px; margin:0 auto; padding:32px 20px 64px; }
-.section-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:16px; }
-.section-title { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; color:var(--color-text-primary); }
-.section-sub { font-size:12px; color:var(--color-text-tertiary); }
-.tab-panel { display:none; }
-.tab-panel.active { display:block; }
+.main{max-width:1120px;margin:0 auto;padding:32px 24px 72px}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
 
-/* ── SUMMARY CARDS (clickable) ── */
-.summary-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:32px; }
-.summary-card { background:var(--color-surface); border:.5px solid var(--color-border-mid); border-radius:var(--radius-lg); padding:20px 18px; position:relative; overflow:hidden; cursor:pointer; transition:box-shadow .15s, border-color .15s; }
-.summary-card:hover { border-color:var(--dp-gold-light); box-shadow:0 4px 20px rgba(0,0,0,.08); }
-.summary-card::before { content:''; position:absolute; bottom:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:.12; }
-.summary-card.healing { border-top:2px solid var(--dp-healing); }
-.summary-card.healing::before { background:var(--dp-healing); }
-.summary-card.thriving { border-top:2px solid var(--dp-thriving); }
-.summary-card.thriving::before { background:var(--dp-thriving); }
-.summary-card.transforming { border-top:2px solid var(--dp-transforming); }
-.summary-card.transforming::before { background:var(--dp-transforming); }
-.summary-card-hint { font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--dp-gold); margin-top:10px; opacity:.7; }
-.sc-series { font-size:9px; letter-spacing:.14em; text-transform:uppercase; color:var(--color-text-tertiary); margin-bottom:8px; }
-.sc-series.healing { color:var(--dp-healing); }
-.sc-series.thriving { color:var(--dp-thriving); }
-.sc-series.transforming { color:var(--dp-transforming); }
-.sc-mean { font-family:'Cormorant Garamond',serif; font-size:40px; font-weight:600; line-height:1; }
-.sc-mean-label { font-size:11px; color:var(--color-text-tertiary); margin-top:3px; }
-.sc-n { font-size:11px; color:var(--color-text-secondary); margin-top:10px; }
-.confidence-bar { height:3px; border-radius:2px; background:var(--color-border); margin-top:8px; overflow:hidden; }
-.confidence-fill { height:100%; border-radius:2px; transition:width 1s ease; }
-.healing .confidence-fill { background:var(--dp-healing); }
-.thriving .confidence-fill { background:var(--dp-thriving); }
-.transforming .confidence-fill { background:var(--dp-transforming); }
+/* ── SECTION HEADER ── */
+.section-hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--color-text-primary)}
+.section-sub{font-size:12px;color:var(--color-text-tertiary)}
 
-/* ── SERIES COMPARISON BARS (clickable) ── */
-.series-comparison { margin-bottom:36px; }
-.series-bars { background:var(--color-surface); border:.5px solid var(--color-border-mid); border-radius:var(--radius-lg); padding:24px; display:flex; flex-direction:column; gap:20px; }
-.series-row { display:grid; grid-template-columns:110px 1fr 60px; align-items:center; gap:16px; cursor:pointer; border-radius:var(--radius-sm); padding:4px; transition:background .12s; }
-.series-row:hover { background:var(--dp-gold-faint); }
-.series-name { font-size:12px; letter-spacing:.06em; text-transform:uppercase; font-weight:500; }
-.series-name.healing { color:var(--dp-healing); }
-.series-name.thriving { color:var(--dp-thriving); }
-.series-name.transforming { color:var(--dp-transforming); }
-.series-n-label { font-size:10px; color:var(--color-text-tertiary); margin-top:2px; }
-.series-bar-bg { height:10px; border-radius:5px; background:var(--color-border); overflow:hidden; }
-.series-bar-fill { height:100%; border-radius:5px; transition:width 1.2s ease; }
-.series-bar-fill.healing { background:var(--dp-healing); }
-.series-bar-fill.thriving { background:var(--dp-thriving); }
-.series-bar-fill.transforming { background:var(--dp-transforming); }
-.series-val { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; text-align:right; }
-.series-row-hint { font-size:9px; color:var(--dp-gold); text-align:right; letter-spacing:.05em; margin-top:-12px; opacity:.7; }
+/* ── SUMMARY STRIP ── */
+.summary-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.summary-card{background:var(--dp-slate-dark);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);padding:20px 18px;cursor:pointer;transition:transform .15s,border-color .15s,background .15s;position:relative;overflow:hidden}
+.summary-card:hover{transform:translateY(-2px);border-color:var(--color-border-gold);background:var(--dp-slate-mid)}
+.summary-card::before{content:'';position:absolute;bottom:-20px;right:-20px;width:100px;height:100px;border-radius:50%;opacity:.15}
+.summary-card.healing{border-top:2px solid var(--dp-healing-accent)}.summary-card.healing::before{background:var(--dp-healing-accent)}
+.summary-card.thriving{border-top:2px solid var(--dp-thriving-accent)}.summary-card.thriving::before{background:var(--dp-thriving-accent)}
+.summary-card.transforming{border-top:2px solid var(--dp-transforming-accent)}.summary-card.transforming::before{background:var(--dp-transforming-accent)}
+.sc-series{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.sc-series.healing{color:var(--dp-healing-accent)}.sc-series.thriving{color:var(--dp-thriving-accent)}.sc-series.transforming{color:var(--dp-transforming-accent)}
+.sc-mean{font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:600;line-height:1;color:#fff}
+.sc-mean-label{font-size:11px;color:var(--color-text-tertiary);margin-top:3px}
+.sc-n{font-size:11px;color:var(--color-text-secondary);margin-top:10px}
+.confidence-bar{height:3px;border-radius:2px;background:var(--color-border);margin-top:8px;overflow:hidden}
+.confidence-fill{height:100%;border-radius:2px;transition:width 1.2s ease}
+.healing .confidence-fill{background:var(--dp-healing-accent)}.thriving .confidence-fill{background:var(--dp-thriving-accent)}.transforming .confidence-fill{background:var(--dp-transforming-accent)}
+.summary-hint{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-gold-light);margin-top:10px;opacity:.7}
+@media(max-width:600px){.summary-strip{grid-template-columns:1fr}}
 
-/* ── SERIES DRILLDOWN (inline below overview) ── */
-.series-drilldown { display:none; background:var(--color-surface); border:.5px solid var(--dp-gold-light); border-radius:var(--radius-lg); padding:20px 24px; margin-top:12px; margin-bottom:24px; }
-.series-drilldown.open { display:block; }
-.drilldown-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.drilldown-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
-.drilldown-close { background:none; border:.5px solid var(--color-border-mid); border-radius:var(--radius-sm); padding:4px 10px; font-size:11px; color:var(--color-text-tertiary); cursor:pointer; font-family:inherit; }
-.drilldown-close:hover { border-color:var(--dp-gold); color:var(--dp-gold); }
+/* ── DRILLDOWN ── */
+.series-drilldown{display:none;background:var(--dp-slate-dark);border:.5px solid var(--color-border-gold);border-radius:var(--radius-lg);padding:20px 24px;margin-top:12px;margin-bottom:24px}
+.series-drilldown.open{display:block}
+.drilldown-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.drilldown-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:#fff}
+.drilldown-close{background:none;border:.5px solid var(--color-border-mid);border-radius:var(--radius-sm);padding:4px 10px;font-size:11px;color:var(--color-text-tertiary);cursor:pointer;font-family:inherit;transition:border-color .15s,color .15s}
+.drilldown-close:hover{border-color:var(--dp-gold-light);color:var(--dp-gold-light)}
 
-/* ── RANKING ROWS ── */
-.chart-tabs { display:flex; gap:0; background:var(--color-bg); border:.5px solid var(--color-border-mid); border-radius:var(--radius-md); overflow:hidden; margin-bottom:16px; width:fit-content; }
-.chart-tab { padding:8px 16px; font-size:12px; letter-spacing:.05em; color:var(--color-text-tertiary); cursor:pointer; border:none; background:none; font-family:inherit; transition:all .15s; }
-.chart-tab.active { background:var(--color-surface); color:var(--color-text-primary); }
-.rankings-section { margin-bottom:36px; }
-.rankings-hint { font-size:11px; color:var(--color-text-tertiary); margin-bottom:12px; }
-.ranking-list { display:flex; flex-direction:column; gap:8px; }
-.ranking-row { background:var(--color-surface); border:.5px solid var(--color-border); border-radius:var(--radius-md); padding:14px 16px; display:grid; grid-template-columns:24px 1fr auto; align-items:start; gap:14px; transition:border-color .15s; border-left:3px solid transparent; }
-.ranking-row.healing-row { border-left-color:var(--dp-healing); }
-.ranking-row.thriving-row { border-left-color:var(--dp-thriving); }
-.ranking-row.transforming-row { border-left-color:var(--dp-transforming); }
-.rank-num { font-family:'Cormorant Garamond',serif; font-size:14px; color:var(--color-text-tertiary); text-align:right; padding-top:2px; }
-.rank-main { min-width:0; }
-.rank-name-row { display:flex; align-items:center; gap:8px; margin-bottom:6px; flex-wrap:wrap; }
-.rank-name { font-size:14px; font-weight:500; color:var(--color-text-primary); }
-.rank-code { font-size:10px; letter-spacing:.08em; color:var(--color-text-tertiary); background:var(--color-bg); border-radius:3px; padding:1px 5px; }
-.series-dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-.series-dot.healing { background:var(--dp-healing); }
-.series-dot.thriving { background:var(--dp-thriving); }
-.series-dot.transforming { background:var(--dp-transforming); }
-.rank-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
-.rank-bar-bg { flex:1; height:4px; border-radius:2px; background:var(--color-border); overflow:hidden; }
-.rank-bar-fill { height:100%; border-radius:2px; transition:width .8s ease; }
-.rank-bar-fill.healing { background:var(--dp-healing); }
-.rank-bar-fill.thriving { background:var(--dp-thriving); }
-.rank-bar-fill.transforming { background:var(--dp-transforming); }
-.rank-n { font-size:10px; color:var(--color-text-tertiary); white-space:nowrap; }
-.rank-score-col { text-align:right; }
-.rank-score { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; line-height:1; }
-.rank-score-sub { font-size:10px; color:var(--color-text-tertiary); }
+/* ── SERIES BARS ── */
+.series-comparison{margin-bottom:36px}
+.series-bars{background:var(--dp-slate-dark);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);padding:24px;display:flex;flex-direction:column;gap:20px}
+.series-row{display:grid;grid-template-columns:120px 1fr 60px;align-items:center;gap:16px;cursor:pointer;border-radius:var(--radius-sm);padding:6px;transition:background .12s}
+.series-row:hover{background:rgba(184,134,11,.06)}
+.series-name{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.series-name.healing{color:var(--dp-healing-accent)}.series-name.thriving{color:var(--dp-thriving-accent)}.series-name.transforming{color:var(--dp-transforming-accent)}
+.series-n-label{font-size:10px;color:var(--color-text-tertiary);margin-top:2px}
+.series-bar-bg{height:8px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.series-bar-fill{height:100%;border-radius:4px;transition:width 1.2s ease}
+.series-bar-fill.healing{background:var(--dp-healing-accent)}.series-bar-fill.thriving{background:var(--dp-thriving-accent)}.series-bar-fill.transforming{background:var(--dp-transforming-accent)}
+.series-val{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;text-align:right;color:#fff}
+.series-rows-hint{font-size:9px;color:var(--dp-gold-light);text-align:right;letter-spacing:.05em;opacity:.7}
 
-/* ── DISTRIBUTION PANEL (always visible) ── */
-.rank-dist-panel { grid-column:1/-1; padding-top:10px; border-top:.5px solid var(--color-border); }
-.dist-chart { display:flex; align-items:flex-end; gap:3px; height:52px; margin-top:4px; }
-.dist-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; }
-.dist-bar-bg { width:100%; background:var(--color-border); border-radius:2px 2px 0 0; min-height:2px; }
-.dist-bar-bg.hi { background:var(--dp-gold); opacity:.9; }
-.dist-bar-label { font-size:8px; color:var(--color-text-tertiary); }
-.dist-pct-label { font-size:9px; color:var(--color-text-tertiary); margin-bottom:6px; display:flex; align-items:center; justify-content:space-between; }
-.early-badge { display:inline-block; font-size:10px; padding:2px 8px; background:var(--color-bg); border:.5px solid var(--color-border-mid); border-radius:10px; color:var(--color-text-tertiary); }
+/* ── PROTO ROW (used in drilldown + by series) ── */
+.proto-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.02);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:6px;transition:border-color .15s}
+.proto-row:hover{border-color:var(--color-border-gold)}
+.proto-name{font-size:14px;font-weight:500;min-width:90px;color:var(--color-text-primary)}
+.proto-code{font-size:10px;letter-spacing:.08em;color:var(--color-text-tertiary);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;border:.5px solid var(--color-border)}
+.early-badge{display:inline-block;font-size:9px;padding:2px 7px;background:rgba(184,134,11,.08);border:.5px solid rgba(184,134,11,.25);border-radius:10px;color:var(--dp-gold-light);letter-spacing:.04em}
+.proto-bar-wrap{flex:1}
+.proto-bar-bg{height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.proto-bar-fill{height:100%;border-radius:2px}
+.proto-score{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;width:40px;text-align:right;flex-shrink:0;color:#fff}
+.proto-n{font-size:10px;color:var(--color-text-tertiary);width:44px;text-align:right;flex-shrink:0}
 
-/* ── VIEW PROTOCOL BUTTON ── */
-.view-proto-btn { display:inline-flex; align-items:center; gap:6px; font-size:11px; font-family:inherit; letter-spacing:.05em; text-transform:uppercase; color:var(--dp-gold); border:.5px solid rgba(184,134,11,.35); background:var(--dp-gold-faint); border-radius:var(--radius-sm); padding:5px 12px; cursor:pointer; text-decoration:none; transition:all .15s; white-space:nowrap; }
-.view-proto-btn:hover { background:var(--dp-gold-pale); border-color:var(--dp-gold); }
-.rank-footer { display:flex; align-items:center; justify-content:space-between; margin-top:10px; flex-wrap:wrap; gap:8px; }
-.rank-stats-inline { font-size:10px; color:var(--color-text-tertiary); display:flex; gap:12px; }
-.rank-stat { display:flex; flex-direction:column; }
-.rank-stat-val { font-size:13px; font-weight:500; color:var(--color-text-primary); font-family:'Cormorant Garamond',serif; }
-.rank-stat-label { font-size:9px; color:var(--color-text-tertiary); }
+/* ── VIEW BUTTON ── */
+.view-btn{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-family:inherit;letter-spacing:.05em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid rgba(212,160,23,.3);background:rgba(212,160,23,.06);border-radius:var(--radius-sm);padding:5px 12px;cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.view-btn:hover{background:rgba(212,160,23,.14);border-color:var(--dp-gold-light)}
 
-/* ── BY SERIES TAB ── */
-.series-section { margin-bottom:28px; }
-.series-section-header { display:flex; align-items:baseline; justify-content:space-between; padding-bottom:10px; border-bottom:.5px solid var(--color-border); margin-bottom:14px; }
-.series-section-title { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; }
-.series-proto-row { display:flex; align-items:center; gap:12px; background:var(--color-surface); border:.5px solid var(--color-border); border-radius:var(--radius-md); padding:12px 16px; margin-bottom:6px; }
-.series-proto-name { font-size:14px; font-weight:500; min-width:90px; }
-.series-proto-code { font-size:10px; color:var(--color-text-tertiary); background:var(--color-bg); border-radius:3px; padding:1px 5px; letter-spacing:.06em; }
-.series-proto-bar-wrap { flex:1; }
-.series-proto-bar-bg { height:5px; border-radius:3px; background:var(--color-border); overflow:hidden; }
-.series-proto-bar-fill { height:100%; border-radius:3px; }
-.series-proto-score { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; width:36px; text-align:right; flex-shrink:0; }
-.series-proto-n { font-size:10px; color:var(--color-text-tertiary); width:42px; text-align:right; flex-shrink:0; }
+/* ── RANKINGS ── */
+.chart-tabs{display:flex;gap:0;background:rgba(255,255,255,.03);border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);overflow:hidden;margin-bottom:16px;width:fit-content}
+.chart-tab{padding:8px 16px;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--color-text-tertiary);cursor:pointer;border:none;background:none;font-family:inherit;transition:all .15s}
+.chart-tab.active{background:rgba(255,255,255,.06);color:var(--color-text-primary)}
+.ranking-list{display:flex;flex-direction:column;gap:8px}
+.ranking-row{background:var(--dp-slate-dark);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:14px 16px;display:grid;grid-template-columns:24px 1fr auto;align-items:start;gap:14px;border-left:3px solid transparent;transition:border-color .15s,background .15s}
+.ranking-row:hover{background:var(--dp-slate-mid)}
+.ranking-row.healing-row{border-left-color:var(--dp-healing-accent)}.ranking-row.thriving-row{border-left-color:var(--dp-thriving-accent)}.ranking-row.transforming-row{border-left-color:var(--dp-transforming-accent)}
+.rank-num{font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--color-text-tertiary);text-align:right;padding-top:2px}
+.rank-main{min-width:0}
+.rank-name-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap}
+.rank-name{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.rank-code{font-size:10px;letter-spacing:.08em;color:var(--color-text-tertiary);background:rgba(255,255,255,.04);border-radius:3px;padding:1px 5px;border:.5px solid var(--color-border)}
+.series-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.series-dot.healing{background:var(--dp-healing-accent)}.series-dot.thriving{background:var(--dp-thriving-accent)}.series-dot.transforming{background:var(--dp-transforming-accent)}
+.rank-bar-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.rank-bar-bg{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.rank-bar-fill{height:100%;border-radius:2px}
+.rank-bar-fill.healing{background:var(--dp-healing-accent)}.rank-bar-fill.thriving{background:var(--dp-thriving-accent)}.rank-bar-fill.transforming{background:var(--dp-transforming-accent)}
+.rank-n{font-size:10px;color:var(--color-text-tertiary);white-space:nowrap}
+.rank-score-col{text-align:right}
+.rank-score{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;line-height:1;color:#fff}
+.rank-score-sub{font-size:10px;color:var(--color-text-tertiary)}
+/* distribution */
+.rank-dist-panel{grid-column:1/-1;padding-top:10px;border-top:.5px solid var(--color-border)}
+.dist-chart{display:flex;align-items:flex-end;gap:3px;height:52px;margin-top:4px}
+.dist-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.dist-bar-bg{width:100%;background:rgba(255,255,255,.08);border-radius:2px 2px 0 0;min-height:2px}
+.dist-bar-bg.hi{background:var(--dp-gold-light);opacity:.85}
+.dist-bar-label{font-size:8px;color:var(--color-text-tertiary)}
+.dist-pct-label{font-size:9px;color:var(--color-text-tertiary);margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.rank-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px}
+.rank-stats-inline{font-size:10px;color:var(--color-text-tertiary);display:flex;gap:12px}
+.rank-stat{display:flex;flex-direction:column}
+.rank-stat-val{font-size:13px;font-weight:500;color:var(--color-text-primary);font-family:'Cormorant Garamond',serif}
+.rank-stat-label{font-size:9px;color:var(--color-text-tertiary)}
+.confidence-note{background:rgba(184,134,11,.06);border:.5px solid rgba(184,134,11,.18);border-radius:var(--radius-md);padding:14px 18px;margin-bottom:20px;font-size:12px;line-height:1.6;color:var(--color-text-secondary)}
+.confidence-note strong{color:var(--dp-gold-light)}
+
+/* ── BY SERIES ── */
+.series-section{margin-bottom:28px}
+.series-section-header{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:10px;border-bottom:.5px solid var(--color-border);margin-bottom:14px;flex-wrap:wrap;gap:8px}
+.series-section-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400}
 
 /* ── ENTRY GRID ── */
-.entry-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; }
-.entry-card { background:var(--color-surface); border:.5px solid var(--color-border); border-radius:var(--radius-md); padding:16px; }
-.entry-card-name { font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--color-text-tertiary); margin-bottom:12px; }
-.entry-levels { display:flex; gap:8px; }
-.entry-level { flex:1; background:var(--color-bg); border-radius:var(--radius-sm); padding:10px 8px; text-align:center; transition:background .12s, border-color .12s; border:.5px solid transparent; }
-.entry-level[data-code] { cursor:pointer; text-decoration:none; color:inherit; display:block; }
-.entry-level[data-code]:hover { background:var(--dp-gold-faint); border-color:rgba(184,134,11,.3); }
-.entry-level-name { font-size:12px; color:var(--color-text-primary); margin-bottom:4px; font-weight:400; }
-.entry-level-score { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; line-height:1; }
-.entry-level-score.no-data { font-size:14px; color:var(--color-text-tertiary); }
-.entry-level-n { font-size:9px; color:var(--color-text-tertiary); margin-top:2px; }
-.entry-level-hint { font-size:8px; color:var(--dp-gold); letter-spacing:.05em; margin-top:4px; opacity:.8; }
+.entry-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.entry-card{background:var(--dp-slate-dark);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:16px;transition:border-color .15s}
+.entry-card:hover{border-color:var(--color-border-mid)}
+.entry-card-name{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:12px}
+.entry-levels{display:flex;gap:8px}
+.entry-level{flex:1;background:rgba(255,255,255,.03);border-radius:var(--radius-sm);padding:10px 8px;text-align:center;transition:background .12s,border-color .12s;border:.5px solid transparent}
+.entry-level[data-code]{cursor:pointer;text-decoration:none;color:inherit;display:block}
+.entry-level[data-code]:hover{background:rgba(212,160,23,.08);border-color:rgba(212,160,23,.28)}
+.entry-level-name{font-size:12px;color:var(--color-text-primary);margin-bottom:4px}
+.entry-level-score{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;line-height:1;color:#fff}
+.entry-level-score.no-data{font-size:14px;color:var(--color-text-tertiary)}
+.entry-level-n{font-size:9px;color:var(--color-text-tertiary);margin-top:2px}
+.entry-level-hint{font-size:8px;color:var(--dp-gold-light);letter-spacing:.04em;margin-top:4px;opacity:.8}
+@media(max-width:600px){.entry-grid{grid-template-columns:1fr}}
 
-/* ── COMMENTARY ── */
-.statistician-block { background:var(--color-surface); border:.5px solid var(--color-border-mid); border-radius:var(--radius-lg); overflow:hidden; margin-bottom:32px; }
-.stat-block-header { background:var(--dp-gold-faint); border-bottom:.5px solid rgba(184,134,11,.2); padding:16px 24px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
-.stat-block-title { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--dp-gold); }
-.stat-block-badge { font-size:10px; color:var(--color-text-tertiary); background:rgba(0,0,0,.04); border-radius:10px; padding:2px 8px; border:.5px solid var(--color-border); }
-.stat-block-body { padding:24px; }
-.stat-commentary { font-size:14px; line-height:1.75; color:var(--color-text-secondary); border-left:2px solid var(--dp-gold-pale); padding-left:16px; }
-.stat-commentary.overview { color:var(--color-text-primary); }
-.stat-commentary em { color:var(--color-text-primary); font-style:italic; }
-.stat-subsection { margin-top:20px; }
-.stat-subsection-label { font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--color-text-tertiary); margin-bottom:10px; }
-.commentary-stale-notice { display:flex; align-items:center; gap:10px; background:rgba(184,134,11,.06); border:.5px solid rgba(184,134,11,.25); border-radius:var(--radius-md); padding:12px 16px; margin-bottom:20px; font-size:12px; color:var(--dp-gold); }
-.commentary-stale-notice button { margin-left:auto; background:var(--dp-gold); color:#fff; border:none; border-radius:var(--radius-sm); padding:5px 14px; font-size:11px; font-family:inherit; cursor:pointer; letter-spacing:.04em; }
-.commentary-stale-notice button:hover { background:var(--dp-gold-light); }
-.commentary-generating { display:flex; align-items:center; gap:10px; padding:16px; font-size:13px; color:var(--color-text-tertiary); }
-.spin { width:18px; height:18px; border:2px solid var(--color-border); border-top-color:var(--dp-gold); border-radius:50%; animation:spin .7s linear infinite; flex-shrink:0; }
-@keyframes spin { to { transform:rotate(360deg); } }
-
-/* ── LOADING / EMPTY ── */
-.loading-state { text-align:center; padding:48px 24px; }
-.loading-spinner { width:32px; height:32px; border:2px solid var(--color-border); border-top-color:var(--dp-gold); border-radius:50%; animation:spin .8s linear infinite; margin:0 auto 16px; }
-.loading-text { font-size:13px; color:var(--color-text-tertiary); }
-.confidence-note { background:var(--dp-gold-faint); border:.5px solid rgba(184,134,11,.2); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:28px; font-size:12px; line-height:1.6; color:var(--color-text-secondary); }
-.confidence-note strong { color:var(--dp-gold); font-weight:500; }
+/* ── LOADING ── */
+.loading-state{text-align:center;padding:64px 24px}
+.loading-spinner{width:32px;height:32px;border:2px solid var(--color-border);border-top-color:var(--dp-gold-light);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+.loading-text{font-size:13px;color:var(--color-text-tertiary)}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── FOOTER ── */
-.page-footer { background:var(--color-surface); border-top:.5px solid var(--color-border-mid); padding:20px 32px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; }
-.footer-brand { font-size:11px; color:var(--color-text-tertiary); letter-spacing:.08em; }
-.footer-links { display:flex; gap:20px; }
-.footer-link { font-size:11px; color:var(--color-text-tertiary); text-decoration:none; letter-spacing:.05em; transition:color .15s; }
-.footer-link:hover { color:var(--dp-gold); }
-
-/* ── RESPONSIVE ── */
-@media(max-width:600px){
-  .main{padding:24px 16px 48px;}
-  .summary-strip{grid-template-columns:1fr;}
-  .entry-grid{grid-template-columns:1fr;}
-  .series-row{grid-template-columns:90px 1fr 50px;}
-  .series-proto-row{flex-wrap:wrap;}
-  .view-proto-btn{font-size:10px; padding:4px 10px;}
-}
+.page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 24px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-link{font-size:12px;color:rgba(255,255,255,.42);transition:color .15s}
+.footer-link:hover{color:rgba(255,255,255,.80)}
 </style>
 </head>
 <body>
 
-<!-- ── SITE NAV ── -->
+<!-- ── NAV ── -->
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <div class="nav-links">
-    <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link" href="drum_protocols_adviser_ux.html">Adviser</a>
-    <a class="nav-link" href="protocol.html">Protocols</a>
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="adviser.html">Adviser</a>
     <a class="nav-link active" href="insights.html">Data Insights</a>
-    <a class="nav-link" href="legal.html">Safety</a>
+    <a class="nav-link" href="protocol.html">Protocols</a>
+    <a class="nav-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
 
-<!-- ── SITE BANNER ── -->
-<div class="site-banner">
-  <img src="banner2_upscaled_cropped.jpg" alt="The Drum Protocols — Regulation Through Rhythm">
-</div>
-
-<!-- ── PAGE HEADER ── -->
-<div class="page-header">
-  <div class="header-panel">
-    <img class="header-logo" src="drum_logo.png" alt="The Drum Protocols logo">
-    <div class="header-brand">The Drum Protocols · Faces of Dragonfly</div>
-    <div class="header-title">Data Insights</div>
-    <div class="header-sub">Listener efficacy data across all protocols · Community-driven transparency</div>
-    <div class="header-meta">
-      <span class="meta-chip live" id="chip-total-responses">Loading…</span>
-      <span class="meta-chip" id="chip-protocols-with-data"></span>
-      <span class="meta-chip" id="chip-generated"></span>
+<!-- ── HEADER ── -->
+<header class="page-header">
+  <div class="header-banner-wrap">
+    <picture>
+      <source srcset="insights_banner.jpg" media="(min-width:900px)">
+      <img src="insights_banner.jpg" alt="Data Insights — The Drum Protocols">
+    </picture>
+  </div>
+  <div class="page-intro">
+    <div class="page-eyebrow">Rhythmic Entrainment Library</div>
+    <h1 class="page-title">Data Insights</h1>
+    <p class="page-subtitle">Listener efficacy data across all protocols — community-driven transparency</p>
+    <div class="page-meta">
+      <span class="meta-chip live" id="chip-total">Loading…</span>
+      <span class="meta-chip" id="chip-protocols"></span>
+      <span class="meta-chip" id="chip-updated"></span>
     </div>
   </div>
-  <div class="header-art"></div>
-</div>
+</header>
 
 <!-- ── LOADING ── -->
-<div id="loading-view" class="main">
+<div id="loading-view">
   <div class="loading-state">
     <div class="loading-spinner"></div>
     <div class="loading-text">Loading data…</div>
@@ -290,26 +244,24 @@ body { font-family:'DM Sans',sans-serif; background:var(--color-bg); color:var(-
 <div id="content-view" style="display:none">
 
   <!-- TAB BAR -->
-  <div class="nav-bar">
-    <button class="nav-tab active"    onclick="showTab('overview')">Overview</button>
-    <button class="nav-tab"           onclick="showTab('rankings')">Protocol Rankings</button>
-    <button class="nav-tab"           onclick="showTab('series')">By Series</button>
-    <button class="nav-tab"           onclick="showTab('entry')">By Entry Point</button>
-    <button class="nav-tab"           onclick="showTab('commentary')">Commentary</button>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('overview')">Overview</button>
+    <button class="tab-btn" onclick="showTab('rankings')">Protocol Rankings</button>
+    <button class="tab-btn" onclick="showTab('series')">By Series</button>
+    <button class="tab-btn" onclick="showTab('entry')">By Entry Point</button>
   </div>
 
-  <div class="main">
+  <main class="main">
 
     <!-- ══ OVERVIEW ══ -->
     <div id="tab-overview" class="tab-panel active">
-
-      <div class="section-header">
+      <div class="section-hd">
         <div class="section-title">Series Summary</div>
-        <div class="section-sub">Mean efficacy rating (0–10 scale) · click any card to drill down</div>
+        <div class="section-sub">Mean efficacy (0–10 scale) · click any card to drill down</div>
       </div>
       <div class="summary-strip" id="summary-strip"></div>
 
-      <!-- drilldown panel lives here, shown/hidden by JS -->
+      <!-- inline drilldown -->
       <div class="series-drilldown" id="series-drilldown">
         <div class="drilldown-header">
           <div class="drilldown-title" id="drilldown-title"></div>
@@ -318,25 +270,24 @@ body { font-family:'DM Sans',sans-serif; background:var(--color-bg); color:var(-
         <div id="drilldown-body"></div>
       </div>
 
-      <div class="section-header" style="margin-top:8px">
+      <div class="section-hd" style="margin-top:8px">
         <div class="section-title">Series Comparison</div>
         <div class="section-sub">Normalised to 10-point scale · click any row to drill down</div>
       </div>
       <div class="series-comparison">
         <div class="series-bars" id="series-bars-overview"></div>
       </div>
-
-    </div><!-- /overview -->
+    </div>
 
     <!-- ══ RANKINGS ══ -->
     <div id="tab-rankings" class="tab-panel">
-      <div class="section-header">
+      <div class="section-hd">
         <div class="section-title">Protocol Rankings</div>
       </div>
       <div class="confidence-note">
         <strong>Reading the distribution:</strong> bars highlighted in gold show ratings ≥ 7.
-        Each row is already expanded — scroll to compare all protocols.
-        Click <em>View full description</em> on any row to open its dedicated protocol page.
+        Each row is expanded — scroll to compare all protocols.
+        Click <em>View full description</em> to open the dedicated protocol page.
       </div>
       <div class="chart-tabs">
         <button class="chart-tab active" onclick="setRankSort('mean',this)">By Mean</button>
@@ -348,7 +299,7 @@ body { font-family:'DM Sans',sans-serif; background:var(--color-bg); color:var(-
 
     <!-- ══ BY SERIES ══ -->
     <div id="tab-series" class="tab-panel">
-      <div class="section-header">
+      <div class="section-hd">
         <div class="section-title">By Series</div>
         <div class="section-sub">All protocols within each therapeutic series</div>
       </div>
@@ -357,218 +308,152 @@ body { font-family:'DM Sans',sans-serif; background:var(--color-bg); color:var(-
 
     <!-- ══ BY ENTRY POINT ══ -->
     <div id="tab-entry" class="tab-panel">
-      <div class="section-header">
+      <div class="section-hd">
         <div class="section-title">By Entry Point</div>
-        <div class="section-sub">Mean efficacy by entry condition · click any protocol cell to open its full description</div>
+        <div class="section-sub">Mean efficacy by entry condition · click any protocol to open its full description</div>
       </div>
       <div class="entry-grid" id="entry-grid"></div>
     </div>
 
-    <!-- ══ COMMENTARY ══ -->
-    <div id="tab-commentary" class="tab-panel">
-      <div class="section-header">
-        <div class="section-title">Sphere Commentary</div>
-        <div class="section-sub" id="commentary-date"></div>
-      </div>
-      <div id="stale-notice" style="display:none">
-        <div class="commentary-stale-notice">
-          ⚠ Data has been updated since this analysis was generated.
-          <button onclick="requestNewCommentary()">Regenerate analysis</button>
-        </div>
-      </div>
-      <div id="commentary-block"></div>
-    </div>
-
-  </div><!-- /main -->
-</div><!-- /content-view -->
-
-<!-- ── FOOTER ── -->
-<div class="page-footer">
-  <div class="footer-brand">THE DRUM PROTOCOLS · FACES OF DRAGONFLY</div>
-  <div class="footer-links">
-    <a class="footer-link" href="index.html">Home</a>
-    <a class="footer-link" href="research.html">Research</a>
-    <a class="footer-link" href="drum_protocols_adviser_ux.html">Protocol Adviser</a>
-    <a class="footer-link" href="protocol.html">Protocol Library</a>
-    <a class="footer-link" href="legal.html">Safety & Privacy</a>
-  </div>
+  </main>
 </div>
 
+<!-- ── FOOTER ── -->
+<footer class="page-footer">
+  <div class="footer-brand">The Drum Protocols</div>
+  <div class="footer-links">
+    <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link" href="adviser.html">Adviser</a>
+    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="protocol.html">Protocols</a>
+    <a class="footer-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="safety.html">Safety</a>
+  </div>
+</footer>
+
 <script>
-// ─────────────────────────────────────────────────────────────────────────────
-// STATE
-// ─────────────────────────────────────────────────────────────────────────────
 let DATA = null;
 let rankSort = 'mean';
 let openDrilldownSeries = null;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BOOT: fetch data.json once. No demo data race condition.
-// ─────────────────────────────────────────────────────────────────────────────
-(function boot() {
-  fetch('data.json?_=' + Date.now())
-    .then(r => { if (!r.ok) throw new Error('no data.json'); return r.json(); })
-    .then(data => init(data))
-    .catch(err => {
-      console.warn('data.json unavailable (' + err.message + ') — using embedded sample');
-      init(SAMPLE_DATA);
-    });
+// ── BOOT ──
+(function boot(){
+  fetch('data.json?_='+Date.now())
+    .then(r=>{if(!r.ok)throw new Error('no data.json');return r.json()})
+    .then(d=>init(d))
+    .catch(()=>init(SAMPLE_DATA));
 })();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INIT
-// ─────────────────────────────────────────────────────────────────────────────
-function init(data) {
-  DATA = data;
-  document.getElementById('loading-view').style.display = 'none';
-  document.getElementById('content-view').style.display = 'block';
-
-  const total    = Object.values(data.protocols).reduce((s,p) => s + p.n, 0);
-  const withData = Object.values(data.protocols).filter(p => p.n > 0).length;
-  document.getElementById('chip-total-responses').textContent    = total.toLocaleString() + ' responses';
-  document.getElementById('chip-protocols-with-data').textContent = withData + ' protocols';
-  document.getElementById('chip-generated').textContent           = 'Updated ' + (data.generated || data.analysis_date || '');
-
+function init(data){
+  DATA=data;
+  document.getElementById('loading-view').style.display='none';
+  document.getElementById('content-view').style.display='block';
+  const total=Object.values(data.protocols).reduce((s,p)=>s+p.n,0);
+  const withData=Object.values(data.protocols).filter(p=>p.n>0).length;
+  document.getElementById('chip-total').textContent=total.toLocaleString()+' responses';
+  document.getElementById('chip-protocols').textContent=withData+' protocols';
+  document.getElementById('chip-updated').textContent='Updated '+(data.generated||data.analysis_date||'');
   renderSummaryStrip(data);
   renderSeriesBarsOverview(data);
-  renderRankings(data, rankSort);
+  renderRankings(data,rankSort);
   renderSeriesDetail(data);
   renderEntryGrid(data);
-  renderCommentary(data);
-  checkCommentaryStaleness(data);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TAB NAVIGATION
-// ─────────────────────────────────────────────────────────────────────────────
-function showTab(name) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  // match tab button by data or text content
-  const labels = { overview:'Overview', rankings:'Protocol Rankings', series:'By Series', entry:'By Entry Point', commentary:'Commentary' };
-  document.querySelectorAll('.nav-tab').forEach(t => {
-    if (t.textContent.trim() === labels[name]) t.classList.add('active');
-  });
+// ── TABS ──
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const labels={overview:'Overview',rankings:'Protocol Rankings',series:'By Series',entry:'By Entry Point'};
+  document.querySelectorAll('.tab-btn').forEach(t=>{if(t.textContent.trim()===labels[name])t.classList.add('active')});
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// OVERVIEW — SUMMARY CARDS (clickable → inline drilldown)
-// ─────────────────────────────────────────────────────────────────────────────
-function renderSummaryStrip(data) {
-  const el = document.getElementById('summary-strip');
-  el.innerHTML = Object.entries(data.series_summary).map(([name, s]) => {
-    const cls = name.toLowerCase();
-    const conf = Math.min((s.n / 300) * 100, 100);
-    return `<div class="summary-card ${cls}" onclick="toggleDrilldown('${name}')" title="Click to see all ${name} protocols">
+// ── SUMMARY CARDS ──
+function renderSummaryStrip(data){
+  document.getElementById('summary-strip').innerHTML=Object.entries(data.series_summary).map(([name,s])=>{
+    const cls=name.toLowerCase();
+    const conf=Math.min((s.n/300)*100,100);
+    return `<div class="summary-card ${cls}" onclick="toggleDrilldown('${name}')">
       <div class="sc-series ${cls}">${name}</div>
       <div class="sc-mean">${s.mean.toFixed(1)}</div>
       <div class="sc-mean-label">mean efficacy (0–10)</div>
       <div class="sc-n">${s.n.toLocaleString()} responses · ${s.protocols} protocols</div>
       <div class="confidence-bar"><div class="confidence-fill" style="width:${conf}%"></div></div>
-      <div class="summary-card-hint">Tap to see all protocols ↓</div>
+      <div class="summary-hint">Tap to see all protocols ↓</div>
     </div>`;
   }).join('');
 }
 
-function toggleDrilldown(seriesName) {
-  const panel = document.getElementById('series-drilldown');
-  if (openDrilldownSeries === seriesName) {
-    closeDrilldown();
-    return;
-  }
-  openDrilldownSeries = seriesName;
-  const cls = seriesName.toLowerCase();
-  const seriesColor = { healing:'var(--dp-healing)', thriving:'var(--dp-thriving)', transforming:'var(--dp-transforming)' };
-  document.getElementById('drilldown-title').innerHTML =
-    `<span style="color:${seriesColor[cls] || 'inherit'}">${seriesName}</span> Protocols`;
-
-  const protos = Object.entries(DATA.protocols)
-    .filter(([,p]) => p.series.toUpperCase() === seriesName)
-    .sort((a,b) => b[1].mean - a[1].mean);
-
-  document.getElementById('drilldown-body').innerHTML = protos.map(([code, p]) => {
-    const bar = (p.mean / 10) * 100;
-    const early = p.n < 20 ? '<span class="early-badge">Early data</span>' : '';
-    return `<div class="series-proto-row">
-      <span class="series-proto-name">${p.name}</span>
-      <span class="series-proto-code">${code}</span>
+function toggleDrilldown(seriesName){
+  const panel=document.getElementById('series-drilldown');
+  if(openDrilldownSeries===seriesName){closeDrilldown();return}
+  openDrilldownSeries=seriesName;
+  const cls=seriesName.toLowerCase();
+  const colors={healing:'var(--dp-healing-accent)',thriving:'var(--dp-thriving-accent)',transforming:'var(--dp-transforming-accent)'};
+  document.getElementById('drilldown-title').innerHTML=`<span style="color:${colors[cls]}">${seriesName}</span> Protocols`;
+  const protos=Object.entries(DATA.protocols).filter(([,p])=>p.series.toUpperCase()===seriesName).sort((a,b)=>b[1].mean-a[1].mean);
+  document.getElementById('drilldown-body').innerHTML=protos.map(([code,p])=>{
+    const bar=(p.mean/10)*100;
+    const early=p.n<20?'<span class="early-badge">Early data</span>':'';
+    return `<div class="proto-row">
+      <span class="proto-name">${p.name}</span>
+      <span class="proto-code">${code}</span>
       ${early}
-      <div class="series-proto-bar-wrap">
-        <div class="series-proto-bar-bg">
-          <div class="series-proto-bar-fill ${cls}" style="width:${bar}%; background:${seriesColor[cls]}; height:5px; border-radius:3px;"></div>
-        </div>
-      </div>
-      <span class="series-proto-score">${p.mean.toFixed(1)}</span>
-      <span class="series-proto-n">n=${p.n}</span>
-      <a class="view-proto-btn" href="protocol.html?id=${code}&vol=VOL001&src=site" title="Open full protocol page">View description →</a>
+      <div class="proto-bar-wrap"><div class="proto-bar-bg"><div class="proto-bar-fill" style="width:${bar}%;background:${colors[cls]};height:4px;border-radius:2px"></div></div></div>
+      <span class="proto-score">${p.mean.toFixed(1)}</span>
+      <span class="proto-n">n=${p.n}</span>
+      <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001&src=site">View description →</a>
     </div>`;
   }).join('');
-
   panel.classList.add('open');
-  panel.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function closeDrilldown() {
-  openDrilldownSeries = null;
+function closeDrilldown(){
+  openDrilldownSeries=null;
   document.getElementById('series-drilldown').classList.remove('open');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// OVERVIEW — SERIES COMPARISON BARS (clickable → same drilldown)
-// ─────────────────────────────────────────────────────────────────────────────
-function renderSeriesBarsOverview(data) {
-  const el = document.getElementById('series-bars-overview');
-  el.innerHTML = Object.entries(data.series_summary).map(([name, s]) => {
-    const cls = name.toLowerCase();
-    const w = (s.mean / 10) * 100;
-    return `<div class="series-row" onclick="toggleDrilldown('${name}')" title="Click to see all ${name} protocols">
-      <div class="series-label-col">
-        <div class="series-name ${cls}">${name}</div>
-        <div class="series-n-label">n = ${s.n.toLocaleString()}</div>
-      </div>
-      <div class="series-bar-bg">
-        <div class="series-bar-fill ${cls}" style="width:${w}%"></div>
-      </div>
+// ── SERIES BARS ──
+function renderSeriesBarsOverview(data){
+  const el=document.getElementById('series-bars-overview');
+  el.innerHTML=Object.entries(data.series_summary).map(([name,s])=>{
+    const cls=name.toLowerCase();
+    const w=(s.mean/10)*100;
+    return `<div class="series-row" onclick="toggleDrilldown('${name}')">
+      <div><div class="series-name ${cls}">${name}</div><div class="series-n-label">n = ${s.n.toLocaleString()}</div></div>
+      <div class="series-bar-bg"><div class="series-bar-fill ${cls}" style="width:${w}%"></div></div>
       <div class="series-val">${s.mean.toFixed(1)}</div>
     </div>`;
-  }).join('') + `<div class="series-row-hint">Click any row to see its protocols</div>`;
+  }).join('')+`<div class="series-rows-hint">Click any row to see its protocols</div>`;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RANKINGS (all rows pre-expanded, with View description button)
-// ─────────────────────────────────────────────────────────────────────────────
-function setRankSort(type, btn) {
-  rankSort = type;
-  document.querySelectorAll('.chart-tab').forEach(t => t.classList.remove('active'));
+// ── RANKINGS ──
+function setRankSort(type,btn){
+  rankSort=type;
+  document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  renderRankings(DATA, rankSort);
+  renderRankings(DATA,rankSort);
 }
 
-function renderRankings(data, sort) {
-  const el = document.getElementById('ranking-list');
-  const protos = Object.entries(data.protocols)
-    .filter(([,p]) => p.n > 0)
-    .sort((a,b) => {
-      if (sort==='mean') return b[1].mean - a[1].mean;
-      if (sort==='n')    return b[1].n - a[1].n;
-      if (sort==='pct')  return b[1].pct_positive - a[1].pct_positive;
-    });
-
-  el.innerHTML = protos.map(([code, p], i) => {
-    const cls = p.series.toLowerCase();
-    const fillW = (p.mean / 10) * 100;
-    const early = p.n < 20 ? '<span class="early-badge">Early data</span>' : '';
-    const maxDist = Math.max(...p.dist, 1);
-    const distBars = p.dist.map((v, j) => {
-      const h = Math.round((v / maxDist) * 40) + 2;
-      return `<div class="dist-col">
-        <div class="dist-bar-bg ${j >= 7 ? 'hi' : ''}" style="height:${h}px"></div>
-        <div class="dist-bar-label">${j}</div>
-      </div>`;
+function renderRankings(data,sort){
+  const protos=Object.entries(data.protocols).filter(([,p])=>p.n>0).sort((a,b)=>{
+    if(sort==='mean')return b[1].mean-a[1].mean;
+    if(sort==='n')return b[1].n-a[1].n;
+    return b[1].pct_positive-a[1].pct_positive;
+  });
+  document.getElementById('ranking-list').innerHTML=protos.map(([code,p],i)=>{
+    const cls=p.series.toLowerCase();
+    const fillW=(p.mean/10)*100;
+    const early=p.n<20?'<span class="early-badge">Early data</span>':'';
+    const maxDist=Math.max(...p.dist,1);
+    const distBars=p.dist.map((v,j)=>{
+      const h=Math.round((v/maxDist)*40)+2;
+      return `<div class="dist-col"><div class="dist-bar-bg ${j>=7?'hi':''}" style="height:${h}px"></div><div class="dist-bar-label">${j}</div></div>`;
     }).join('');
-    const std = p.std != null ? p.std.toFixed(1) : '—';
-
+    const std=p.std!=null?p.std.toFixed(1):'—';
     return `<div class="ranking-row ${cls}-row">
       <div class="rank-num">${i+1}</div>
       <div class="rank-main">
@@ -583,10 +468,7 @@ function renderRankings(data, sort) {
           <span class="rank-n">n=${p.n}</span>
         </div>
         <div class="rank-dist-panel">
-          <div class="dist-pct-label">
-            <span>${p.pct_positive}% rated ≥7 · distribution (0–10)</span>
-            <span>std ${std}</span>
-          </div>
+          <div class="dist-pct-label"><span>${p.pct_positive}% rated ≥7 · distribution (0–10)</span><span>std ${std}</span></div>
           <div class="dist-chart">${distBars}</div>
           <div class="rank-footer">
             <div class="rank-stats-inline">
@@ -595,265 +477,122 @@ function renderRankings(data, sort) {
               <div class="rank-stat"><span class="rank-stat-val">${p.pct_positive}%</span><span class="rank-stat-label">rated ≥7</span></div>
               <div class="rank-stat"><span class="rank-stat-val">${p.n}</span><span class="rank-stat-label">responses</span></div>
             </div>
-            <a class="view-proto-btn" href="protocol.html?id=${code}&vol=VOL001&src=site">View full description →</a>
+            <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001&src=site">View full description →</a>
           </div>
         </div>
       </div>
-      <div class="rank-score-col">
-        <div class="rank-score">${p.mean.toFixed(1)}</div>
-        <div class="rank-score-sub">mean</div>
-      </div>
+      <div class="rank-score-col"><div class="rank-score">${p.mean.toFixed(1)}</div><div class="rank-score-sub">mean</div></div>
     </div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BY SERIES (with View description button)
-// ─────────────────────────────────────────────────────────────────────────────
-function renderSeriesDetail(data) {
-  const el = document.getElementById('series-detail');
-  const byS = {};
-  Object.entries(data.protocols).forEach(([code, p]) => {
-    if (!byS[p.series]) byS[p.series] = [];
-    byS[p.series].push({code, ...p});
+// ── BY SERIES ──
+function renderSeriesDetail(data){
+  const byS={};
+  Object.entries(data.protocols).forEach(([code,p])=>{
+    if(!byS[p.series])byS[p.series]=[];
+    byS[p.series].push({code,...p});
   });
-
-  const seriesColor = { HEALING:'var(--dp-healing)', THRIVING:'var(--dp-thriving)', TRANSFORMING:'var(--dp-transforming)' };
-
-  el.innerHTML = Object.entries(byS).map(([series, protos]) => {
-    const cls = series.toLowerCase();
-    const col = seriesColor[series] || 'var(--dp-gold)';
-    const sorted = [...protos].sort((a,b) => b.mean - a.mean);
-    const s = data.series_summary[series];
-    const rows = sorted.map(p => {
-      const bar = (p.mean / 10) * 100;
-      const early = p.n < 20 ? '<span class="early-badge">Early</span>' : '';
-      return `<div class="series-proto-row">
-        <span class="series-proto-name">${p.name}</span>
-        <span class="series-proto-code">${p.code}</span>
+  const colors={HEALING:'var(--dp-healing-accent)',THRIVING:'var(--dp-thriving-accent)',TRANSFORMING:'var(--dp-transforming-accent)'};
+  document.getElementById('series-detail').innerHTML=Object.entries(byS).map(([series,protos])=>{
+    const cls=series.toLowerCase();
+    const col=colors[series]||'var(--dp-gold-light)';
+    const sorted=[...protos].sort((a,b)=>b.mean-a.mean);
+    const s=data.series_summary[series];
+    const rows=sorted.map(p=>{
+      const bar=(p.mean/10)*100;
+      const early=p.n<20?'<span class="early-badge">Early</span>':'';
+      return `<div class="proto-row">
+        <span class="proto-name">${p.name}</span>
+        <span class="proto-code">${p.code}</span>
         ${early}
-        <div class="series-proto-bar-wrap">
-          <div class="series-proto-bar-bg">
-            <div class="series-proto-bar-fill" style="width:${bar}%; background:${col}; height:5px; border-radius:3px;"></div>
-          </div>
-        </div>
-        <span class="series-proto-score">${p.mean.toFixed(1)}</span>
-        <span class="series-proto-n">n=${p.n}</span>
-        <a class="view-proto-btn" href="protocol.html?id=${p.code}&vol=VOL001&src=site">View full description →</a>
+        <div class="proto-bar-wrap"><div class="proto-bar-bg"><div class="proto-bar-fill" style="width:${bar}%;background:${col};height:4px;border-radius:2px"></div></div></div>
+        <span class="proto-score">${p.mean.toFixed(1)}</span>
+        <span class="proto-n">n=${p.n}</span>
+        <a class="view-btn" href="protocol.html?id=${p.code}&vol=VOL001&src=site">View description →</a>
       </div>`;
     }).join('');
-
     return `<div class="series-section">
       <div class="series-section-header">
         <div class="series-section-title" style="color:${col}">${series}</div>
-        <div class="section-sub">Mean ${s ? s.mean.toFixed(1) : '—'} · ${s ? s.n : '—'} responses · ${sorted.length} protocols</div>
+        <div class="section-sub">Mean ${s?s.mean.toFixed(1):'—'} · ${s?s.n:'—'} responses · ${sorted.length} protocols</div>
       </div>
       ${rows}
     </div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// BY ENTRY POINT (each cell links to protocol page)
-// ─────────────────────────────────────────────────────────────────────────────
-const TIER1_MAP = {
-  "Over-stimulation":          ["H-OS-L1","H-OS-L2","H-OS-L3"],
-  "Anxiety & Stress":          ["H-AX-L1","H-AX-L2","H-AX-L3"],
-  "Acute Distress / Crisis":   ["H-CR-L1","H-CR-L2","H-CR-L3"],
-  "Sleep & Rest":              ["H-SL-L1","H-SL-L2","H-SL-L3"],
-  "Focus & Clarity":           ["T-FC-L1","T-FC-L2","T-FC-L3"],
-  "Creative Flow":             ["T-CF-L1","T-CF-L2","T-CF-L3"],
-  "Maintenance & Balance":     ["T-MB-L1","T-MB-L2","T-MB-L3"],
-  "Mood & Energy":             ["X-ME-L1","X-ME-L2","X-ME-L3"],
-  "Motivation & Drive":        ["X-MD-L1","X-MD-L2","X-MD-L3"],
-  "Mind & Clarity":            ["X-MC-L1","X-MC-L2","X-MC-L3"]
+// ── ENTRY GRID ──
+const TIER1_MAP={
+  "Over-stimulation":["H-OS-L1","H-OS-L2","H-OS-L3"],
+  "Anxiety & Stress":["H-AX-L1","H-AX-L2","H-AX-L3"],
+  "Acute Distress / Crisis":["H-CR-L1","H-CR-L2","H-CR-L3"],
+  "Sleep & Rest":["H-SL-L1","H-SL-L2","H-SL-L3"],
+  "Focus & Clarity":["T-FC-L1","T-FC-L2","T-FC-L3"],
+  "Creative Flow":["T-CF-L1","T-CF-L2","T-CF-L3"],
+  "Maintenance & Balance":["T-MB-L1","T-MB-L2","T-MB-L3"],
+  "Mood & Energy":["X-ME-L1","X-ME-L2","X-ME-L3"],
+  "Motivation & Drive":["X-MD-L1","X-MD-L2","X-MD-L3"],
+  "Mind & Clarity":["X-MC-L1","X-MC-L2","X-MC-L3"]
 };
 
-function renderEntryGrid(data) {
-  const el = document.getElementById('entry-grid');
-  el.innerHTML = Object.entries(TIER1_MAP).map(([entry, codes]) => {
-    const levels = codes.map((code, i) => {
-      const p = data.protocols[code];
-      if (!p) return `<div class="entry-level">
-        <div class="entry-level-name">L${i+1}</div>
-        <div class="entry-level-score no-data">—</div>
-      </div>`;
-      return `<a class="entry-level" data-code="${code}"
-          href="protocol.html?id=${code}&vol=VOL001&src=site"
-          title="Open ${p.name} (${code}) — full protocol description">
+function renderEntryGrid(data){
+  document.getElementById('entry-grid').innerHTML=Object.entries(TIER1_MAP).map(([entry,codes])=>{
+    const levels=codes.map((code,i)=>{
+      const p=data.protocols[code];
+      if(!p)return`<div class="entry-level"><div class="entry-level-name">L${i+1}</div><div class="entry-level-score no-data">—</div></div>`;
+      return`<a class="entry-level" data-code="${code}" href="protocol.html?id=${code}&vol=VOL001&src=site">
         <div class="entry-level-name">${p.name}</div>
         <div class="entry-level-score">${p.mean.toFixed(1)}</div>
         <div class="entry-level-n">n=${p.n}</div>
         <div class="entry-level-hint">tap to open →</div>
       </a>`;
     }).join('');
-    return `<div class="entry-card">
-      <div class="entry-card-name">${entry}</div>
-      <div class="entry-levels">${levels}</div>
-    </div>`;
+    return`<div class="entry-card"><div class="entry-card-name">${entry}</div><div class="entry-levels">${levels}</div></div>`;
   }).join('');
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COMMENTARY — render + staleness check
-// ─────────────────────────────────────────────────────────────────────────────
-function renderCommentary(data) {
-  // Support both key names: sphere_commentary (pipeline) or statistician_commentary (legacy)
-  const c = data.sphere_commentary || data.statistician_commentary || {};
-  const dateEl = document.getElementById('commentary-date');
-  dateEl.textContent = 'Analysis generated ' + (data.analysis_date || data.generated || '');
-
-  const sections = [
-    { label:'Overview',                    key:'overview' },
-    { label:'Cross-Series Patterns',       key:'cross_series' },
-    { label:'Anomalies & Research Questions', key:'anomalies' },
-    { label:'Development Signals',         key:'development_signals' },
-  ];
-
-  const hasContent = sections.some(s => c[s.key]);
-  if (!hasContent) {
-    document.getElementById('commentary-block').innerHTML = `
-      <div class="statistician-block">
-        <div class="stat-block-header">
-          <div class="stat-block-title">Automated Statistical Analysis</div>
-          <div class="stat-block-badge">No analysis yet</div>
-        </div>
-        <div class="stat-block-body">
-          <div class="stat-commentary overview">
-            No Sphere commentary has been generated yet. Run the pipeline with a live API key to produce analysis:
-            <code>python sphere_pipeline.py --csv tally_export.csv</code>
-          </div>
-        </div>
-      </div>`;
-    return;
-  }
-
-  document.getElementById('commentary-block').innerHTML = `
-    <div class="statistician-block">
-      <div class="stat-block-header">
-        <div class="stat-block-title">Sphere — Automated Statistical Analysis</div>
-        <div class="stat-block-badge">Generated ${data.analysis_date || data.generated || ''}</div>
-      </div>
-      <div class="stat-block-body">
-        ${sections.filter(s => c[s.key]).map((s, i) => `
-          <div class="${i > 0 ? 'stat-subsection' : ''}">
-            ${i > 0 ? `<div class="stat-subsection-label">${s.label}</div>` : ''}
-            <div class="stat-commentary ${i===0 ? 'overview' : ''}">${c[s.key]}</div>
-          </div>
-        `).join('')}
-        ${renderByProtocolCommentary(data, c)}
-      </div>
-    </div>`;
-}
-
-function renderByProtocolCommentary(data, c) {
-  if (!c.by_protocol || Object.keys(c.by_protocol).length === 0) return '';
-  const items = Object.entries(c.by_protocol)
-    .filter(([code]) => data.protocols[code])
-    .map(([code, text]) => {
-      const p = data.protocols[code];
-      return `<div style="margin-bottom:12px">
-        <span style="font-size:11px;font-weight:500;color:var(--color-text-primary)">${p.name}</span>
-        <span style="font-size:10px;color:var(--color-text-tertiary);margin-left:6px;background:var(--color-bg);padding:1px 5px;border-radius:3px">${code}</span>
-        <div class="stat-commentary" style="margin-top:4px;font-size:13px">${text}</div>
-      </div>`;
-    }).join('');
-  if (!items) return '';
-  return `<div class="stat-subsection">
-    <div class="stat-subsection-label">By Protocol</div>
-    ${items}
-  </div>`;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// COMMENTARY STALENESS CHECK
-// Compare data.generated date vs sphere_commentary generation date.
-// If data is newer than the last analysis, show a notice.
-// ─────────────────────────────────────────────────────────────────────────────
-function checkCommentaryStaleness(data) {
-  const notice = document.getElementById('stale-notice');
-  const dataDate       = data.generated       ? new Date(data.generated)       : null;
-  const analysisDate   = data.analysis_date   ? new Date(data.analysis_date)   : null;
-
-  // If both dates exist and data is newer than the analysis, it's stale
-  if (dataDate && analysisDate && dataDate > analysisDate) {
-    notice.style.display = 'block';
-    return;
-  }
-
-  // Also flag if commentary is missing entirely but protocols exist
-  const c = data.sphere_commentary || data.statistician_commentary || {};
-  const hasContent = ['overview','cross_series','anomalies','development_signals'].some(k => c[k]);
-  if (!hasContent && Object.keys(data.protocols || {}).length > 0) {
-    notice.style.display = 'block';
-  }
-}
-
-function requestNewCommentary() {
-  // This runs client-side on a static site — we can't trigger the pipeline directly.
-  // Show clear guidance instead.
-  const notice = document.getElementById('stale-notice');
-  notice.innerHTML = `<div class="commentary-stale-notice" style="flex-direction:column;align-items:flex-start;gap:6px">
-    <strong>To regenerate analysis:</strong>
-    <span>1. Export latest data from Tally → save as <code>tally_export.csv</code></span>
-    <span>2. Push to GitHub — the Sphere Pipeline Action will run automatically</span>
-    <span>3. Or run locally: <code>python sphere_pipeline.py --csv tally_export.csv</code></span>
-    <button onclick="document.getElementById('stale-notice').style.display='none'" style="margin-left:0;margin-top:4px;background:var(--dp-slate);color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:11px;font-family:inherit;cursor:pointer">Dismiss</button>
-  </div>`;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SAMPLE DATA — only used if data.json is unavailable (local dev / no network)
-// These are clearly labelled sample figures, not live data.
-// ─────────────────────────────────────────────────────────────────────────────
-const SAMPLE_DATA = {
-  generated:     "2026-03-01",
-  analysis_date: "2026-03-01",
-  sphere_commentary: {
-    overview: "[Sample data] Across 762 responses representing 30 protocols, the system is showing meaningful early signal. Mean ratings cluster between 6.8 and 7.6 across series.",
-    cross_series: "[Sample] THRIVING protocols lead in mean efficacy at 7.4. HEALING follows at 7.1. TRANSFORMING shows the widest variance at 6.8 mean.",
-    anomalies: "[Sample] Anchor (H-CR-L1) shows a bimodal distribution — a population-matching signal worth investigating in the Adviser routing.",
-    development_signals: "[Sample] L1 protocols in Motivation & Drive may benefit from adjusted Adviser routing. Sleep & Rest protocols show the most consistent distributions."
+// ── SAMPLE DATA ──
+const SAMPLE_DATA={
+  generated:"2026-03-01",analysis_date:"2026-03-01",
+  protocols:{
+    "H-OS-L1":{name:"Pebble",series:"HEALING",entry:"Over-stimulation",n:47,mean:7.3,std:1.8,dist:[0,0,1,2,3,4,6,12,11,6,2],pct_positive:66},
+    "H-OS-L2":{name:"Rainfall",series:"HEALING",entry:"Over-stimulation",n:31,mean:7.1,std:2.0,dist:[0,1,1,2,4,3,5,8,4,2,1],pct_positive:61},
+    "H-OS-L3":{name:"Glacier",series:"HEALING",entry:"Over-stimulation",n:18,mean:6.8,std:2.3,dist:[0,0,1,2,3,2,3,3,2,1,1],pct_positive:50},
+    "H-AX-L1":{name:"Meadow",series:"HEALING",entry:"Anxiety & Stress",n:63,mean:7.6,std:1.6,dist:[0,0,0,1,2,5,8,16,18,9,4],pct_positive:73},
+    "H-AX-L2":{name:"Cottage",series:"HEALING",entry:"Anxiety & Stress",n:41,mean:7.4,std:1.9,dist:[0,0,1,1,3,4,6,12,9,4,1],pct_positive:68},
+    "H-AX-L3":{name:"Valley",series:"HEALING",entry:"Anxiety & Stress",n:28,mean:7.2,std:2.1,dist:[0,0,1,2,2,3,4,7,5,3,1],pct_positive:64},
+    "H-CR-L1":{name:"Anchor",series:"HEALING",entry:"Acute Distress / Crisis",n:22,mean:6.4,std:2.8,dist:[0,1,1,2,4,2,2,4,4,1,1],pct_positive:45},
+    "H-CR-L2":{name:"Harbor",series:"HEALING",entry:"Acute Distress / Crisis",n:15,mean:6.7,std:2.4,dist:[0,0,1,2,2,2,1,4,2,1,0],pct_positive:47},
+    "H-CR-L3":{name:"Horizon",series:"HEALING",entry:"Acute Distress / Crisis",n:11,mean:6.9,std:2.2,dist:[0,0,1,1,1,1,2,2,2,1,0],pct_positive:45},
+    "H-SL-L1":{name:"Lantern",series:"HEALING",entry:"Sleep & Rest",n:58,mean:7.8,std:1.5,dist:[0,0,0,1,2,3,7,14,18,10,3],pct_positive:78},
+    "H-SL-L2":{name:"Hammock",series:"HEALING",entry:"Sleep & Rest",n:44,mean:7.5,std:1.7,dist:[0,0,1,1,2,4,6,12,11,5,2],pct_positive:72},
+    "H-SL-L3":{name:"Midnight",series:"HEALING",entry:"Sleep & Rest",n:29,mean:7.3,std:1.9,dist:[0,0,1,1,2,3,4,8,6,3,1],pct_positive:62},
+    "T-FC-L1":{name:"Compass",series:"THRIVING",entry:"Focus & Clarity",n:52,mean:7.7,std:1.6,dist:[0,0,0,1,2,4,7,14,16,6,2],pct_positive:73},
+    "T-FC-L2":{name:"Waypoint",series:"THRIVING",entry:"Focus & Clarity",n:38,mean:7.4,std:1.8,dist:[0,0,1,1,3,3,5,11,9,4,1],pct_positive:66},
+    "T-FC-L3":{name:"Summit",series:"THRIVING",entry:"Focus & Clarity",n:24,mean:7.2,std:2.0,dist:[0,0,1,1,2,3,3,6,5,2,1],pct_positive:58},
+    "T-CF-L1":{name:"Ember",series:"THRIVING",entry:"Creative Flow",n:34,mean:7.5,std:1.7,dist:[0,0,0,1,2,4,5,10,8,3,1],pct_positive:65},
+    "T-CF-L2":{name:"Current",series:"THRIVING",entry:"Creative Flow",n:27,mean:7.3,std:1.9,dist:[0,0,1,1,2,3,4,7,6,2,1],pct_positive:59},
+    "T-CF-L3":{name:"Aurora",series:"THRIVING",entry:"Creative Flow",n:19,mean:7.6,std:1.6,dist:[0,0,0,1,1,2,3,5,5,2,0],pct_positive:63},
+    "T-MB-L1":{name:"Stone",series:"THRIVING",entry:"Maintenance & Balance",n:41,mean:7.4,std:1.8,dist:[0,0,1,1,2,4,5,11,10,5,2],pct_positive:68},
+    "T-MB-L2":{name:"Axis",series:"THRIVING",entry:"Maintenance & Balance",n:30,mean:7.1,std:2.0,dist:[0,0,1,2,2,3,4,8,6,3,1],pct_positive:60},
+    "T-MB-L3":{name:"Orbit",series:"THRIVING",entry:"Maintenance & Balance",n:21,mean:7.3,std:1.9,dist:[0,0,1,1,1,2,3,6,5,2,0],pct_positive:62},
+    "X-ME-L1":{name:"Breeze",series:"TRANSFORMING",entry:"Mood & Energy",n:35,mean:6.9,std:2.0,dist:[0,0,1,2,3,4,5,8,7,3,2],pct_positive:57},
+    "X-ME-L2":{name:"Sunrise",series:"TRANSFORMING",entry:"Mood & Energy",n:25,mean:7.2,std:1.8,dist:[0,0,1,1,2,3,4,6,5,2,1],pct_positive:56},
+    "X-ME-L3":{name:"Updraft",series:"TRANSFORMING",entry:"Mood & Energy",n:18,mean:7.0,std:1.9,dist:[0,0,1,1,2,3,3,4,3,1,0],pct_positive:44},
+    "X-MD-L1":{name:"Footpath",series:"TRANSFORMING",entry:"Motivation & Drive",n:28,mean:6.9,std:2.1,dist:[0,0,1,2,3,3,4,7,5,2,1],pct_positive:54},
+    "X-MD-L2":{name:"Trail",series:"TRANSFORMING",entry:"Motivation & Drive",n:19,mean:7.4,std:1.8,dist:[0,0,0,1,2,2,3,5,4,2,0],pct_positive:63},
+    "X-MD-L3":{name:"Switchback",series:"TRANSFORMING",entry:"Motivation & Drive",n:14,mean:7.1,std:2.0,dist:[0,0,1,1,1,2,2,3,3,1,0],pct_positive:50},
+    "X-MC-L1":{name:"Cavern",series:"TRANSFORMING",entry:"Mind & Clarity",n:24,mean:7.3,std:1.7,dist:[0,0,0,1,2,3,4,7,5,2,0],pct_positive:58},
+    "X-MC-L2":{name:"Starlight",series:"TRANSFORMING",entry:"Mind & Clarity",n:17,mean:7.0,std:1.9,dist:[0,0,1,1,1,2,3,4,3,2,0],pct_positive:53},
+    "X-MC-L3":{name:"Cosmos",series:"TRANSFORMING",entry:"Mind & Clarity",n:12,mean:7.4,std:1.6,dist:[0,0,0,1,1,2,2,3,2,1,0],pct_positive:50}
   },
-  protocols: {
-    "H-OS-L1":{ name:"Pebble",     series:"HEALING",      entry:"Over-stimulation",         n:47, mean:7.3, std:1.8, dist:[0,0,1,2,3,4,6,12,11,6,2],  pct_positive:66 },
-    "H-OS-L2":{ name:"Rainfall",   series:"HEALING",      entry:"Over-stimulation",         n:31, mean:7.1, std:2.0, dist:[0,1,1,2,4,3,5,8,4,2,1],   pct_positive:61 },
-    "H-OS-L3":{ name:"Glacier",    series:"HEALING",      entry:"Over-stimulation",         n:18, mean:6.8, std:2.3, dist:[0,0,1,2,3,2,3,3,2,1,1],   pct_positive:50 },
-    "H-AX-L1":{ name:"Meadow",     series:"HEALING",      entry:"Anxiety & Stress",         n:63, mean:7.6, std:1.6, dist:[0,0,0,1,2,5,8,16,18,9,4],  pct_positive:73 },
-    "H-AX-L2":{ name:"Cottage",    series:"HEALING",      entry:"Anxiety & Stress",         n:41, mean:7.4, std:1.9, dist:[0,0,1,1,3,4,6,12,9,4,1],  pct_positive:68 },
-    "H-AX-L3":{ name:"Valley",     series:"HEALING",      entry:"Anxiety & Stress",         n:28, mean:7.2, std:2.1, dist:[0,0,1,2,2,3,4,7,5,3,1],   pct_positive:64 },
-    "H-CR-L1":{ name:"Anchor",     series:"HEALING",      entry:"Acute Distress / Crisis",  n:22, mean:6.4, std:2.8, dist:[0,1,1,2,4,2,2,4,4,1,1],   pct_positive:45 },
-    "H-CR-L2":{ name:"Harbor",     series:"HEALING",      entry:"Acute Distress / Crisis",  n:15, mean:6.7, std:2.4, dist:[0,0,1,2,2,2,1,4,2,1,0],   pct_positive:47 },
-    "H-CR-L3":{ name:"Horizon",    series:"HEALING",      entry:"Acute Distress / Crisis",  n:11, mean:6.9, std:2.2, dist:[0,0,1,1,1,1,2,2,2,1,0],   pct_positive:45 },
-    "H-SL-L1":{ name:"Lantern",    series:"HEALING",      entry:"Sleep & Rest",             n:58, mean:7.8, std:1.5, dist:[0,0,0,1,2,3,7,14,18,10,3], pct_positive:78 },
-    "H-SL-L2":{ name:"Hammock",    series:"HEALING",      entry:"Sleep & Rest",             n:44, mean:7.5, std:1.7, dist:[0,0,1,1,2,4,6,12,11,5,2],  pct_positive:72 },
-    "H-SL-L3":{ name:"Midnight",   series:"HEALING",      entry:"Sleep & Rest",             n:29, mean:7.3, std:1.9, dist:[0,0,1,1,2,3,4,8,6,3,1],   pct_positive:62 },
-    "T-FC-L1":{ name:"Compass",    series:"THRIVING",     entry:"Focus & Clarity",          n:52, mean:7.7, std:1.6, dist:[0,0,0,1,2,4,7,14,16,6,2],  pct_positive:73 },
-    "T-FC-L2":{ name:"Waypoint",   series:"THRIVING",     entry:"Focus & Clarity",          n:38, mean:7.4, std:1.8, dist:[0,0,1,1,3,3,5,11,9,4,1],   pct_positive:66 },
-    "T-FC-L3":{ name:"Summit",     series:"THRIVING",     entry:"Focus & Clarity",          n:24, mean:7.2, std:2.0, dist:[0,0,1,1,2,3,3,6,5,2,1],   pct_positive:58 },
-    "T-CF-L1":{ name:"Ember",      series:"THRIVING",     entry:"Creative Flow",            n:34, mean:7.5, std:1.7, dist:[0,0,0,1,2,4,5,10,8,3,1],   pct_positive:65 },
-    "T-CF-L2":{ name:"Current",    series:"THRIVING",     entry:"Creative Flow",            n:27, mean:7.3, std:1.9, dist:[0,0,1,1,2,3,4,7,6,2,1],   pct_positive:59 },
-    "T-CF-L3":{ name:"Aurora",     series:"THRIVING",     entry:"Creative Flow",            n:19, mean:7.6, std:1.6, dist:[0,0,0,1,1,2,3,5,5,2,0],   pct_positive:63 },
-    "T-MB-L1":{ name:"Stone",      series:"THRIVING",     entry:"Maintenance & Balance",    n:41, mean:7.4, std:1.8, dist:[0,0,1,1,2,4,5,11,10,5,2],  pct_positive:68 },
-    "T-MB-L2":{ name:"Axis",       series:"THRIVING",     entry:"Maintenance & Balance",    n:30, mean:7.1, std:2.0, dist:[0,0,1,2,2,3,4,8,6,3,1],   pct_positive:60 },
-    "T-MB-L3":{ name:"Orbit",      series:"THRIVING",     entry:"Maintenance & Balance",    n:21, mean:7.3, std:1.9, dist:[0,0,1,1,1,2,3,6,5,2,0],   pct_positive:62 },
-    "X-ME-L1":{ name:"Breeze",     series:"TRANSFORMING", entry:"Mood & Energy",            n:35, mean:6.9, std:2.0, dist:[0,0,1,2,3,4,5,8,7,3,2],   pct_positive:57 },
-    "X-ME-L2":{ name:"Sunrise",    series:"TRANSFORMING", entry:"Mood & Energy",            n:25, mean:7.2, std:1.8, dist:[0,0,1,1,2,3,4,6,5,2,1],   pct_positive:56 },
-    "X-ME-L3":{ name:"Updraft",    series:"TRANSFORMING", entry:"Mood & Energy",            n:18, mean:7.0, std:1.9, dist:[0,0,1,1,2,3,3,4,3,1,0],   pct_positive:44 },
-    "X-MD-L1":{ name:"Footpath",   series:"TRANSFORMING", entry:"Motivation & Drive",       n:28, mean:6.9, std:2.1, dist:[0,0,1,2,3,3,4,7,5,2,1],   pct_positive:54 },
-    "X-MD-L2":{ name:"Trail",      series:"TRANSFORMING", entry:"Motivation & Drive",       n:19, mean:7.4, std:1.8, dist:[0,0,0,1,2,2,3,5,4,2,0],   pct_positive:63 },
-    "X-MD-L3":{ name:"Switchback", series:"TRANSFORMING", entry:"Motivation & Drive",       n:14, mean:7.1, std:2.0, dist:[0,0,1,1,1,2,2,3,3,1,0],   pct_positive:50 },
-    "X-MC-L1":{ name:"Cavern",     series:"TRANSFORMING", entry:"Mind & Clarity",           n:24, mean:7.3, std:1.7, dist:[0,0,0,1,2,3,4,7,5,2,0],   pct_positive:58 },
-    "X-MC-L2":{ name:"Starlight",  series:"TRANSFORMING", entry:"Mind & Clarity",           n:17, mean:7.0, std:1.9, dist:[0,0,1,1,1,2,3,4,3,2,0],   pct_positive:53 },
-    "X-MC-L3":{ name:"Cosmos",     series:"TRANSFORMING", entry:"Mind & Clarity",           n:12, mean:7.4, std:1.6, dist:[0,0,0,1,1,2,2,3,2,1,0],   pct_positive:50 }
-  },
-  series_summary: {
-    "HEALING":      { n:407, mean:7.1, protocols:12 },
-    "THRIVING":     { n:286, mean:7.4, protocols:9  },
-    "TRANSFORMING": { n:192, mean:7.1, protocols:9  }
+  series_summary:{
+    "HEALING":{n:407,mean:7.1,protocols:12},
+    "THRIVING":{n:286,mean:7.4,protocols:9},
+    "TRANSFORMING":{n:192,mean:7.1,protocols:9}
   }
 };
 </script>
-
 </body>
 </html>
