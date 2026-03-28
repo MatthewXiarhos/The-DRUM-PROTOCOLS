@@ -255,8 +255,12 @@ def build_sphere_prompt(protocol_stats, series_summary, total_n):
         '  "anomalies": "flag any bimodal distributions, outlier protocols, or surprising patterns",',
         '  "development_signals": "2-4 concrete actionable suggestions citing specific protocol codes",',
         '  "by_protocol": {',
-        '    "H-OS-L1": "1-2 sentence reading for this specific protocol",',
+        '    "H-OS-L1": "1-2 sentence technical reading — use statistical terminology, cite n, mean, std, bimodality, confidence tier",',
         '    ... (include all protocols with n >= ' + str(MIN_N_PUBLIC) + ')',
+        '  },',
+        '  "by_protocol_plain": {',
+        '    "H-OS-L1": "1-2 sentence plain-language version of the same finding — no jargon, no statistics terms, written for a curious non-technical listener. Focus on what the data actually means for the experience: how reliably it seems to help, whether results vary a lot between people, whether there are any surprises. Warm but honest tone.",',
+        '    ... (include the same protocols as by_protocol)',
         '  }',
         "}",
     ]
@@ -275,7 +279,7 @@ def call_sphere(protocol_stats, series_summary, total_n):
     print("  → Calling Sphere (Claude API)...")
     message = client.messages.create(
         model="claude-sonnet-4-6",
-        max_tokens=4096,
+        max_tokens=16000,
         system=SPHERE_SYSTEM_PROMPT,
         messages=[{"role": "user", "content": prompt}],
     )
@@ -467,7 +471,8 @@ def run_pipeline(csv_path, skip_sphere=False, dry_run=False, output_path="data.j
                 "bimodality_coefficient": s["bimodality_coefficient"],
                 "src_counts":       s.get("src_counts", {}),
                 "vol_counts":       s.get("vol_counts", {}),
-                "sphere": sphere_commentary.get("by_protocol", {}).get(code, ""),
+                "sphere":       sphere_commentary.get("by_protocol", {}).get(code, ""),
+                "sphere_plain": sphere_commentary.get("by_protocol_plain", {}).get(code, ""),
             }
             for code, s in protocol_stats.items()
         },

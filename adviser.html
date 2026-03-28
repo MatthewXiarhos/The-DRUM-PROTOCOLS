@@ -33,7 +33,7 @@ a { color: inherit; }
 .page-header { background: var(--dp-slate-dark); position: relative; overflow: hidden; }
 .page-header::before { content: ''; position: absolute; right: -80px; top: -80px; width: 360px; height: 360px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.12); pointer-events: none; }
 .page-header::after { content: ''; position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.08); pointer-events: none; }
-.header-banner-wrap { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: 18px 24px 0; }
+.header-banner-wrap { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: 18px 24px 18px; }
 .header-banner { display: block; width: 100%; border-radius: 18px; overflow: hidden; border: 1px solid rgba(255,255,255,0.10); box-shadow: 0 16px 44px rgba(0,0,0,0.35); background: var(--dp-slate-mid); max-height: 260px; }
 .header-banner img { display: block; width: 100%; height: 260px; object-fit: cover; object-position: center 30%; }
 .page-intro { max-width: 1120px; margin: 0 auto; padding: 24px 24px 28px; position: relative; z-index: 1; }
@@ -78,6 +78,12 @@ a { color: inherit; }
 .panel-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); }
 .panel-section:last-child { border-bottom: none; }
 .section-label { font-size: 10px; letter-spacing: 0.12em; color: var(--color-text-tertiary); text-transform: uppercase; margin-bottom: 12px; }
+.curve-about-split { display: flex; gap: 0; padding: 0; }
+.curve-col { flex: 0 0 52%; padding: 18px 16px 18px 28px; border-right: 0.5px solid var(--color-border); }
+.about-col { flex: 1; padding: 18px 28px 18px 20px; display: flex; flex-direction: column; justify-content: center; }
+.about-col .section-label { margin-bottom: 8px; }
+.about-col .desc-text { font-size: 13px; color: var(--color-text-secondary); line-height: 1.7; }
+@media (max-width: 520px) { .curve-about-split { flex-direction: column; } .curve-col { border-right: none; border-bottom: 0.5px solid var(--color-border); padding: 18px 18px 14px; } .about-col { padding: 14px 18px 18px; } }
 #curve-svg { width: 100%; }
 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .stat-card { background: var(--dp-slate-deeper); border-radius: var(--radius-md); padding: 12px; text-align: center; border: 0.5px solid var(--color-border); }
@@ -95,6 +101,11 @@ a { color: inherit; }
 .yt-play-icon { font-size: 36px; opacity: 0.3; }
 .yt-coming-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); }
 .youtube-embed { width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-md); border: none; display: block; }
+.panel-section.listen-section { padding-bottom: 0; }
+.panel-section.listen-section .survey-reminder { margin-bottom: 12px; }
+.panel-section.listen-section #youtube-container { margin: 0 -28px -18px; }
+.panel-section.listen-section .youtube-embed { border-radius: 0; }
+.panel-section.listen-section .youtube-placeholder { border-radius: 0; }
 .survey-pair { display: flex; gap: 8px; }
 .btn-survey-quick { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 14px 8px; border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-md); background: var(--dp-slate-deeper); text-decoration: none; transition: all 0.15s; cursor: pointer; font-family: inherit; }
 .btn-survey-quick:hover { border-color: var(--dp-healing-accent); background: rgba(82,183,136,0.08); }
@@ -108,6 +119,12 @@ a { color: inherit; }
 .commentary-date { font-size: 10px; color: var(--color-text-tertiary); }
 .commentary-text { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); border-left: 2px solid rgba(212,160,23,0.3); padding-left: 12px; }
 .commentary-text.no-data { font-style: italic; color: var(--color-text-tertiary); }
+.commentary-tabs{display:flex;gap:0;margin-bottom:14px;border-bottom:.5px solid rgba(255,255,255,0.08);}
+.commentary-tab{font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px 8px;cursor:pointer;color:var(--color-text-tertiary);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.commentary-tab:hover{color:var(--color-text-secondary);}
+.commentary-tab.active{color:var(--dp-gold-light);border-bottom-color:var(--dp-gold-light);}
+.commentary-plain{display:block;}
+.commentary-technical{display:none;}
 .related-list { display: flex; flex-direction: column; gap: 7px; }
 .related-card { display: flex; align-items: center; gap: 12px; padding: 11px 13px; border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-md); background: var(--dp-slate-deeper); cursor: pointer; transition: all 0.15s; text-align: left; width: 100%; font-family: inherit; color: var(--color-text-primary); }
 .related-card:hover { border-color: var(--color-border-gold); background: var(--dp-slate-mid); }
@@ -121,13 +138,13 @@ a { color: inherit; }
 .related-score { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--color-text-primary); }
 .related-score.no-data { font-size: 13px; color: var(--color-text-tertiary); }
 .action-section { padding: 18px 28px 24px; display: flex; flex-direction: column; gap: 8px; }
-.btn-listen { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 13px; background: var(--dp-gold); color: #fff; border: none; border-radius: var(--radius-md); font-size: 13px; font-family: inherit; font-weight: 500; cursor: pointer; letter-spacing: 0.06em; text-transform: uppercase; transition: background 0.15s; text-decoration: none; }
-.btn-listen:hover { background: var(--dp-gold-light); }
-.btn-listen.disabled { opacity: 0.35; pointer-events: none; }
 .insights-link { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px; background: transparent; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-md); font-size: 12px; font-family: inherit; cursor: pointer; transition: all 0.15s; text-decoration: none; letter-spacing: 0.03em; }
 .insights-link:hover { border-color: var(--color-border-gold); color: var(--dp-gold-light); }
 .btn-restart { text-align: center; font-size: 12px; color: var(--color-text-tertiary); cursor: pointer; padding: 4px; background: none; border: none; font-family: inherit; transition: color 0.15s; }
 .btn-restart:hover { color: var(--dp-gold-light); }
+.survey-reminder { font-size: 12px; color: var(--color-text-tertiary); margin-bottom: 14px; line-height: 1.6; }
+.survey-reminder a { color: var(--dp-gold-light); border-bottom: .5px solid rgba(212,160,23,.3); padding-bottom: 1px; transition: color .15s, border-color .15s; text-decoration: none; }
+.survey-reminder a:hover { color: #fff; border-color: rgba(255,255,255,.4); }
 .adviser-sidebar { display: flex; flex-direction: column; gap: 16px; }
 .sidebar-card { background: var(--color-surface); border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-lg); padding: 20px; box-shadow: var(--shadow-card); }
 .sidebar-card-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--color-text-tertiary); margin-bottom: 10px; }
@@ -173,11 +190,7 @@ a { color: inherit; }
       <img src="adviser_banner.jpg" alt="Protocol Adviser · The Drum Protocols">
     </picture>
   </div>
-  <div class="page-intro">
-    <div class="page-eyebrow">Rhythmic Entrainment Library</div>
-    <h1 class="page-title">Protocol Adviser</h1>
-    <p class="page-sub">Three guided questions to match your current nervous system state and available time to the right protocol.</p>
-  </div>
+
 </header>
 <main class="main">
   <div class="adviser-wrap" id="adviser-wrap">
@@ -209,18 +222,40 @@ a { color: inherit; }
           <div class="result-name" id="result-name">&mdash;</div>
           <div class="result-meta" id="result-meta"></div>
         </div>
-        <div class="panel-section">
-          <div class="section-label">Entrainment curve</div>
-          <svg id="curve-svg" viewBox="0 0 400 100" style="height:100px">
-            <defs><linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#B8860B" stop-opacity="0.2"/><stop offset="100%" stop-color="#B8860B" stop-opacity="0.04"/></linearGradient></defs>
-            <path id="curve-fill" fill="url(#curveGrad)"/>
-            <path id="curve-line" fill="none" stroke="#D4A017" stroke-width="2" stroke-linecap="round"/>
-            <line id="inflect-line" stroke="#D4A017" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.35"/>
-            <text id="label-start" font-size="10" fill="#607080" font-family="sans-serif"></text>
-            <text id="label-end" font-size="10" fill="#607080" font-family="sans-serif" text-anchor="end"></text>
-            <text id="label-dur" font-size="10" fill="#607080" font-family="sans-serif" text-anchor="middle"></text>
-            <text id="label-move" font-size="9" fill="#D4A017" font-family="sans-serif" text-anchor="middle" opacity="0.8"></text>
-          </svg>
+        <div class="panel-section curve-about-split">
+          <div class="curve-col">
+            <div class="section-label">Entrainment curve</div>
+            <svg id="curve-svg" viewBox="0 0 260 148" style="width:100%;display:block">
+              <defs><linearGradient id="curveGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#B8860B" stop-opacity="0.2"/><stop offset="100%" stop-color="#B8860B" stop-opacity="0.04"/></linearGradient></defs>
+              <path id="curve-fill" fill="url(#curveGrad)"/>
+              <path id="curve-line" fill="none" stroke="#D4A017" stroke-width="2" stroke-linecap="round"/>
+              <line id="inflect-line" stroke="#D4A017" stroke-width="0.5" stroke-dasharray="3 3" opacity="0.35"/>
+              <!-- Y axis -->
+              <line id="y-axis" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              <text id="y-lbl-top" font-size="8" fill="#3a4a56" font-family="sans-serif" text-anchor="end">16Hz</text>
+              <text id="y-lbl-bot" font-size="8" fill="#3a4a56" font-family="sans-serif" text-anchor="end">4Hz</text>
+              <!-- duration axis markers -->
+              <line id="dur-mark-20" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="2 3"/>
+              <line id="dur-mark-30" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="2 3"/>
+              <line id="dur-mark-45" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="2 3"/>
+              <line id="dur-mark-60" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="2 3"/>
+              <line id="dur-mark-90" stroke="rgba(255,255,255,0.08)" stroke-width="1" stroke-dasharray="2 3"/>
+              <text id="dur-lbl-20" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="middle"></text>
+              <text id="dur-lbl-30" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="middle"></text>
+              <text id="dur-lbl-45" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="middle"></text>
+              <text id="dur-lbl-60" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="middle"></text>
+              <text id="dur-lbl-90" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="middle"></text>
+              <text id="label-start" font-size="9" fill="#8a9dac" font-family="sans-serif"></text>
+              <text id="label-end"   font-size="9" fill="#8a9dac" font-family="sans-serif"></text>
+              <text id="label-move"  font-size="8" fill="#D4A017" font-family="sans-serif" text-anchor="middle" opacity="0.8"></text>
+              <text id="label-dur" font-size="0" fill="none"></text>
+              <text id="x-axis-label" font-size="8" fill="#2e3a44" font-family="sans-serif" text-anchor="end" x="248" y="146">minutes</text>
+            </svg>
+          </div>
+          <div class="about-col">
+            <div class="section-label">About this protocol</div>
+            <div class="desc-text" id="result-desc"></div>
+          </div>
         </div>
         <div class="panel-section">
           <div class="section-label">Listener data</div>
@@ -233,13 +268,14 @@ a { color: inherit; }
           <div class="dist-bars" id="dist-bars"></div>
           <div class="early-badge" id="early-badge">Early data &middot; results will deepen with more responses</div>
         </div>
-        <div class="panel-section">
-          <div class="section-label">About this protocol</div>
-          <div class="desc-text" id="result-desc"></div>
-        </div>
-        <div class="panel-section">
-          <div class="section-label">Listen</div>
-          <div id="youtube-container"></div>
+        <div class="commentary-section">
+          <div class="commentary-header"><div class="commentary-label">Statistical commentary</div><div class="commentary-date" id="commentary-date"></div></div>
+          <div class="commentary-tabs">
+            <button class="commentary-tab active" id="tab-plain" onclick="switchCommentaryTab('plain')">What this means for you</button>
+            <button class="commentary-tab" id="tab-technical" onclick="switchCommentaryTab('technical')">Technical details</button>
+          </div>
+          <div class="commentary-text commentary-plain" id="commentary-text-plain"></div>
+          <div class="commentary-text commentary-technical" id="commentary-text-technical"></div>
         </div>
         <div class="panel-section">
           <div class="section-label">Complete a survey after listening</div>
@@ -249,16 +285,15 @@ a { color: inherit; }
           </div>
           <div class="survey-note">Your data drives protocol development.<br>Every response matters &mdash; including ones that didn&rsquo;t work.</div>
         </div>
-        <div class="commentary-section">
-          <div class="commentary-header"><div class="commentary-label">Statistical commentary</div><div class="commentary-date" id="commentary-date"></div></div>
-          <div class="commentary-text" id="commentary-text"></div>
+        <div class="panel-section listen-section">
+          <div class="section-label">Listen</div>
+          <div id="youtube-container"></div>
         </div>
         <div class="panel-section">
           <div class="section-label">Related protocols</div>
           <div class="related-list" id="related-list"></div>
         </div>
         <div class="action-section">
-          <a class="btn-listen" id="btn-listen" href="#" target="_blank">&#9654; Listen on YouTube</a>
           <a class="insights-link" href="insights.html">View all protocol data &rarr; Data Insights</a>
           <button class="btn-restart" onclick="restart()">&larr; Start over</button>
         </div>
@@ -300,79 +335,84 @@ a { color: inherit; }
   </div>
 </footer>
 <script>
-const QUESTIONS=[{label:'Where you are',text:'Which best describes where you are right now?',options:[{icon:'🌊',text:'Overwhelmed or over-stimulated',sub:"Too much input, can't settle",key:'overstim'},{icon:'⚡',text:'Anxious or stressed',sub:'Worry, tension, racing thoughts',key:'anxiety'},{icon:'🆘',text:'In acute distress',sub:'Crisis moment, need help now',key:'crisis'},{icon:'😔',text:'Low energy or flat mood',sub:'Withdrawn, unmotivated, heavy',key:'low'},{icon:'🎯',text:'I want to focus or create',sub:'Need to get into a productive state',key:'focus'},{icon:'⚖️',text:'Maintenance & balance',sub:'Daily regulation, steady state',key:'maintenance'},{icon:'🚀',text:'Low motivation or drive',sub:'Need to get started, build momentum',key:'motivation'},{icon:'🧘',text:'Mind clarity & calm presence',sub:'Grounded, clear-headed, centred',key:'mindclarity'},{icon:'😴',text:'Ready for sleep or rest',sub:'Winding down for the night',key:'sleep'}]},{label:'How much time',text:'How much time do you have?',options:[{icon:'⚡',text:'20 – 30 minutes',sub:'Need results quickly',key:'short'},{icon:'⏱',text:'45 minutes',sub:'Moderate session',key:'mid'},{icon:'🕐',text:'60 minutes or more',sub:'Full session available',key:'long'}]},{label:'Intensity',text:'How would you describe your current state?',options:[{icon:'🔴',text:"Acute — it's intense right now",sub:'Strong symptoms, need quick shift',key:'acute'},{icon:'🟡',text:'Moderate — noticeable but manageable',sub:'Present but not overwhelming',key:'moderate'},{icon:'🟢',text:'Mild — low background level',sub:'Subtle, maintenance-level',key:'mild'}]}];
+// ── DATA (populated from protocols.json + data.json) ─────────────────────────
+let QUESTIONS    = [];
+let ALL_PROTOCOLS= {};  // flat: { code: protocol }
+let ROUTING_POOLS= {};  // { zoneKey: [code, ...] }
+let STATS={}, DATA_DATE='';
 
-const P=(n,c,s,e,cat,meta,mv,st,en,d,yt,s1,s2)=>({name:n,code:c,series:s,entry:e,meta,move:mv,start:st,end:en,dur:d,yt,survey1s:s1,survey1m:s2,desc:''});
+// ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
+Promise.all([
+  fetch('protocols.json').then(r=>{if(!r.ok)throw new Error('protocols.json not found');return r.json();}),
+  fetch('data.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null)
+]).then(([pj, dj])=>{
 
-const PROTOCOLS={
-  overstim:{
-    short:{acute:{name:'Pebble',code:'H-OS-L1',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 30 min',move:'DESCENT',start:15,end:8,dur:30,desc:'A rapid descent from 15Hz to 8Hz. Designed for moments when your nervous system needs to come down quickly and time is limited.',yt:'https://youtu.be/SfBlHwzZYSI',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L1&vol=VOL001&src=adviser'}},
-    mid:{moderate:{name:'Rainfall',code:'H-OS-L2',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 45 min',move:'DESCENT',start:13,end:9,dur:45,desc:'A measured descent from 13Hz to 9Hz. Gives your nervous system more time and space to follow the signal.',yt:'https://youtu.be/NdrSrj4Ra0w',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L2&vol=VOL001&src=adviser'}},
-    long:{mild:{name:'Glacier',code:'H-OS-L3',series:'healing',entry:'Over-stimulation',meta:'Healing · Over-stimulation · 60 min',move:'DESCENT',start:12,end:10,dur:60,desc:'The most gradual over-stimulation protocol. Starts lower, descends gently — arriving at a calm but alert resting state.',yt:'https://youtu.be/8oA0lfYZ0HY',survey1s:'https://tally.so/r/1AMk7b/?ref=H-OS-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-OS-L3&vol=VOL001&src=adviser'}}
-  },
-  anxiety:{
-    short:{acute:{name:'Meadow',code:'H-AX-L1',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 30 min',move:'DESCENT',start:14,end:7,dur:30,desc:'A deep, rapid descent from 14Hz to 7Hz. Designed for elevated anxiety when time is short.',yt:'https://youtu.be/S1gj9nVErG8',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L1&vol=VOL001&src=adviser'}},
-    mid:{moderate:{name:'Cottage',code:'H-AX-L2',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 45 min',move:'DESCENT',start:12,end:8,dur:45,desc:'A more measured descent for anxiety and stress. Steadier, more comfortable path toward calm.',yt:'https://youtu.be/15JBxivmC5w',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L2&vol=VOL001&src=adviser'}},
-    long:{mild:{name:'Valley',code:'H-AX-L3',series:'healing',entry:'Anxiety & Stress',meta:'Healing · Anxiety & Stress · 60 min',move:'DESCENT',start:11,end:9,dur:60,desc:'The gentlest anxiety protocol. A full hour of gradual, unhurried descent toward calm.',yt:'https://youtu.be/ZxozidUcxNE',survey1s:'https://tally.so/r/1AMk7b/?ref=H-AX-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-AX-L3&vol=VOL001&src=adviser'}}
-  },
-  crisis:{
-    short:{acute:{name:'Anchor',code:'H-CR-L1',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 20 min',move:'DESCENT',start:16,end:7,dur:20,desc:'The most rapid descent in the library. Designed for acute distress or crisis — it moves fast and drops deep. Use it when the situation calls for immediate intervention.',yt:'https://youtu.be/kpzloDEFUo4',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L1&vol=VOL001&src=adviser'},moderate:{name:'Harbor',code:'H-CR-L2',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 20 min',move:'DESCENT',start:14,end:8,dur:20,desc:'Same short duration as Anchor but starting lower and arriving at a calmer resting state. For acute distress where speed matters but a more controlled descent is appropriate.',yt:'https://youtu.be/-ymeuLka1Qc',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L2&vol=VOL001&src=adviser'}},
-    mid:{mild:{name:'Horizon',code:'H-CR-L3',series:'healing',entry:'Acute Distress / Crisis',meta:'Healing · Acute Distress · 30 min',move:'DESCENT',start:13,end:8,dur:30,desc:'The most measured crisis protocol. 30 minutes allows more room to follow the descent without the intensity of the 20-minute versions.',yt:'https://youtu.be/4h1VU7RzQ-c',survey1s:'https://tally.so/r/1AMk7b/?ref=H-CR-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-CR-L3&vol=VOL001&src=adviser'}}
-  },
-  sleep:{
-    mid:{acute:{name:'Lantern',code:'H-SL-L1',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 45 min',move:'DESCENT',start:11,end:4,dur:45,desc:'A deep descent from 11Hz to 4Hz. Guides the nervous system through the full arc of winding down. Best used when you are ready to rest and have 45 minutes.',yt:'https://youtu.be/wTeJWDh5JOE',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L1&vol=VOL001&src=adviser'}},
-    long:{moderate:{name:'Hammock',code:'H-SL-L2',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 60 min',move:'DESCENT',start:10,end:4.5,dur:60,desc:'A full-hour sleep preparation protocol. Patient, gradual transition toward deep rest — suited for those who need more time to wind down.',yt:'https://youtu.be/qgovois2S0s',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L2&vol=VOL001&src=adviser'},mild:{name:'Midnight',code:'H-SL-L3',series:'healing',entry:'Sleep & Rest',meta:'Healing · Sleep & Rest · 60 min',move:'DESCENT',start:9,end:5,dur:60,desc:'The gentlest sleep protocol — starting lowest and arriving at the highest resting point. A full hour of gradual, unhurried descent toward deep rest.',yt:'https://youtu.be/juAeFp1G0IM',survey1s:'https://tally.so/r/1AMk7b/?ref=H-SL-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=H-SL-L3&vol=VOL001&src=adviser'}}
-  },
-  focus:{
-    mid:{acute:{name:'Compass',code:'T-FC-L1',series:'thriving',entry:'Focus & Clarity',meta:'Thriving · Focus & Clarity · 45 min',move:'HOLD',start:12,end:12,dur:45,desc:'A stable 45-minute hold at 12Hz. Alert, engaged, and clear — designed to support sustained attention and cognitive focus.',yt:'https://youtu.be/y2myu077Q0g',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L1&vol=VOL001&src=adviser'},mild:{name:'Summit',code:'T-FC-L3',series:'thriving',entry:'Focus & Clarity',meta:'Thriving · Focus & Clarity · 45 min',move:'HOLD',start:10,end:10,dur:45,desc:"A 45-minute hold at 10Hz — the heart of the alpha range. Calm alertness and relaxed clarity. A grounded platform for focus that doesn't demand high activation.",yt:'https://youtu.be/7brNPC38c7U',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L3&vol=VOL001&src=adviser'}},
-    long:{moderate:{name:'Waypoint',code:'T-FC-L2',series:'thriving',entry:'Focus & Clarity',meta:'Thriving · Focus & Clarity · 60 min',move:'HOLD',start:11,end:11,dur:60,desc:'A full hour at 11Hz. Steady cognitive support for extended work sessions — slightly calmer than Compass with more duration.',yt:'https://youtu.be/-mx5rgYXqEI',survey1s:'https://tally.so/r/1AMk7b/?ref=T-FC-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-FC-L2&vol=VOL001&src=adviser'},mild:{name:'Current',code:'T-CF-L2',series:'thriving',entry:'Creative Flow',meta:'Thriving · Creative Flow · 60 min',move:'HOLD',start:8,end:8,dur:60,desc:'A 60-minute hold at 8Hz — on the border of alpha and theta. Supports a deep, inward creative state for imaginative or meditative work.',yt:'https://youtu.be/OT8pKP0dyuk',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L2&vol=VOL001&src=adviser'}},
-    short:{mild:{name:'Ember',code:'T-CF-L1',series:'thriving',entry:'Creative Flow',meta:'Thriving · Creative Flow · 60 min',move:'HOLD',start:9,end:9,dur:60,desc:'60 minutes at 9Hz — the lower edge of alpha. Open, generative, receptive. Designed for creative work, reflection, or open-ended thinking.',yt:'https://youtu.be/X0LR0vl-vh8',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L1&vol=VOL001&src=adviser'},moderate:{name:'Aurora',code:'T-CF-L3',series:'thriving',entry:'Creative Flow',meta:'Thriving · Creative Flow · 45 min',move:'HOLD',start:7,end:7,dur:45,desc:'A 45-minute hold at 7Hz — deep theta. Conditions for open, unconstrained thinking that can be difficult to reach in ordinary waking states.',yt:'https://youtu.be/Yw70yHnlfjI',survey1s:'https://tally.so/r/1AMk7b/?ref=T-CF-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-CF-L3&vol=VOL001&src=adviser'}}
-  },
-  maintenance:{
-    long:{acute:{name:'Stone',code:'T-MB-L1',series:'thriving',entry:'Maintenance & Balance',meta:'Thriving · Maintenance & Balance · 60 min',move:'HOLD',start:10,end:10,dur:60,desc:'A 60-minute hold at 10Hz. Designed for ongoing nervous system health — holding a calm, balanced frequency for a full hour.',yt:'https://youtu.be/Jdb9OfA1WC8',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L1&vol=VOL001&src=adviser'}},
-    mid:{moderate:{name:'Axis',code:'T-MB-L2',series:'thriving',entry:'Maintenance & Balance',meta:'Thriving · Maintenance & Balance · 45 min',move:'HOLD',start:9,end:9,dur:45,desc:'A 45-minute hold at 9Hz. A sustainable regular practice that supports balanced nervous system tone without requiring a full hour.',yt:'https://youtu.be/NSfpCch3RYY',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L2&vol=VOL001&src=adviser'}},
-    short:{mild:{name:'Orbit',code:'T-MB-L3',series:'thriving',entry:'Maintenance & Balance',meta:'Thriving · Maintenance & Balance · 30 min',move:'HOLD',start:8,end:8,dur:30,desc:'30 minutes at 8Hz — calm, grounded, slightly inward. The most accessible maintenance protocol. A practical daily option when time is limited.',yt:'https://youtu.be/cR9WtZFshUU',survey1s:'https://tally.so/r/1AMk7b/?ref=T-MB-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=T-MB-L3&vol=VOL001&src=adviser'}}
-  },
-  low:{
-    short:{acute:{name:'Breeze',code:'X-ME-L1',series:'transforming',entry:'Mood & Energy',meta:'Transforming · Mood & Energy · 30 min',move:'ASCENT',start:4,end:10,dur:30,desc:'A brisk ascent from 4Hz to 10Hz over 30 minutes. For moments when mood is low and time is short — rising from deep delta into alpha.',yt:'https://youtu.be/t3ajODhKGr8',survey1s:'https://tally.so/r/1AMk7b/?ref=X-ME-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-ME-L1&vol=VOL001&src=adviser'}},
-    mid:{moderate:{name:'Sunrise',code:'X-ME-L2',series:'transforming',entry:'Mood & Energy',meta:'Transforming · Mood & Energy · 45 min',move:'ASCENT',start:5,end:10,dur:45,desc:'A measured upward arc from 5Hz to 10Hz over 45 minutes. Allows mood and energy to lift gradually at a sustainable pace.',yt:'https://youtu.be/-lMKgTrOAwQ',survey1s:'https://tally.so/r/1AMk7b/?ref=X-ME-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-ME-L2&vol=VOL001&src=adviser'}},
-    long:{mild:{name:'Updraft',code:'X-ME-L3',series:'transforming',entry:'Mood & Energy',meta:'Transforming · Mood & Energy · 60 min',move:'ASCENT',start:6,end:10,dur:60,desc:'A slow, patient ascent from 6Hz to 10Hz over 60 minutes — a full hour rising from deep theta to calm alpha.',yt:'https://youtu.be/rIwRhYUV1oM',survey1s:'https://tally.so/r/1AMk7b/?ref=X-ME-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-ME-L3&vol=VOL001&src=adviser'}}
-  },
-  motivation:{
-    short:{acute:{name:'Footpath',code:'X-MD-L1',series:'transforming',entry:'Motivation & Drive',meta:'Transforming · Motivation & Drive · 30 min',move:'ASCENT',start:6,end:13,dur:30,desc:'An ascent from 6Hz to 13Hz over 30 minutes. For building momentum quickly when motivation is low and time is short.',yt:'https://youtu.be/OyH4_FOyCIg',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L1&vol=VOL001&src=adviser'}},
-    mid:{moderate:{name:'Trail',code:'X-MD-L2',series:'transforming',entry:'Motivation & Drive',meta:'Transforming · Motivation & Drive · 45 min',move:'ASCENT',start:7,end:12,dur:45,desc:'An ascent from 7Hz to 12Hz over 45 minutes. A more measured build — giving the nervous system time to follow the upward arc comfortably.',yt:'https://youtu.be/pCXLWqB47OE',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L2&vol=VOL001&src=adviser'}},
-    long:{mild:{name:'Switchback',code:'X-MD-L3',series:'transforming',entry:'Motivation & Drive',meta:'Transforming · Motivation & Drive · 60 min',move:'ASCENT',start:8,end:12,dur:60,desc:'An ascent from 8Hz to 12Hz over 60 minutes. The most gradual motivation protocol — a patient, sustained climb toward engagement and drive.',yt:'https://youtu.be/zmoeaV645Fs',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MD-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MD-L3&vol=VOL001&src=adviser'}}
-  },
-  mindclarity:{
-    mid:{acute:{name:'Cavern',code:'X-MC-L1',series:'transforming',entry:'Meditation & Contemplation',meta:'Transforming · Meditation & Contemplation · 45 min',move:'DESCENT',start:12,end:7,dur:45,desc:'A descent from 12Hz to 7Hz over 45 minutes. Guides the nervous system from alert waking into a deep, contemplative theta state.',yt:'https://youtu.be/QE6BOXMkXLY',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MC-L1&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MC-L1&vol=VOL001&src=adviser'}},
-    short:{moderate:{name:'Starlight',code:'X-MC-L2',series:'transforming',entry:'Meditation & Contemplation',meta:'Transforming · Meditation & Contemplation · 45 min',move:'DESCENT',start:10,end:7,dur:45,desc:'A descent from 10Hz to 7Hz over 45 minutes. Starting from a calmer baseline — a more measured path into deep contemplation.',yt:'https://youtu.be/XAZlzrqJsCc',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MC-L2&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MC-L2&vol=VOL001&src=adviser'}},
-    long:{mild:{name:'Cosmos',code:'X-MC-L3',series:'transforming',entry:'Meditation & Contemplation',meta:'Transforming · Meditation & Contemplation · 60 min',move:'DESCENT',start:10,end:8,dur:60,desc:'A descent from 10Hz to 8Hz over 60 minutes. The most gradual contemplation protocol — a full hour of slow, inward movement toward a deep meditative state.',yt:'https://youtu.be/DnDIyAMrmgE',survey1s:'https://tally.so/r/1AMk7b/?ref=X-MC-L3&vol=VOL001&src=adviser',survey1m:'https://tally.so/r/rjKPY5/?ref=X-MC-L3&vol=VOL001&src=adviser'}}
+  // Build QUESTIONS from protocols.json questions[]
+  QUESTIONS = pj.questions.map(q=>({
+    label:   q.label,
+    text:    q.text,
+    options: q.options.map(o=>({icon:o.icon||'', text:o.text, sub:o.sub||'', key:o.key}))
+  }));
+
+  // Build ALL_PROTOCOLS flat lookup from protocols.json protocols[]
+  pj.protocols.forEach(p=>{
+    const vol1 = pj.volumes[0] ? pj.volumes[0].num : '001';
+    const ytObj = p.yt || {};
+    const ytVol1 = typeof ytObj === 'object' ? (ytObj[vol1] || '#') : (ytObj || '#');
+    const surveys1 = p.surveys && p.surveys[vol1];
+    ALL_PROTOCOLS[p.code] = {
+      name:     p.name,
+      code:     p.code,
+      series:   (p.seriesLower || p.series || '').toLowerCase(),
+      entry:    p.entry,
+      meta:     p.meta,
+      move:     p.move,
+      start:    p.startHz,
+      end:      p.endHz,
+      dur:      p.dur,
+      desc:     p.descAdviser || p.descPage || '',
+      yt:       ytVol1,
+      survey1s: surveys1 ? surveys1.survey1s.replace('src=site','src=adviser') : '#',
+      survey1m: surveys1 ? surveys1.survey1m.replace('src=site','src=adviser') : '#'
+    };
+  });
+
+  // Build ROUTING_POOLS from protocols.json routing[]
+  (pj.routing || []).forEach(r=>{
+    ROUTING_POOLS[r.key] = r.codes;
+  });
+
+  // Build STATS from data.json
+  if(dj){
+    DATA_DATE = dj.analysis_date || dj.generated || '';
+    if(dj.protocols) Object.entries(dj.protocols).forEach(([c,p])=>{
+      STATS[c]={n:p.n,mean:p.mean,dist:p.dist,pct:p.pct_positive,commentary:p.sphere||'',commentaryPlain:p.sphere_plain||''};
+    });
   }
-};
 
-const ALL_PROTOCOLS={};
-Object.values(PROTOCOLS).forEach(z=>Object.values(z).forEach(t=>Object.values(t).forEach(p=>{ALL_PROTOCOLS[p.code]=p;})));
+  // Start the adviser UI.
+  // If returning from a survey with ?id=CODE in the URL, auto-load that result.
+  const returnId = (new URLSearchParams(window.location.search).get('id')||''). toUpperCase();
+  if(returnId && ALL_PROTOCOLS[returnId]){
+    document.getElementById('screen-adviser').classList.remove('active');
+    document.getElementById('screen-result').classList.add('active');
+    populateResult(ALL_PROTOCOLS[returnId], null);
+  } else {
+    renderQuestion();
+  }
 
-const ZONE_CODES={
-  overstim:['H-OS-L1','H-OS-L2','H-OS-L3'],
-  anxiety:['H-AX-L1','H-AX-L2','H-AX-L3'],
-  crisis:['H-CR-L1','H-CR-L2','H-CR-L3'],
-  focus:['T-FC-L1','T-FC-L2','T-FC-L3','T-CF-L1','T-CF-L2','T-CF-L3'],
-  maintenance:['T-MB-L1','T-MB-L2','T-MB-L3'],
-  sleep:['H-SL-L1','H-SL-L2','H-SL-L3'],
-  low:['X-ME-L1','X-ME-L2','X-ME-L3'],
-  motivation:['X-MD-L1','X-MD-L2','X-MD-L3'],
-  mindclarity:['X-MC-L1','X-MC-L2','X-MC-L3']
-};
+}).catch(err=>{
+  console.error('Failed to load protocols.json:', err);
+  const grid = document.getElementById('options-grid');
+  if(grid) grid.innerHTML = '<div style="font-size:13px;color:var(--color-text-tertiary);padding:16px 0">Unable to load protocol data. Please refresh the page.</div>';
+});
 
-let STATS={},DATA_DATE='';
-fetch('data.json').then(r=>{if(!r.ok)throw 0;return r.json();}).then(d=>{DATA_DATE=d.analysis_date||d.generated||'';if(d.protocols)Object.entries(d.protocols).forEach(([c,p])=>{STATS[c]={n:p.n,mean:p.mean,dist:p.dist,pct:p.pct_positive,commentary:p.sphere||''};});}).catch(()=>{});
-
-let answers={},currentQ=0;
+let answers={}, currentQ=0;
 
 function scrollToPanel(){const p=document.getElementById('adviser-panel');const top=p.getBoundingClientRect().top+window.scrollY-64;window.scrollTo({top,behavior:'smooth'});}
 
 function renderQuestion(){
+  if(!QUESTIONS.length) return;
   const q=QUESTIONS[currentQ];
   document.getElementById('q-label').textContent=q.label;
   document.getElementById('q-text').textContent=q.text;
@@ -388,30 +428,109 @@ function selectOption(key,btn){document.querySelectorAll('.option-btn').forEach(
 function nextStep(){if(currentQ<2){currentQ++;renderQuestion();}else showResult();}
 
 function findProtocol(){
-  const sit=answers[0],tk=answers[1],iv=answers[2];
-  const bucket=PROTOCOLS[sit];if(!bucket)return null;
-  const to=tk==='short'?['short','mid','long']:tk==='mid'?['mid','short','long']:['long','mid','short'];
-  const io=[iv,'acute','moderate','mild'];
-  for(const t of to){if(!bucket[t])continue;for(const i of io){if(bucket[t][i])return bucket[t][i];}}
-  return null;
+  // Returns the top-ranked protocol from the zone pool for the primary match.
+  // Uses ranked logic: protocols with data.json scores sorted by mean desc,
+  // unranked protocols appended after. Returns the first result.
+  const results = rankedZoneProtocols(answers[0]);
+  return results.length ? results[0] : null;
+}
+
+function rankedZoneProtocols(zoneKey){
+  // Returns all protocols in the zone pool, ranked: scored first (desc by mean), unscored after.
+  const pool = (ROUTING_POOLS[zoneKey] || []).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  const scored   = pool.filter(p=>STATS[p.code]&&STATS[p.code].n>0).sort((a,b)=>(STATS[b.code].mean||0)-(STATS[a.code].mean||0));
+  const unscored = pool.filter(p=>!STATS[p.code]||STATS[p.code].n===0);
+  return [...scored, ...unscored];
 }
 
 function drawCurve(p){
-  const W=400,H=100,pad={l:40,r:40,t:20,b:28},cW=W-pad.l-pad.r,cH=H-pad.t-pad.b;
-  const {start,end,dur,move}=p,minF=Math.min(start,end)-1,maxF=Math.max(start,end)+1;
-  const toX=t=>(t/dur)*cW+pad.l,toY=f=>pad.t+cH-(f-minF)/(maxF-minF)*cH;
+  // SVG viewBox is 260 x 148
+  const W=260, H=148;
+  const HZ_MIN=3, HZ_MAX=16;
+  // Padding: left for Y axis labels, right breathing room, top for move label, bottom for x-axis labels
+  const pad={l:32,r:12,t:18,b:28};
+  const cW=W-pad.l-pad.r, cH=H-pad.t-pad.b;
+  const {start,end,dur,move}=p;
+  const X_MAX=95;
+  const toX=t=>(t/X_MAX)*cW+pad.l;
+  const toY=f=>pad.t+cH-(f-HZ_MIN)/(HZ_MAX-HZ_MIN)*cH;
+  const baseline=pad.t+cH;
+
+  // Curve path
   let pd='',fd='';
-  for(let i=0;i<=80;i++){const t=i/80;let f;if(move==='HOLD')f=start;else{const s=1/(1+Math.exp(-10*(t-0.382)));f=move==='DESCENT'?start-(start-end)*s:start+(end-start)*s;}const x=toX(t*dur),y=toY(f);pd+=(i===0?`M${x},${y}`:`L${x},${y}`);if(i===0)fd=`M${x},${H-pad.b} L${x},${y}`;else fd+=`L${x},${y}`;if(i===80)fd+=` L${x},${H-pad.b} Z`;}
+  for(let i=0;i<=80;i++){
+    const t=i/80; let f;
+    if(move==='HOLD') f=start;
+    else{const s=1/(1+Math.exp(-10*(t-0.382)));f=move==='DESCENT'?start-(start-end)*s:start+(end-start)*s;}
+    const x=toX(t*dur), y=toY(f);
+    pd+=(i===0?`M${x},${y}`:`L${x},${y}`);
+    if(i===0) fd=`M${x},${baseline} L${x},${y}`; else fd+=`L${x},${y}`;
+    if(i===80) fd+=` L${x},${baseline} Z`;
+  }
   document.getElementById('curve-line').setAttribute('d',pd);
   document.getElementById('curve-fill').setAttribute('d',fd);
+
+  // Inflect line
   const ix=toX(dur*0.382);
   ['x1','x2'].forEach(a=>document.getElementById('inflect-line').setAttribute(a,ix));
-  document.getElementById('inflect-line').setAttribute('y1',pad.t);document.getElementById('inflect-line').setAttribute('y2',H-pad.b);
-  const ls=document.getElementById('label-start');ls.setAttribute('x',pad.l);ls.setAttribute('y',H-10);ls.textContent=`${start}Hz`;
-  const le=document.getElementById('label-end');le.setAttribute('x',W-pad.r);le.setAttribute('y',H-10);le.textContent=`${end}Hz`;
-  const ld=document.getElementById('label-dur');ld.setAttribute('x',W/2);ld.setAttribute('y',H-10);ld.textContent=`${dur} min`;
-  const lm=document.getElementById('label-move');lm.setAttribute('x',W/2);lm.setAttribute('y',pad.t+8);lm.textContent=move;
+  document.getElementById('inflect-line').setAttribute('y1',pad.t);
+  document.getElementById('inflect-line').setAttribute('y2',baseline);
+
+  // Y axis line
+  const ya=document.getElementById('y-axis');
+  ya.setAttribute('x1',pad.l); ya.setAttribute('x2',pad.l);
+  ya.setAttribute('y1',pad.t); ya.setAttribute('y2',baseline);
+
+  // Y axis labels: 16Hz at top, 4Hz near bottom (using 4 not 3 so label sits cleanly)
+  const ytop=document.getElementById('y-lbl-top');
+  ytop.setAttribute('x',pad.l-4); ytop.setAttribute('y',pad.t+4); ytop.textContent='16Hz';
+  const ybot=document.getElementById('y-lbl-bot');
+  ybot.setAttribute('x',pad.l-4); ybot.setAttribute('y',toY(4)+4); ybot.textContent='4Hz';
+
+  // Start/end Hz annotations on the curve endpoints
+  const ls=document.getElementById('label-start');
+  const startY=toY(start);
+  ls.setAttribute('x', toX(0)+4);
+  ls.setAttribute('y', startY-5);
+  ls.setAttribute('text-anchor','start');
+  ls.textContent=`${start}Hz`;
+
+  const le=document.getElementById('label-end');
+  const endY=toY(end);
+  le.setAttribute('x', toX(dur)-4);
+  le.setAttribute('y', endY-5);
+  le.setAttribute('text-anchor','end');
+  le.textContent=`${end}Hz`;
+
+  // Move label
+  const lm=document.getElementById('label-move');
+  lm.setAttribute('x',pad.l+cW/2); lm.setAttribute('y',pad.t+10); lm.textContent=move;
+
+  // X axis duration markers — all always visible; protocol's own highlighted
+  const marks=[
+    {id:'20', t:20,  label:'20'},
+    {id:'30', t:30,  label:'30'},
+    {id:'45', t:45,  label:'45'},
+    {id:'60', t:60,  label:'60'},
+    {id:'90', t:90,  label:'90+'},
+  ];
+  marks.forEach(m=>{
+    const lineEl=document.getElementById('dur-mark-'+m.id);
+    const lblEl =document.getElementById('dur-lbl-'+m.id);
+    if(!lineEl||!lblEl) return;
+    const mx=toX(m.t);
+    lineEl.setAttribute('x1',mx); lineEl.setAttribute('x2',mx);
+    lineEl.setAttribute('y1',pad.t); lineEl.setAttribute('y2',baseline);
+    lblEl.setAttribute('x',mx); lblEl.setAttribute('y',baseline+11);
+    // Protocol's own duration marker is bright; others are very dim
+    const isOwn=(m.t===dur)||(m.id==='90'&&dur>60);
+    lineEl.setAttribute('stroke', isOwn ? 'rgba(255,255,255,0.18)' : 'rgba(255,255,255,0.06)');
+    lblEl.setAttribute('fill', isOwn ? '#607080' : '#2a3540');
+    lblEl.setAttribute('font-weight', isOwn ? '500' : 'normal');
+    lblEl.textContent=m.label;
+  });
 }
+
 
 function renderStats(code){
   const s=STATS[code]||{n:0,dist:[0,0,0,0,0,0,0,0,0,0,0]};
@@ -429,23 +548,43 @@ function renderStats(code){
 }
 
 function renderYoutube(p){
-  const c=document.getElementById('youtube-container'),lb=document.getElementById('btn-listen');
+  const c=document.getElementById('youtube-container');
   if(p.yt&&p.yt!=='#'){
     const m=p.yt.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
     c.innerHTML=m?`<iframe class="youtube-embed" src="https://www.youtube.com/embed/${m[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`:`<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video available — open on YouTube</div></div>`;
-    lb.href=p.yt;lb.classList.remove('disabled');
-  }else{c.innerHTML=`<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video coming soon</div></div>`;lb.href='#';lb.classList.add('disabled');}
+  }else{c.innerHTML=`<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video coming soon</div></div>`;}
+}
+
+function switchCommentaryTab(tab){
+  document.getElementById('tab-plain').classList.toggle('active', tab==='plain');
+  document.getElementById('tab-technical').classList.toggle('active', tab==='technical');
+  document.querySelector('.commentary-plain').style.display = tab==='plain'?'block':'none';
+  document.querySelector('.commentary-technical').style.display = tab==='technical'?'block':'none';
+  try{localStorage.setItem('dp-commentary-tab',tab);}catch(e){}
 }
 
 function renderCommentary(code){
-  const s=STATS[code],el=document.getElementById('commentary-text');
+  const s=STATS[code];
   document.getElementById('commentary-date').textContent=DATA_DATE?`Analysis ${DATA_DATE}`:'';
-  if(s&&s.commentary){el.textContent=s.commentary;el.classList.remove('no-data');}
-  else{el.textContent='No statistical commentary available yet for this protocol. Commentary is generated when n ≥ 10.';el.classList.add('no-data');}
+  const noData='No commentary available yet. Commentary is generated once sufficient listener data exists.';
+  const elPlain=document.getElementById('commentary-text-plain');
+  const elTech=document.getElementById('commentary-text-technical');
+  if(s&&s.commentaryPlain){elPlain.textContent=s.commentaryPlain;elPlain.classList.remove('no-data');}
+  else{elPlain.textContent=noData;elPlain.classList.add('no-data');}
+  if(s&&s.commentary){elTech.textContent=s.commentary;elTech.classList.remove('no-data');}
+  else{elTech.textContent=noData;elTech.classList.add('no-data');}
+  // Restore preferred tab from last session
+  try{const pref=localStorage.getItem('dp-commentary-tab');if(pref)switchCommentaryTab(pref);}catch(e){}
 }
 
 function renderRelated(currentCode,sk){
-  const codes=(ZONE_CODES[sk]||[]).filter(c=>c!==currentCode).slice(0,3).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  // sk may be null on a direct return visit — fall back to matching by routing pool
+  let pool = ROUTING_POOLS[sk];
+  if(!pool){
+    // Find the pool that contains this protocol
+    pool = Object.values(ROUTING_POOLS).find(codes=>codes.includes(currentCode)) || [];
+  }
+  const codes=pool.filter(c=>c!==currentCode).slice(0,3).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
   const list=document.getElementById('related-list');
   if(!codes.length){list.innerHTML='<div style="font-size:13px;color:var(--color-text-tertiary);padding:8px 0">No related protocols found.</div>';return;}
   list.innerHTML=codes.map(p=>{const s=STATS[p.code];const sc=s&&s.n>0?`<div class="related-score">${s.mean?s.mean.toFixed(1):'—'}</div>`:`<div class="related-score no-data">—</div>`;return `<button class="related-card" onclick="loadRelated('${p.code}')"><div class="related-dot ${p.series}"></div><div class="related-main"><div class="related-name">${p.name}</div><div class="related-meta">${p.meta}</div></div>${sc}</button>`;}).join('');
@@ -453,12 +592,21 @@ function renderRelated(currentCode,sk){
 
 function loadRelated(code){const p=ALL_PROTOCOLS[code];if(!p)return;populateResult(p,answers[0]);scrollToPanel();}
 
+function buildSurveyUrl(tallyId, code){
+  // Survey opens in a new tab (target=_blank) so adviser stays open behind it.
+  // No redirectUrl needed — user closes the survey tab to return.
+  return `https://tally.so/r/${tallyId}/?ref=${code}&vol=VOL001&src=adviser`;
+}
+
 function populateResult(p,sk){
   document.getElementById('result-name').textContent=p.name;
   document.getElementById('result-meta').textContent=`${p.code} · ${p.meta}`;
   document.getElementById('result-desc').textContent=p.desc;
-  document.getElementById('survey-quick').href=p.survey1s;
-  document.getElementById('survey-full').href=p.survey1m;
+  // Build survey URLs with redirectUrl back to adviser.html
+  const url1s=buildSurveyUrl('1AMk7b',p.code);
+  const url1m=buildSurveyUrl('rjKPY5',p.code);
+  document.getElementById('survey-quick').href=url1s;
+  document.getElementById('survey-full').href=url1m;
   document.getElementById('result-header').className='result-header '+p.series;
   drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
 }
@@ -478,7 +626,7 @@ function restart(){
   renderQuestion();scrollToPanel();
 }
 
-renderQuestion();
+// renderQuestion() is called from the Promise.all bootstrap above, not here directly.
 </script>
 </body>
 </html>
