@@ -76,10 +76,27 @@ a{color:inherit;text-decoration:none}
 .survey-reminder a:hover{color:#fff;border-color:rgba(255,255,255,.4)}
 
 /* ── VIDEO ── */
-.video-section{border-radius:var(--radius-lg);overflow:hidden;margin-bottom:16px;background:#000}
+.video-section{border-radius:var(--radius-lg);overflow:hidden;margin-bottom:0;background:#000;position:relative}
 .video-embed{width:100%;aspect-ratio:16/9;border:none;display:block}
 .video-placeholder{width:100%;aspect-ratio:16/9;background:var(--dp-slate-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:var(--radius-lg)}
 .vp-icon{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(255,255,255,.4)}
+
+/* ── MOBILE LISTENING ADVISORY ── */
+.yt-advisory{
+  display:none;
+  background:rgba(184,134,11,0.10);
+  border:0.5px solid rgba(184,134,11,0.30);
+  border-top:2px solid var(--dp-gold-light);
+  border-radius:0 0 var(--radius-lg) var(--radius-lg);
+  padding:12px 16px 12px 14px;
+  margin-bottom:16px;
+  align-items:center;
+  gap:12px;
+}
+.yt-advisory-icon{font-size:18px;flex-shrink:0}
+.yt-advisory-text{font-size:12px;line-height:1.55;color:var(--color-text-secondary)}
+.yt-advisory-text strong{color:var(--dp-gold-light);font-weight:500}
+@media(max-width:768px){.yt-advisory{display:flex}}
 .vp-label{font-size:13px;color:rgba(255,255,255,.35);letter-spacing:.06em}
 .vol-selector{padding:10px 12px;background:rgba(0,0,0,.4)}
 .vol-selector select{width:100%;padding:10px 14px;background:rgba(255,255,255,.06);color:#fff;border:.5px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
@@ -274,6 +291,16 @@ a{color:inherit;text-decoration:none}
 
   <!-- VIDEO -->
   <div class="video-section" id="video-section"></div>
+
+  <!-- MOBILE LISTENING ADVISORY (shown only on mobile) -->
+  <div class="yt-advisory">
+    <div class="yt-advisory-icon">🎧</div>
+    <div class="yt-advisory-text">
+      <strong>For uninterrupted listening on mobile</strong> — use the
+      <strong>Watch on YouTube</strong> button inside the player above.
+      The YouTube app keeps audio running when your screen dims or locks.
+    </div>
+  </div>
 
   <!-- SURVEY -->
   <div class="section">
@@ -631,7 +658,11 @@ function renderVideo(p, volCode){
   if(ytUrl && ytUrl!=='#'){
     const match=ytUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
     if(match){
-      container.innerHTML=dropdownHTML+`<iframe class="video-embed" src="https://www.youtube.com/embed/${match[1]}" allow="accelerometer;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>`;
+      const isMobile=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const overlay=isMobile
+        ? `<div onclick="window.open('${ytUrl}','_blank')" style="position:absolute;inset:0;z-index:10;cursor:pointer;background:transparent;" title="Open in YouTube for uninterrupted listening"></div>`
+        : '';
+      container.innerHTML=dropdownHTML+`<div style="position:relative">${overlay}<iframe class="video-embed" src="https://www.youtube.com/embed/${match[1]}?rel=0" allow="accelerometer;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe></div>`;
       ytLink.style.display='block';
       ytExt.href=ytUrl;
     } else {
