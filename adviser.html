@@ -30,6 +30,10 @@ a { color: inherit; }
 .nav-link { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s; white-space: nowrap; }
 .nav-link:hover { color: #fff; }
 .nav-link.active { color: var(--dp-gold-light); }
+.nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 32px; height: 32px; cursor: pointer; background: none; border: none; padding: 4px; flex-shrink: 0; }
+.nav-hamburger span { display: block; height: 2px; width: 100%; background: rgba(255,255,255,0.55); }
+.nav-hamburger:hover span { background: #fff; }
+@media (max-width: 640px) { .site-nav { padding: 0 16px; } .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid); flex-direction: column; gap: 0; z-index: 199; } .nav-links.open { display: flex; } .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; } .nav-link:last-child { border-bottom: none; } .nav-hamburger { display: flex; } }
 .page-header { background: var(--dp-slate-dark); position: relative; overflow: hidden; }
 .page-header::before { content: ''; position: absolute; right: -80px; top: -80px; width: 360px; height: 360px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.12); pointer-events: none; }
 .page-header::after { content: ''; position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.08); pointer-events: none; }
@@ -166,20 +170,24 @@ a { color: inherit; }
 .footer-link { font-size: 12px; color: rgba(255,255,255,0.42); text-decoration: none; transition: color 0.15s; }
 .footer-link:hover { color: rgba(255,255,255,0.80); }
 @media (max-width: 860px) { .adviser-wrap { grid-template-columns: 1fr; } .adviser-sidebar { display: none; } }
-@media (max-width: 720px) { .site-nav { padding: 0 16px; } .nav-links { gap: 12px; } .nav-link { font-size: 10px; } .header-banner-wrap { padding: 12px 16px 0; } .header-banner img { height: 180px; } .page-intro { padding: 18px 16px 22px; } .main { padding: 0 16px 64px; } .adviser-header, .question-block, .options-grid, .nav-row, .panel-section, .action-section, .commentary-section { padding-left: 18px; padding-right: 18px; } }
-@media (max-width: 520px) { .nav-links { display: none; } .page-title { font-size: 34px; } .result-name { font-size: 28px; } }
+@media (max-width: 720px) { .header-banner-wrap { padding: 12px 16px 0; } .header-banner img { height: 180px; } .page-intro { padding: 18px 16px 22px; } .main { padding: 0 16px 64px; } .adviser-header, .question-block, .options-grid, .nav-row, .panel-section, .action-section, .commentary-section { padding-left: 18px; padding-right: 18px; } }
+@media (max-width: 520px) { .page-title { font-size: 34px; } .result-name { font-size: 28px; } }
 </style>
 </head>
 <body>
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a class="nav-link" href="index.html">Home</a>
     <a class="nav-link active" href="adviser.html">Adviser</a>
-    <a class="nav-link" href="insights.html">Data Insights</a>
+    <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
-    <a class="nav-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="nav-link" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="about.html">About</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
@@ -327,10 +335,11 @@ a { color: inherit; }
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
-    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
-    <a class="footer-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="footer-link" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="about.html">About</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>
@@ -627,6 +636,20 @@ function restart(){
 }
 
 // renderQuestion() is called from the Promise.all bootstrap above, not here directly.
+</script>
+<script>
+function toggleNav(btn) {
+  const links = document.querySelector('.nav-links');
+  const open = links.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.site-nav')) {
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn = document.querySelector('.nav-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
 </script>
 </body>
 </html>

@@ -27,11 +27,13 @@ a{color:inherit;text-decoration:none}
 .site-nav{background:var(--dp-slate-deeper);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--color-border)}
 .nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);font-weight:500}
 .nav-links{display:flex;gap:24px;align-items:center}
-.nav-link{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);transition:color .15s}
+.nav-link{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);transition:color .15s;white-space:nowrap}
 .nav-link:hover{color:#fff}
 .nav-link.active{color:var(--dp-gold-light)}
-@media(max-width:720px){.site-nav{padding:0 16px}.nav-links{gap:14px}}
-@media(max-width:520px){.nav-links{display:none}}
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
+.nav-hamburger span{display:block;height:2px;width:100%;background:rgba(255,255,255,0.55)}
+.nav-hamburger:hover span{background:#fff}
+@media(max-width:640px){.site-nav{padding:0 16px}.nav-links{display:none;position:fixed;top:52px;left:0;right:0;background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);flex-direction:column;gap:0;z-index:199}.nav-links.open{display:flex}.nav-link{padding:14px 20px;border-bottom:1px solid var(--color-border);font-size:12px}.nav-link:last-child{border-bottom:none}.nav-hamburger{display:flex}}
 
 /* ── PAGE HEADER ── */
 .page-header{background:var(--dp-slate-deeper);position:relative;overflow:hidden;padding:18px 24px 0}
@@ -201,13 +203,17 @@ a{color:inherit;text-decoration:none}
 <!-- ── NAV ── -->
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a class="nav-link" href="index.html">Home</a>
     <a class="nav-link" href="adviser.html">Adviser</a>
-    <a class="nav-link active" href="insights.html">Data Insights</a>
+    <a class="nav-link active" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
-    <a class="nav-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="nav-link" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="about.html">About</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
@@ -324,10 +330,11 @@ a{color:inherit;text-decoration:none}
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
-    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
-    <a class="footer-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="footer-link" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="about.html">About</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>
@@ -593,6 +600,20 @@ const SAMPLE_DATA={
     "TRANSFORMING":{n:192,mean:7.1,protocols:9}
   }
 };
+</script>
+<script>
+function toggleNav(btn) {
+  const links = document.querySelector('.nav-links');
+  const open = links.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.site-nav')) {
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn = document.querySelector('.nav-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
 </script>
 </body>
 </html>

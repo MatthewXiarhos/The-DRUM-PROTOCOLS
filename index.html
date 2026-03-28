@@ -69,8 +69,38 @@ a { color: inherit; }
   color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s;
   white-space: nowrap;
 }
-.nav-link:hover, .nav-link.active { color: #fff; }
+.nav-link:hover { color: #fff; }
 .nav-link.active { color: var(--dp-gold-light); }
+.nav-hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; gap: 5px;
+  width: 32px; height: 32px; cursor: pointer;
+  background: none; border: none; padding: 4px; flex-shrink: 0;
+}
+.nav-hamburger span {
+  display: block; height: 2px; width: 100%;
+  background: rgba(255,255,255,0.55);
+}
+.nav-hamburger:hover span { background: #fff; }
+@media (max-width: 640px) {
+  .site-nav { padding: 0 16px; }
+  .nav-links {
+    display: none;
+    position: fixed; top: 52px; left: 0; right: 0;
+    background: var(--dp-slate-deeper);
+    border-bottom: 1px solid var(--color-border-mid);
+    flex-direction: column; gap: 0;
+    z-index: 199;
+  }
+  .nav-links.open { display: flex; }
+  .nav-link {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 12px;
+  }
+  .nav-link:last-child { border-bottom: none; }
+  .nav-hamburger { display: flex; }
+}
 
 /* ── PAGE HEADER ── */
 .page-header {
@@ -332,9 +362,6 @@ a { color: inherit; }
   .path-card:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 720px) {
-  .site-nav { padding: 0 16px; }
-  .nav-links { gap: 12px; }
-  .nav-link { font-size: 10px; }
   .header-banner-wrap { padding: 12px 16px 0; }
   .hero { padding: 24px 16px 36px; gap: 22px; }
   .main { padding: 18px 16px 64px; }
@@ -344,7 +371,6 @@ a { color: inherit; }
   .section-title { font-size: 26px; }
 }
 @media (max-width: 520px) {
-  .nav-links { display: none; }
   .hero-title { font-size: 40px; }
   .hero-actions { flex-direction: column; align-items: stretch; }
   .btn-primary, .btn-secondary { width: 100%; }
@@ -356,13 +382,17 @@ a { color: inherit; }
 
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
     <a class="nav-link active" href="index.html">Home</a>
     <a class="nav-link" href="adviser.html">Adviser</a>
-    <a class="nav-link" href="insights.html">Data Insights</a>
+    <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
-    <a class="nav-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="nav-link" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="about.html">About</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
@@ -376,12 +406,10 @@ a { color: inherit; }
   </div>
   <div class="hero">
     <div class="hero-copy">
-      <div class="eyebrow">Faces of Dragonfly · Rhythmic Entrainment Library</div>
       <h1 class="hero-title">Rhythm as a tool for nervous system regulation.</h1>
       <p class="hero-sub">The Drum Protocols are a structured library of rhythmic audio sessions designed to support nervous system regulation. Each protocol is mapped to a physiological state — helping listeners move toward calm, sustain focus, or build upward from depletion.</p>
       <div class="hero-actions">
         <a class="btn-primary" href="adviser.html">Find Your Protocol</a>
-        <a class="btn-secondary" href="https://www.youtube.com/@THE-DRUM-PROTOCOLS" target="_blank" rel="noopener">Watch on YouTube</a>
       </div>
     </div>
     <div class="hero-art">
@@ -467,17 +495,32 @@ a { color: inherit; }
 </main>
 
 <footer class="page-footer">
-  <div class="footer-brand">THE DRUM PROTOCOLS · FACES OF DRAGONFLY</div>
+  <div class="footer-brand">THE DRUM PROTOCOLS</div>
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
-    <a class="footer-link" href="insights.html">Data Insights</a>
+    <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
-    <a class="footer-link" href="sphere.html">Sphere's Data Lab</a>
+    <a class="footer-link" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="about.html">About</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>
 
+<script>
+function toggleNav(btn) {
+  const links = document.querySelector('.nav-links');
+  const open = links.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.site-nav')) {
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn = document.querySelector('.nav-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
+</script>
 </body>
 </html>
