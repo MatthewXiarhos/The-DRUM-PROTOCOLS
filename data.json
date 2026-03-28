@@ -1,44 +1,76 @@
 {
-  "generated": "2026-03-25",
-  "analysis_date": "2026-03-25",
+  "generated": "2026-03-27",
+  "analysis_date": "2026-03-27",
   "total_responses": 997,
   "protocols_with_data": 30,
   "sphere_commentary": {
-    "overview": "Across 997 responses spanning 30 protocols, the aggregate signal is cautiously positive: series means cluster between 6.36 and 6.78, with standard deviations in the 1.4–1.9 range suggesting meaningful but not excessive population variance. The framework is performing within expected parameters for an early-stage independent research project — no protocol is signalling systematic harm, and positive-response rates (pct_pos) broadly track mean scores, which is an internal consistency check worth noting. Sample sizes remain the primary constraint on interpretation: only 8 protocols have reached 'meaningful' confidence (n≥50), and no protocol has crossed n=100, so all pattern-level conclusions should be held lightly.",
-    "cross_series": "HEALING leads on both volume (n=581) and mean score (6.78), which is consistent with an established audience finding entry points through high-frequency use cases like anxiety, sleep, and over-stimulation. THRIVING shows a tighter standard deviation (1.56 vs 1.77 for HEALING) suggesting a more homogeneous respondent population, possibly self-selecting optimisers rather than crisis-adjacent users — this is worth tracking as n grows. TRANSFORMING carries the lowest mean (6.36) and meaningful variability, which is structurally expected given that ASCENT protocols target low-affect states where baseline scoring is suppressed and response curves are less predictable; this should not be read as underperformance.",
-    "anomalies": "X-MC-L3 (Cosmos, n=10) flags as the most statistically unusual protocol in the dataset: mean 5.6 with std 2.2 against a distribution of [0,0,1,1,2,1,0,3,1,1,0] that shows a pronounced gap at score 6 with mass at both low (3–5) and high (7–9) ends — a tentative bimodal signature. At n=10 this cannot be confirmed as a real subgroup effect, but it warrants close monitoring as the primary anomaly flag. X-MD-L3 (Switchback, n=11) shows std=2.31, the highest in the dataset, with a similarly fragmented distribution [0,0,0,1,2,0,2,0,2,3,1] — extreme spread for an ASCENT protocol targeting motivation, consistent with either population mismatch or high sensitivity to pre-session state. T-MB-L3 (Orbit, n=15) shows a strikingly compressed distribution with 9 of 15 responses at score 7 and zeros at 8 and 9 — this spike pattern is unusual and could indicate a ceiling-effect artefact, a very specific subpopulation, or a rating anchoring behaviour in early respondents. T-FC-L3 (Summit) shows the lowest pct_pos (45%) in THRIVING at n=22, with no scores above 8 — a soft signal that the L3 routing for Focus and Clarity may not be serving the respondents who reach it.",
-    "development_signals": "1. T-FC-L3 (Summit, n=22, mean=6.23, pct_pos=45%): This is the weakest signal in the THRIVING series and the only THRIVING protocol where pct_pos drops below 50%. The distribution shows scores compressed between 6–7 with no high-end responses, and it follows T-FC-L2 (Waypoint) which scores well (mean=7.06, pct_pos=65%). This inversion — where L3 underperforms L2 — warrants investigation of Adviser routing logic: are listeners being escalated to Summit prematurely, or does the protocol's HOLD architecture need a longer entrainment ramp for the population arriving at L3? Suggested action: audit the routing criteria between Waypoint and Summit, and consider whether Summit requires a protocol revision to extend its hold phase or introduce a more gradual phi-sigmoid onset. 2. X-MC-L3 (Cosmos, n=10, mean=5.6, std=2.2): The tentative bimodal distribution and highest variance-adjusted concern in the TRANSFORMING series suggests this protocol may be landing very differently across subpopulations — one group responding well, another not engaging. At n=10 no action should be taken on the protocol itself, but suggested action is to implement a targeted data collection push for Cosmos specifically, including optional post-session qualitative prompts, to determine whether the split correlates with a listener characteristic (e.g. caregiver vs direct listener, clinical vs self-referred). 3. X-MD-L2 (Trail, n=14, mean=6.0, pct_pos=36%) and X-MD-L3 (Switchback, n=11, std=2.31): The Motivation and Drive sub-series shows the weakest aggregate performance in TRANSFORMING, with Trail holding the lowest pct_pos in the entire dataset at 36%. ASCENT protocols are structurally challenging, but the combination of low positive response and high variance across L2 and L3 suggests the sub-series may benefit from a dedicated review once n reaches 30 per level. Suggested action: flag X-MD as a priority data collection target for the next review cycle; consider whether the ASCENT arc across Trail and Switchback is appropriately calibrated to the wing ratio, and whether a bridging variant between Footpath and Trail is warranted. 4. H-SL-L2 (Hammock, n=47, mean=7.04, std=1.44) and H-SL-L3 (Midnight, n=33, mean=7.03, std=1.55): The Sleep sub-series shows the most consistent performance in the dataset — both L2 and L3 have means above 7.0, low standard deviations relative to series norms, and pct_pos above 64%. This is the strongest candidate for a VOL002 or extended-format development. Suggested action: prioritise Hammock and Midnight for a second-volume development pass, and consider whether a dedicated sleep maintenance protocol (HOLD type) could complement the existing DESCENT architecture to serve listeners who fall asleep successfully but experience early waking.",
+    "overview": "Across 997 responses spanning 30 protocols, the corpus shows a coherent central tendency: aggregate means cluster between 6.1 and 7.2, suggesting the framework is producing consistent moderate-to-strong positive signal at scale. HEALING leads in both volume (n=581) and mean score (6.78), which is structurally expected given its more established routing and broader accessibility. Standard deviations averaging around 1.7 across all series indicate meaningful population-level variance — consistent with a diverse respondent pool interpreting a subjective scale differently, not with protocol inconsistency.",
+    "cross_series": "HEALING outperforms both other series in sample size and mean score, with its Sleep and Anxiety subcategories performing particularly strongly (means approaching 7.0); this likely reflects both protocol maturity and the relative tractability of those presenting states. THRIVING sits close behind at 6.73 with notably tighter variance (std=1.56), suggesting a more homogeneous respondent population — possibly self-selecting high-functioning users — but its lower n (241) warrants caution before drawing firm conclusions. TRANSFORMING trails at 6.36 mean with comparable variance to HEALING (std=1.74), which is not surprising: ASCENT protocols targeting low-affect states face the steepest entrainment challenge, and several protocols in this series are operating on early-data n values where no pattern conclusions should be drawn.",
+    "anomalies": "X-MC-L3 (Cosmos, n=10, mean=5.6, std=2.2) flags immediately: the highest standard deviation in the dataset combined with the lowest mean and a bimodal-leaning distribution (scores clustering at 3-4 and 7-8 with a gap at 6) is a strong subgroup signal, though n=10 makes this statistically fragile — treat as hypothesis, not finding. X-MD-L3 (Switchback, n=11, std=2.31) shows a similarly wide spread with a near-bimodal pattern (scores at 4, 6-7, and 9-10 with gaps), suggesting this protocol may be landing very differently depending on listener state at entry — the ASCENT protocol type in a low-affect context is the probable driver. T-MB-L3 (Orbit, n=15) shows an unusual distribution spike at score 7 (9 of 15 respondents) with near-zero adjacent scores, which is almost certainly an artifact of small n but warrants a flag for monitoring as data accumulates. H-OS-L1 (Pebble) is the only HEALING non-crisis protocol at meaningful n to show pct_pos below 55% despite a reasonable mean (6.54) — the distribution shows a notable cluster at score 6 (19 respondents), suggesting a 'satisfactory but not transformative' ceiling effect worth investigating.",
+    "development_signals": "1. T-FC-L3 (Summit, n=22, mean=6.23, std=1.35, pct_pos=45%): This is the only THRIVING protocol where pct_pos falls below 50% at developing-confidence level, with a distribution heavily concentrated between scores 6-7 and very few high-responders (0 scores above 9). The tight std rules out population diversity as the explanation — this looks like a ceiling effect or a protocol design issue. Recommend reviewing the L3 difficulty gradient relative to L2 (Waypoint, mean=7.06): the drop of 0.83 mean points from L2 to L3 within the same subcategory is the largest L-level regression in the dataset. Investigate whether Summit's HOLD architecture is sustaining the state established by Waypoint or disrupting it — consider extending the hold phase or adjusting Adviser routing at the L3 entry point. 2. X-MD-L1 and X-MD-L2 (Footpath, n=21, mean=6.24, pct_pos=43%; Trail, n=14, mean=6.0, pct_pos=36%): The Motivation & Drive subcategory shows the lowest pct_pos values in the entire dataset, particularly at L2. Both are ASCENT protocols, and the 36% positive rate on Trail is a meaningful signal even at early-data confidence. Before protocol revision, the priority action is population disambiguation: caregivers rating a dependent's response to an ASCENT protocol for low motivation are almost certainly applying a different scale anchor than a direct listener. Recommend adding a respondent-type field to data collection and re-examining this subcategory once source is known. 3. H-OS-L1 (Pebble, n=72, mean=6.54, std=1.79, pct_pos=51%): At the largest n in the overstimulation subcategory, Pebble underperforms its L2 and L3 siblings on pct_pos by 10-11 percentage points. This is structurally interesting because L1 should be the most accessible entry point. The distribution mode at score 6 suggests listeners are reaching a regulated state but not a deeply settled one — consistent with a protocol that descends too quickly for highly sensitised listeners. Recommend investigating whether a pre-Pebble grounding micro-protocol or an extended opening hold phase would improve outcomes for listeners arriving at peak overstimulation. 4. X-MC-L3 (Cosmos, n=10, mean=5.6, std=2.2): Although n=10 prevents any pattern conclusion, the std is an outlier and the score distribution suggests genuine bimodality. This warrants a specific data collection push to reach n=30 before any design changes are made — but it is worth flagging now as a candidate for a population-split investigation. If bimodality persists at higher n, the hypothesis to test is whether Cosmos is landing differently for listeners who arrive with cognitive fog versus those with ruminative clarity, both of which may route to Mind & Clarity from opposite presenting states.",
     "by_protocol": {
-      "H-AX-L1": "Meadow is the highest-mean protocol in the Anxiety and Stress sub-series (mean=7.14, n=65) and one of the stronger performers in HEALING overall, though its std=1.88 indicates notable spread — the distribution shows a concentration in the 6–9 range with a modest tail at lower scores, consistent with a diverse anxiety-presenting population finding variable but generally positive utility.",
-      "H-AX-L2": "Cottage (mean=6.9, n=51) shows a cleaner distribution than L1, with 67% positive response and a concentration in the 7–8 range; the tighter spread relative to Meadow is consistent with a more self-selected population reaching L2, and the signal here is stable and encouraging.",
-      "H-AX-L3": "Valley (mean=6.97, n=38, developing confidence) continues the sub-series pattern of solid performance; the distribution is slightly more dispersed than Cottage but pct_pos holds at 61%, suggesting L3 listeners are still engaging productively with the longer entrainment arc.",
-      "H-CR-L1": "Anchor (mean=6.35, n=48) is performing within the structurally expected range for a crisis-oriented DESCENT protocol — listeners arriving in acute distress bring suppressed baseline scores, and a mean above 6 with pct_pos at 52% should be read as a meaningful outcome signal, not a weakness.",
-      "H-CR-L2": "Harbor (mean=6.14, n=35) holds the second-lowest mean in the HEALING series, but this is consistent with the acute distress framing; the distribution clusters in the 5–8 range with limited extreme-low responses, suggesting the protocol is not aversive — it is working within a compressed response window typical of crisis populations.",
-      "H-CR-L3": "Horizon (mean=6.31, n=29) shows a slight recovery over Harbor (6.14) which is a mildly interesting inversion worth monitoring — one hypothesis is that the longer L3 format provides more entrainment time for the most dysregulated listeners, but n is too small to support this interpretation with confidence.",
-      "H-OS-L1": "Pebble (mean=6.54, n=72) is the highest-n protocol in the dataset and shows a broad distribution with a mode at score 6 and a long tail into the 7–9 range; pct_pos at 51% is the lowest in the Over-stimulation sub-series, suggesting L1 may be catching a heterogeneous population that includes both mild and severe over-stimulation presentations — a routing or intake framing adjustment could potentially improve fit.",
-      "H-OS-L2": "Rainfall (mean=6.71, n=58) improves on Pebble across all metrics — higher mean, similar std, and pct_pos jumping to 62%; this is consistent with L2 self-selection filtering toward listeners who found L1 partially effective and are seeking deeper entrainment.",
-      "H-OS-L3": "Glacier (mean=6.98, n=44) is the strongest performer in the Over-stimulation sub-series and shows a well-formed distribution concentrated in the 6–9 range; the progressive improvement across L1–L3 in this sub-series is one of the cleaner level-progression signals in the dataset.",
-      "H-SL-L1": "Lantern (mean=6.97, n=61) anchors a consistently high-performing sleep sub-series; its distribution is notably flat across the 5–9 range which indicates population diversity in sleep difficulty severity, but the aggregate signal is strong.",
-      "H-SL-L2": "Hammock (mean=7.04, n=47) has the lowest standard deviation in the HEALING series (1.44) and one of the highest pct_pos values at 68%; this tightness suggests a well-matched population-protocol pairing and makes Hammock a candidate for extended development consideration.",
-      "H-SL-L3": "Midnight (mean=7.03, n=33) maintains L2-level performance at L3, which is unusual in a positive direction — most sub-series show some regression at L3 due to smaller and more varied populations, but the sleep sub-series appears to sustain engagement across the full progression.",
-      "T-CF-L1": "Ember (mean=6.66, n=38) shows a moderate signal for Creative Flow at L1, with pct_pos at 53% indicating the population is split roughly evenly at the positive threshold; the distribution is reasonable but unremarkable, and more data would help clarify whether this reflects a true population average or early-adopter variance.",
-      "T-CF-L2": "Current (mean=6.58, n=24) shows a compressed distribution (std=1.26) concentrated in the 6–8 range; the slightly lower mean than L1 is not a concern at this sample size, and the tighter spread suggests a more homogeneous population reaching L2.",
-      "T-CF-L3": "Aurora (mean=7.17, n=18, early data) is the highest mean in the Creative Flow sub-series and shows a clean concentration in the 6–8 range with no low-end responses; this is an encouraging early signal but should be held loosely given n=18 — the absence of low scores may reflect selection effects rather than protocol performance.",
-      "T-FC-L1": "Compass (mean=6.4, n=42) is the baseline for Focus and Clarity; the distribution is broad with a mode at score 7 but significant mass in the 4–6 range, and pct_pos at 55% suggests moderate fit — this is a functioning but not optimised L1 entry point.",
-      "T-FC-L2": "Waypoint (mean=7.06, n=31) is a notable improvement over Compass and one of the stronger THRIVING signals — the distribution is concentrated in the 6–9 range with minimal low-end mass, and the L1-to-L2 improvement (6.4 to 7.06) is the largest positive level-progression jump in the THRIVING series.",
-      "T-FC-L3": "Summit (mean=6.23, n=22, pct_pos=45%) is a development concern: it underperforms both Compass and Waypoint, has the lowest pct_pos in THRIVING, and shows no scores above 8 — the L2-to-L3 regression warrants routing and protocol review as a priority action.",
-      "T-MB-L1": "Stone (mean=7.17, n=29) is the highest mean in the Maintenance and Balance sub-series and one of the top performers in THRIVING, with pct_pos at 69% and a clean distribution concentrated in the 7–9 range; the low std (1.29) suggests good population-protocol fit.",
-      "T-MB-L2": "Axis (mean=6.59, n=22) shows a regression from Stone (7.17 to 6.59) with notably higher variance (std=1.92); the distribution is more dispersed with low-end responses appearing, which may reflect a more heterogeneous population at L2 or a protocol calibration issue — worth monitoring as n grows.",
-      "T-MB-L3": "Orbit (mean=6.87, n=15, early data) shows a distribution spike with 9 of 15 responses at score 7 and zeros at adjacent scores 8 and 9, which is an unusual concentration pattern; this could reflect a rating anchoring artefact in a small early cohort and should be monitored closely rather than interpreted structurally at this stage.",
-      "X-MC-L1": "Cavern (mean=6.62, n=24) is a reasonable baseline for the Mind and Clarity sub-series within TRANSFORMING; pct_pos at 50% is exactly at threshold, and the distribution is moderately concentrated in the 6–8 range — a functional but not strong signal.",
-      "X-MC-L2": "Starlight (mean=6.59, n=17, early data) holds close to L1 performance with a cleaner distribution (std=1.33); the absence of extreme scores in either direction suggests a consistent if modest response — interpretation should wait for n to develop.",
-      "X-MC-L3": "Cosmos (mean=5.6, n=10, early data) is the primary anomaly flag in the dataset: the lowest mean across all protocols with std=2.2 and a distribution that suggests a tentative bimodal pattern; this cannot be confirmed at n=10 but warrants prioritised data collection and qualitative investigation.",
-      "X-MD-L1": "Footpath (mean=6.24, n=21) is a low-but-functional baseline for Motivation and Drive, with pct_pos at 43% — below threshold but within the expected range for an ASCENT protocol targeting low-affect states where the scoring baseline is structurally suppressed.",
-      "X-MD-L2": "Trail (mean=6.0, n=14, early data) holds the lowest pct_pos in the entire dataset at 36%; while ASCENT protocols are expected to score lower, this figure warrants attention — at n=14 no protocol action is appropriate, but Trail should be a priority data collection target.",
-      "X-MD-L3": "Switchback (mean=6.91, n=11, early data) shows the highest standard deviation in the dataset at 2.31, with a fragmented distribution [0,0,0,1,2,0,2,0,2,3,1] that suggests extreme response heterogeneity; the mean appears relatively high given the variance, and this protocol requires substantially more data before any signal can be trusted.",
-      "X-ME-L1": "Breeze (mean=6.29, n=35) anchors the Mood and Energy sub-series with a moderate signal; pct_pos at 43% is below threshold, consistent with ASCENT-type protocols, and the distribution shows a mode at score 6 with gradual tailing — a plausible baseline for a low-affect entry point.",
-      "X-ME-L2": "Sunrise (mean=6.48, n=25) shows improvement over Breeze in both mean and pct_pos (43% to 60%), which is an encouraging level-progression signal for the Mood and Energy sub-series; the distribution is concentrated in the 6–8 range with limited extreme-low responses.",
-      "X-ME-L3": "Updraft (mean=6.28, n=18, early data) shows a slight regression from Sunrise (6.48 to 6.28) with similar variance; at n=18 this is not interpretable as a real pattern, but it is worth monitoring to see whether the L2-to-L3 improvement trajectory holds as data accumulates."
+      "H-AX-L1": "H-AX-L1 (Meadow, n=65, mean=7.14, std=1.88) is the highest-mean HEALING protocol at meaningful confidence and sits in the upper quartile across the full dataset. The distribution is right-skewed with modes at scores 6 and 8-9 (14 respondents each), and pct_pos of 62% is solid for a general-population DESCENT protocol. The std of 1.88 is slightly elevated relative to subcategory siblings, consistent with expected diversity at the L1 entry level.",
+      "H-AX-L2": "H-AX-L2 (Cottage, n=51, mean=6.9, std=1.61, pct_pos=67%) shows a tighter distribution than L1 with a clear mode at score 7 (16 respondents), suggesting strong central convergence. The reduced std relative to Meadow is consistent with a more filtered population at L2. Confidence is meaningful; this is one of the more reliable-looking protocols in the anxiety subcategory.",
+      "H-AX-L3": "H-AX-L3 (Valley, n=38, mean=6.97, std=1.78, pct_pos=61%) maintains the subcategory's strong mean at developing confidence. Distribution is relatively flat across scores 6-9, with no pronounced mode — this spread may reflect the heterogeneity of listeners who self-select into L3 content. No anomalies flagged; continue accumulating data toward n=50.",
+      "H-CR-L1": "H-CR-L1 (Anchor, n=48, mean=6.35, std=1.69, pct_pos=52%) is performing as structurally expected for a crisis-category protocol at developing confidence. The distribution shows a mode at score 8 (13 respondents) alongside a notable cluster at scores 5-6 (16 respondents combined), producing a slight bimodal shape. This is consistent with crisis respondents arriving at heterogeneous distress levels — the protocol may be reaching some listeners more effectively than others depending on presenting acuity.",
+      "H-CR-L2": "H-CR-L2 (Harbor, n=35, mean=6.14, std=1.64, pct_pos=46%) is the lowest-mean HEALING protocol below crisis tier, with pct_pos just under half. The distribution is relatively uniform between scores 5-8, suggesting no strong central response tendency at this n. Low pct_pos in crisis protocols is structurally expected and should not be read as failure; however, the slight decline from L1 to L2 warrants monitoring as n grows.",
+      "H-CR-L3": "H-CR-L3 (Horizon, n=29, mean=6.31, std=1.82, pct_pos=48%) shows a bimodal-adjacent distribution with clusters at scores 4-5 and 7-8, with a relative gap at 6. This pattern is consistent with a population split between listeners in acute crisis (lower scores) and those using the protocol preventively or post-peak (higher scores). Developing confidence; no design changes warranted at this n, but population tagging would clarify the signal considerably.",
+      "H-OS-L1": "H-OS-L1 (Pebble, n=72, mean=6.54, std=1.79, pct_pos=51%) is the largest-n protocol in the overstimulation subcategory and shows the weakest pct_pos of the three OS protocols at meaningful confidence. The distribution mode sits at score 6 (19 respondents), with a long right tail — suggestive of a 'functional but not peak' response profile. The 10-11 percentage point gap in pct_pos relative to OS L2 and L3 is worth investigating, as it inverts the expected L-level performance gradient.",
+      "H-OS-L2": "H-OS-L2 (Rainfall, n=58, mean=6.71, std=1.84, pct_pos=62%) outperforms its L1 sibling on both mean and pct_pos at meaningful confidence. Distribution shows a broad mode spanning scores 7-8 (28 respondents combined), with modest tails. The elevated std is consistent with population diversity rather than protocol inconsistency at this n.",
+      "H-OS-L3": "H-OS-L3 (Glacier, n=44, mean=6.98, std=1.76, pct_pos=61%) continues the subcategory's counterintuitive ascending gradient across L-levels at developing confidence. Distribution is well-shaped with a mode at scores 7-8. The progressive mean increase from L1 to L3 within OS is worth flagging as a routing question: are listeners self-selecting into higher L-levels after prior positive experience, creating a selection effect?",
+      "H-SL-L1": "H-SL-L1 (Lantern, n=61, mean=6.97, std=1.87, pct_pos=61%) is the top-performing L1 protocol in the dataset at meaningful confidence. Distribution is unusually flat between scores 6-9 (11 respondents at each score), indicating consistent mid-to-high response across a wide respondent range. The std of 1.87 is slightly elevated but expected given population breadth at entry level.",
+      "H-SL-L2": "H-SL-L2 (Hammock, n=47, mean=7.04, std=1.44, pct_pos=68%) stands out for its notably tight standard deviation — the lowest in the HEALING series — suggesting strong convergence in response at developing confidence. The distribution mode is at score 7 (15 respondents) with clean tails. This is one of the more statistically stable protocols in the dataset; pct_pos of 68% is among the highest in HEALING.",
+      "H-SL-L3": "H-SL-L3 (Midnight, n=33, mean=7.03, std=1.55, pct_pos=64%) maintains subcategory consistency at developing confidence. The distribution is notably symmetric around scores 6-8 (24 of 33 respondents), with minimal outlier mass. The Sleep subcategory shows the most consistent performance gradient across L-levels of any HEALING subcategory.",
+      "T-CF-L1": "T-CF-L1 (Ember, n=38, mean=6.66, std=1.61, pct_pos=53%) sits at the lower end of THRIVING pct_pos at developing confidence, with a distribution mode at score 7 (10 respondents) and a modest left tail. The 53% pct_pos alongside a mean of 6.66 suggests a reasonable but not strong response profile — consistent with creative flow being a state that is harder to induce on demand than regulation-based states.",
+      "T-CF-L2": "T-CF-L2 (Current, n=24, mean=6.58, std=1.26, pct_pos=54%) shows the tightest distribution in the Creative Flow subcategory at developing confidence. The low std indicates high response convergence; nearly all scores fall between 5-8. The slight mean decline from L1 to L2 (0.08 points) is negligible at this n.",
+      "T-CF-L3": "T-CF-L3 (Aurora, n=18, mean=7.17, std=1.12, pct_pos=67%) is early-data and no pattern conclusions should be drawn, but the initial signal is notably strong — highest mean in the CF subcategory with the tightest std, concentrated at scores 6-8. If this holds at higher n, it would suggest positive self-selection into L3 or a genuinely effective protocol for the subset who reach it.",
+      "T-FC-L1": "T-FC-L1 (Compass, n=42, mean=6.4, std=1.75, pct_pos=55%) is the baseline for the Focus & Clarity subcategory at developing confidence. Distribution shows a notable cluster at score 7 (12 respondents) alongside spread across 4-6, producing mild left-skew. The std of 1.75 reflects population diversity consistent with a broad-entry HOLD protocol.",
+      "T-FC-L2": "T-FC-L2 (Waypoint, n=31, mean=7.06, std=1.5, pct_pos=65%) shows a meaningful uplift from L1 in both mean (+0.66) and pct_pos (+10pp) at developing confidence. Distribution concentrates at scores 7-8 (16 respondents combined). This is the strongest-performing FC protocol and the L2-to-L3 drop (to 6.23) is the most pronounced subcategory regression in the THRIVING series.",
+      "T-FC-L3": "T-FC-L3 (Summit, n=22, mean=6.23, std=1.35, pct_pos=45%) is a flagged protocol. Despite a tight std ruling out high-variance population effects, pct_pos falls below 50% — the only THRIVING protocol to do so. The distribution is compressed into scores 6-7 with very few high responders (3 above score 7), suggesting a ceiling effect or structural design issue. The L2-to-L3 mean drop of 0.83 is the largest within-subcategory L-level decline in the dataset.",
+      "T-MB-L1": "T-MB-L1 (Stone, n=29, mean=7.17, std=1.29, pct_pos=69%) is the joint-highest mean in THRIVING alongside Aurora (T-CF-L3), with a tight distribution concentrated at scores 7-8 (17 respondents combined) at developing confidence. The 69% pct_pos is the highest in the THRIVING series at this confidence level. Maintenance & Balance appears to be a well-matched protocol category for this respondent population.",
+      "T-MB-L2": "T-MB-L2 (Axis, n=22, mean=6.59, std=1.92, pct_pos=59%) shows the widest std in the THRIVING series at developing confidence. The distribution is notably spread across scores 3-9, which is atypical for a HOLD protocol in a maintenance context — could indicate population heterogeneity in how 'maintenance' is interpreted by respondents, or a bimodal subgroup effect worth monitoring.",
+      "T-MB-L3": "T-MB-L3 (Orbit, n=15, mean=6.87, std=1.59, pct_pos=73%) is early-data. The unusual distribution — 9 of 15 respondents scoring exactly 7 with near-zero adjacent scores — is almost certainly a small-n artifact. The 73% pct_pos is the highest in the dataset at any confidence level but should not be weighted until n exceeds 30.",
+      "X-MC-L1": "X-MC-L1 (Cavern, n=24, mean=6.62, std=1.52, pct_pos=50%) is the entry point for the Mind & Clarity subcategory at developing confidence. A 50% pct_pos with a mean of 6.62 reflects moderate positive signal; the distribution clusters at score 6 (8 respondents) with a modest right tail. Standard deviation is tighter than series average, suggesting more homogeneous response.",
+      "X-MC-L2": "X-MC-L2 (Starlight, n=17, mean=6.59, std=1.33, pct_pos=53%) is early-data with a distribution concentrated at scores 6-7 (11 respondents). The slight mean maintenance from L1 to L2 (drop of 0.03) and tightening std are consistent with a filtered but not dramatically different L2 respondent pool. No actionable signal at this n.",
+      "X-MC-L3": "X-MC-L3 (Cosmos, n=10, mean=5.6, std=2.2, pct_pos=50%) is early-data and flagged for monitoring. The std of 2.2 is the highest in the dataset, and the distribution shows score mass at both low (2-4) and high (7-9) ends with a gap at 5-6 — a tentative bimodal pattern. At n=10 this is statistically unreliable, but the pattern warrants specific data collection to test the subgroup hypothesis.",
+      "X-MD-L1": "X-MD-L1 (Footpath, n=21, mean=6.24, std=1.92, pct_pos=43%) is the lowest pct_pos in TRANSFORMING at developing confidence. The distribution is relatively flat across scores 4-9 with no clear mode, and std of 1.92 reflects high response dispersion. ASCENT protocols targeting low motivation face structural headwinds in this metric; however, the 43% pct_pos still warrants investigation given it is the lowest in its subcategory.",
+      "X-MD-L2": "X-MD-L2 (Trail, n=14, mean=6.0, std=1.51, pct_pos=36%) is early-data and flags the lowest pct_pos in the entire dataset. The distribution concentrates at scores 5-7 (10 of 14 respondents) with limited high-end mass. While early-data confidence limits interpretation, the 36% pct_pos is notable and should be monitored closely as n grows — respondent population disambiguation is the highest-priority next step.",
+      "X-MD-L3": "X-MD-L3 (Switchback, n=11, mean=6.91, std=2.31, pct_pos=55%) is early-data with the joint-highest std in the dataset. The distribution is strikingly sparse: scores at 3, 4, 6, 8, 9, and 10 with gaps — consistent with a bimodal or multimodal response profile. The high mean is driven by a cluster of high scores (3+1 respondents at 9-10) masking a left tail. This pattern is a strong candidate for subgroup investigation once n increases.",
+      "X-ME-L1": "X-ME-L1 (Breeze, n=35, mean=6.29, std=1.68, pct_pos=43%) is the largest-n TRANSFORMING protocol and shows the second-lowest pct_pos in the series at developing confidence. Distribution clusters at scores 5-7 (22 respondents) with limited high-end response. For a Mood & Energy ASCENT protocol, the 43% pct_pos suggests either population mismatch or a protocol that is lifting affect modestly but not dramatically — which may be appropriate as a first-contact protocol for low-affect states.",
+      "X-ME-L2": "X-ME-L2 (Sunrise, n=25, mean=6.48, std=1.6, pct_pos=60%) shows meaningful improvement over L1 on pct_pos (+17pp) at developing confidence, with a distribution mode at score 7 (9 respondents). This is one of the cleaner L1-to-L2 improvement signals in TRANSFORMING and suggests the subcategory's ascending arc may be functioning as intended.",
+      "X-ME-L3": "X-ME-L3 (Updraft, n=18, mean=6.28, std=1.69, pct_pos=56%) is early-data with a slight mean decline from L2 (-0.20). Distribution spreads across scores 4-8 with a mode at score 7 (5 respondents). The L2-to-L3 regression is modest but mirrors a pattern seen in other series' L3 protocols — worth monitoring as n grows to distinguish genuine plateau from small-n noise."
+    },
+    "by_protocol_plain": {
+      "H-AX-L1": "Meadow is the highest-rated anxiety protocol and one of the strongest performers overall. Around 62% of listeners rated it positively, and scores were spread across the higher end — suggesting it's working well for a wide range of people coming in with anxiety or stress. Results do vary a bit between listeners, which is normal for an entry-level protocol.",
+      "H-AX-L2": "Cottage is performing reliably, with most listeners clustering around a consistent positive response. Results are less variable than Meadow, which often happens as listeners who've already found the approach helpful move deeper into the series. A solid, dependable signal.",
+      "H-AX-L3": "Valley holds up well as the deepest anxiety protocol, with scores spread fairly evenly across the higher range. The spread suggests that listeners who reach L3 are a varied group — some finding it very impactful, others finding it helpful but not transformative. Worth watching as more data comes in.",
+      "H-CR-L1": "Anchor is doing what a crisis protocol is expected to do in this framework: reaching people in acute distress and producing measurable positive change for around half of them. That may sound modest, but given how extreme the starting state can be for crisis listeners, it's a meaningful result. Some listeners seem to respond strongly, others more moderately — which makes sense given how different people's distress levels are when they press play.",
+      "H-CR-L2": "Harbor shows a similar picture to Anchor — steady, moderate positive impact for listeners in acute distress. Just under half rated it positively, which is structurally expected in this category. Results are spread fairly evenly, without strong clustering at either end. No red flags here, but more data will help clarify who benefits most.",
+      "H-CR-L3": "Horizon, the deepest crisis protocol, shows an interesting split: some listeners seem to find it quite helpful, while others find it only mildly so. This could reflect the difference between people using it at the height of a crisis versus those using it more preventively. Not a concern at this stage, but understanding who's listening would really sharpen the picture.",
+      "H-OS-L1": "Pebble is the first port of call for overstimulation, and it's helping — but it's landing a bit more modestly than its L2 and L3 siblings, which is unusual. Most listeners are rating it as useful but not dramatically settling. It's possible that people arriving in peak overstimulation need a gentler on-ramp before the main protocol can fully work. Worth exploring.",
+      "H-OS-L2": "Rainfall is doing well, with a solid cluster of listeners rating it in the 7–8 range. It actually outperforms Pebble (L1) in terms of how many people report a clearly positive experience — which is an interesting pattern that deserves more attention as data grows.",
+      "H-OS-L3": "Glacier, the deepest overstimulation protocol, continues the trend of the later protocols in this subcategory performing better than the first. Scores cluster nicely in the 7–8 range. It's possible that listeners reaching L3 have already had positive experiences and are arriving in a more receptive state — or that the longer format is genuinely more effective for deep settling.",
+      "H-SL-L1": "Lantern is one of the standout performers in the whole collection. For a first-level protocol, it's reaching a really wide range of listeners and landing consistently well. Scores are unusually evenly distributed across the higher range — a sign that it works for lots of different kinds of people, not just a narrow group.",
+      "H-SL-L2": "Hammock shows the most consistent results of any protocol in the Healing series — most listeners converge on a similar, clearly positive rating. It's the kind of stability that suggests the protocol is doing something that lands reliably, rather than working brilliantly for some and less so for others.",
+      "H-SL-L3": "Midnight rounds out the sleep series on a strong and consistent note. The Sleep subcategory overall is the most stable in the collection — scores are reliable and positive across all three levels, which is an encouraging sign for this category's design.",
+      "T-CF-L1": "Ember is a reasonable starting point for the Creative Flow series, with results spread across a fairly wide range. Creative flow is genuinely harder to induce than physiological calming, so a modest but solid positive signal at entry level is a reasonable baseline. A bit more than half of listeners rated it positively.",
+      "T-CF-L2": "Current shows tight, consistent results — most listeners land in a similar positive range, without much variation. The scores are a bit lower than L1 on average, but the consistency is actually a strength: it suggests a reliable experience rather than a hit-or-miss one.",
+      "T-CF-L3": "Aurora is showing an encouraging early signal — the highest rating in the Creative Flow group, with results clustering neatly in the positive range. The caveat is that only 18 people have responded so far, so this is too early to call a pattern. But it's a promising start.",
+      "T-FC-L1": "Compass is doing its job as an entry point for Focus & Clarity, with just over half of listeners rating it positively. Results vary more than some other protocols, which probably reflects how different people's focus needs are when they come to it. A solid foundation.",
+      "T-FC-L2": "Waypoint is the clear high point in the Focus & Clarity series — noticeably better ratings than the L1 and L3 protocols, with more people rating it positively. It seems to hit a sweet spot, possibly because the L2 format suits the focus-seeking listener particularly well.",
+      "T-FC-L3": "Summit is the one protocol in the Thriving series that isn't quite landing — fewer than half of listeners rated it positively, and most responses cluster in a narrow 'okay but not great' range. Notably, the results are very consistent (not just variable), which suggests there may be something about the protocol design itself worth revisiting, rather than just a mismatch with some listeners.",
+      "T-MB-L1": "Stone is the strongest performer in the Maintenance & Balance group, with the highest proportion of positive ratings in the whole Thriving series. Most listeners are clustering comfortably in the 7–8 range. It seems particularly well-matched to the people who seek it out — possibly because 'balance maintenance' is a clearly defined state that the protocol can reliably support.",
+      "T-MB-L2": "Axis shows more variation in responses than its L1 sibling — some listeners finding it very helpful, others less so. This is the widest spread of any Thriving protocol. It might reflect different ideas about what 'maintenance' means to different listeners, or it could signal a design question worth exploring.",
+      "T-MB-L3": "Orbit has a striking pattern in its early data: nearly all listeners so far have given it exactly the same score. That's almost certainly a quirk of having very few responses (15), rather than a meaningful finding — but the early positive lean is worth noting. Check back when more people have used it.",
+      "X-MC-L1": "Cavern is a modest but steady entry point for the Mind & Clarity series. Half of listeners rated it positively, with most responses in the 5–7 range. Results are more consistent than the series average, which is a reasonable foundation for a first-level protocol in a challenging category.",
+      "X-MC-L2": "Starlight is early in its data collection, and the picture is similar to Cavern — mild positive lean, most scores in the 6–7 range. Nothing alarming, but too few responses to draw any conclusions yet. The main thing to note is that it's holding its own relative to L1.",
+      "X-MC-L3": "Cosmos is the most variable protocol in the entire collection, and it's too early to know why. A small number of responses are splitting sharply between 'quite helpful' and 'not very helpful', with not much in the middle. This could mean the protocol is working very differently for different types of listeners — a genuine research question worth tracking as more data comes in.",
+      "X-MD-L1": "Footpath has the lowest proportion of positive ratings in the Transforming series. Helping lift motivation in low-affect states is one of the harder things a sound protocol can do, so some modesty in the numbers is expected. Still, the spread of responses is wide and the positive rate is low enough to keep a close eye on, especially to understand who's doing the listening.",
+      "X-MD-L2": "Trail has the lowest positive rating proportion in the whole collection. That's notable, and worth taking seriously — but with only 14 responses, it's too early to draw conclusions. The priority is understanding more about who's listening: a caregiver watching a loved one's response will rate very differently from someone listening themselves. Getting clearer on the audience would help a lot here.",
+      "X-MD-L3": "Switchback has a very small number of responses, but they're striking — a few people rating it very highly, a few rating it low, and not much in the middle. This kind of split could mean the protocol works brilliantly for some listeners and not for others, perhaps depending on how deep into low affect they are. Interesting signal, but we need more data before reading too much into it.",
+      "X-ME-L1": "Breeze is the most-listened-to Transforming protocol, and it's producing a modest but real positive effect for most listeners. For a protocol aiming to lift mood and energy from a low starting point, landing just under half with a clearly positive rating is the beginning of a signal, not a failure. Most listeners end up in a slightly better place, even if not dramatically so.",
+      "X-ME-L2": "Sunrise shows a notable jump in positive responses compared to Breeze — 60% rating it positively, compared to 43% for the first protocol. That's one of the bigger improvements between levels in the Transforming series, and it suggests the ascending arc of this subcategory may be working as intended.",
+      "X-ME-L3": "Updraft is early in data collection and shows a slight dip from Sunrise's positive momentum. The responses are spread fairly evenly across the middle-to-higher range. Not enough data yet to know whether this is a real pattern or just noise — worth monitoring as more listeners reach this level."
     }
   },
   "protocols": {
@@ -71,7 +103,8 @@
       "vol_counts": {
         "VOL001": 61
       },
-      "sphere": "Lantern (mean=6.97, n=61) anchors a consistently high-performing sleep sub-series; its distribution is notably flat across the 5–9 range which indicates population diversity in sleep difficulty severity, but the aggregate signal is strong."
+      "sphere": "H-SL-L1 (Lantern, n=61, mean=6.97, std=1.87, pct_pos=61%) is the top-performing L1 protocol in the dataset at meaningful confidence. Distribution is unusually flat between scores 6-9 (11 respondents at each score), indicating consistent mid-to-high response across a wide respondent range. The std of 1.87 is slightly elevated but expected given population breadth at entry level.",
+      "sphere_plain": "Lantern is one of the standout performers in the whole collection. For a first-level protocol, it's reaching a really wide range of listeners and landing consistently well. Scores are unusually evenly distributed across the higher range — a sign that it works for lots of different kinds of people, not just a narrow group."
     },
     "T-MB-L2": {
       "name": "Axis",
@@ -102,7 +135,8 @@
       "vol_counts": {
         "VOL001": 22
       },
-      "sphere": "Axis (mean=6.59, n=22) shows a regression from Stone (7.17 to 6.59) with notably higher variance (std=1.92); the distribution is more dispersed with low-end responses appearing, which may reflect a more heterogeneous population at L2 or a protocol calibration issue — worth monitoring as n grows."
+      "sphere": "T-MB-L2 (Axis, n=22, mean=6.59, std=1.92, pct_pos=59%) shows the widest std in the THRIVING series at developing confidence. The distribution is notably spread across scores 3-9, which is atypical for a HOLD protocol in a maintenance context — could indicate population heterogeneity in how 'maintenance' is interpreted by respondents, or a bimodal subgroup effect worth monitoring.",
+      "sphere_plain": "Axis shows more variation in responses than its L1 sibling — some listeners finding it very helpful, others less so. This is the widest spread of any Thriving protocol. It might reflect different ideas about what 'maintenance' means to different listeners, or it could signal a design question worth exploring."
     },
     "H-AX-L1": {
       "name": "Meadow",
@@ -133,7 +167,8 @@
       "vol_counts": {
         "VOL001": 65
       },
-      "sphere": "Meadow is the highest-mean protocol in the Anxiety and Stress sub-series (mean=7.14, n=65) and one of the stronger performers in HEALING overall, though its std=1.88 indicates notable spread — the distribution shows a concentration in the 6–9 range with a modest tail at lower scores, consistent with a diverse anxiety-presenting population finding variable but generally positive utility."
+      "sphere": "H-AX-L1 (Meadow, n=65, mean=7.14, std=1.88) is the highest-mean HEALING protocol at meaningful confidence and sits in the upper quartile across the full dataset. The distribution is right-skewed with modes at scores 6 and 8-9 (14 respondents each), and pct_pos of 62% is solid for a general-population DESCENT protocol. The std of 1.88 is slightly elevated relative to subcategory siblings, consistent with expected diversity at the L1 entry level.",
+      "sphere_plain": "Meadow is the highest-rated anxiety protocol and one of the strongest performers overall. Around 62% of listeners rated it positively, and scores were spread across the higher end — suggesting it's working well for a wide range of people coming in with anxiety or stress. Results do vary a bit between listeners, which is normal for an entry-level protocol."
     },
     "H-AX-L3": {
       "name": "Valley",
@@ -164,7 +199,8 @@
       "vol_counts": {
         "VOL001": 38
       },
-      "sphere": "Valley (mean=6.97, n=38, developing confidence) continues the sub-series pattern of solid performance; the distribution is slightly more dispersed than Cottage but pct_pos holds at 61%, suggesting L3 listeners are still engaging productively with the longer entrainment arc."
+      "sphere": "H-AX-L3 (Valley, n=38, mean=6.97, std=1.78, pct_pos=61%) maintains the subcategory's strong mean at developing confidence. Distribution is relatively flat across scores 6-9, with no pronounced mode — this spread may reflect the heterogeneity of listeners who self-select into L3 content. No anomalies flagged; continue accumulating data toward n=50.",
+      "sphere_plain": "Valley holds up well as the deepest anxiety protocol, with scores spread fairly evenly across the higher range. The spread suggests that listeners who reach L3 are a varied group — some finding it very impactful, others finding it helpful but not transformative. Worth watching as more data comes in."
     },
     "T-CF-L3": {
       "name": "Aurora",
@@ -195,7 +231,8 @@
       "vol_counts": {
         "VOL001": 18
       },
-      "sphere": "Aurora (mean=7.17, n=18, early data) is the highest mean in the Creative Flow sub-series and shows a clean concentration in the 6–8 range with no low-end responses; this is an encouraging early signal but should be held loosely given n=18 — the absence of low scores may reflect selection effects rather than protocol performance."
+      "sphere": "T-CF-L3 (Aurora, n=18, mean=7.17, std=1.12, pct_pos=67%) is early-data and no pattern conclusions should be drawn, but the initial signal is notably strong — highest mean in the CF subcategory with the tightest std, concentrated at scores 6-8. If this holds at higher n, it would suggest positive self-selection into L3 or a genuinely effective protocol for the subset who reach it.",
+      "sphere_plain": "Aurora is showing an encouraging early signal — the highest rating in the Creative Flow group, with results clustering neatly in the positive range. The caveat is that only 18 people have responded so far, so this is too early to call a pattern. But it's a promising start."
     },
     "H-SL-L3": {
       "name": "Midnight",
@@ -226,7 +263,8 @@
       "vol_counts": {
         "VOL001": 33
       },
-      "sphere": "Midnight (mean=7.03, n=33) maintains L2-level performance at L3, which is unusual in a positive direction — most sub-series show some regression at L3 due to smaller and more varied populations, but the sleep sub-series appears to sustain engagement across the full progression."
+      "sphere": "H-SL-L3 (Midnight, n=33, mean=7.03, std=1.55, pct_pos=64%) maintains subcategory consistency at developing confidence. The distribution is notably symmetric around scores 6-8 (24 of 33 respondents), with minimal outlier mass. The Sleep subcategory shows the most consistent performance gradient across L-levels of any HEALING subcategory.",
+      "sphere_plain": "Midnight rounds out the sleep series on a strong and consistent note. The Sleep subcategory overall is the most stable in the collection — scores are reliable and positive across all three levels, which is an encouraging sign for this category's design."
     },
     "X-MD-L1": {
       "name": "Footpath",
@@ -257,7 +295,8 @@
       "vol_counts": {
         "VOL001": 21
       },
-      "sphere": "Footpath (mean=6.24, n=21) is a low-but-functional baseline for Motivation and Drive, with pct_pos at 43% — below threshold but within the expected range for an ASCENT protocol targeting low-affect states where the scoring baseline is structurally suppressed."
+      "sphere": "X-MD-L1 (Footpath, n=21, mean=6.24, std=1.92, pct_pos=43%) is the lowest pct_pos in TRANSFORMING at developing confidence. The distribution is relatively flat across scores 4-9 with no clear mode, and std of 1.92 reflects high response dispersion. ASCENT protocols targeting low motivation face structural headwinds in this metric; however, the 43% pct_pos still warrants investigation given it is the lowest in its subcategory.",
+      "sphere_plain": "Footpath has the lowest proportion of positive ratings in the Transforming series. Helping lift motivation in low-affect states is one of the harder things a sound protocol can do, so some modesty in the numbers is expected. Still, the spread of responses is wide and the positive rate is low enough to keep a close eye on, especially to understand who's doing the listening."
     },
     "H-SL-L2": {
       "name": "Hammock",
@@ -288,7 +327,8 @@
       "vol_counts": {
         "VOL001": 47
       },
-      "sphere": "Hammock (mean=7.04, n=47) has the lowest standard deviation in the HEALING series (1.44) and one of the highest pct_pos values at 68%; this tightness suggests a well-matched population-protocol pairing and makes Hammock a candidate for extended development consideration."
+      "sphere": "H-SL-L2 (Hammock, n=47, mean=7.04, std=1.44, pct_pos=68%) stands out for its notably tight standard deviation — the lowest in the HEALING series — suggesting strong convergence in response at developing confidence. The distribution mode is at score 7 (15 respondents) with clean tails. This is one of the more statistically stable protocols in the dataset; pct_pos of 68% is among the highest in HEALING.",
+      "sphere_plain": "Hammock shows the most consistent results of any protocol in the Healing series — most listeners converge on a similar, clearly positive rating. It's the kind of stability that suggests the protocol is doing something that lands reliably, rather than working brilliantly for some and less so for others."
     },
     "H-CR-L3": {
       "name": "Horizon",
@@ -319,7 +359,8 @@
       "vol_counts": {
         "VOL001": 29
       },
-      "sphere": "Horizon (mean=6.31, n=29) shows a slight recovery over Harbor (6.14) which is a mildly interesting inversion worth monitoring — one hypothesis is that the longer L3 format provides more entrainment time for the most dysregulated listeners, but n is too small to support this interpretation with confidence."
+      "sphere": "H-CR-L3 (Horizon, n=29, mean=6.31, std=1.82, pct_pos=48%) shows a bimodal-adjacent distribution with clusters at scores 4-5 and 7-8, with a relative gap at 6. This pattern is consistent with a population split between listeners in acute crisis (lower scores) and those using the protocol preventively or post-peak (higher scores). Developing confidence; no design changes warranted at this n, but population tagging would clarify the signal considerably.",
+      "sphere_plain": "Horizon, the deepest crisis protocol, shows an interesting split: some listeners seem to find it quite helpful, while others find it only mildly so. This could reflect the difference between people using it at the height of a crisis versus those using it more preventively. Not a concern at this stage, but understanding who's listening would really sharpen the picture."
     },
     "T-CF-L1": {
       "name": "Ember",
@@ -350,7 +391,8 @@
       "vol_counts": {
         "VOL001": 38
       },
-      "sphere": "Ember (mean=6.66, n=38) shows a moderate signal for Creative Flow at L1, with pct_pos at 53% indicating the population is split roughly evenly at the positive threshold; the distribution is reasonable but unremarkable, and more data would help clarify whether this reflects a true population average or early-adopter variance."
+      "sphere": "T-CF-L1 (Ember, n=38, mean=6.66, std=1.61, pct_pos=53%) sits at the lower end of THRIVING pct_pos at developing confidence, with a distribution mode at score 7 (10 respondents) and a modest left tail. The 53% pct_pos alongside a mean of 6.66 suggests a reasonable but not strong response profile — consistent with creative flow being a state that is harder to induce on demand than regulation-based states.",
+      "sphere_plain": "Ember is a reasonable starting point for the Creative Flow series, with results spread across a fairly wide range. Creative flow is genuinely harder to induce than physiological calming, so a modest but solid positive signal at entry level is a reasonable baseline. A bit more than half of listeners rated it positively."
     },
     "X-MD-L2": {
       "name": "Trail",
@@ -381,7 +423,8 @@
       "vol_counts": {
         "VOL001": 14
       },
-      "sphere": "Trail (mean=6.0, n=14, early data) holds the lowest pct_pos in the entire dataset at 36%; while ASCENT protocols are expected to score lower, this figure warrants attention — at n=14 no protocol action is appropriate, but Trail should be a priority data collection target."
+      "sphere": "X-MD-L2 (Trail, n=14, mean=6.0, std=1.51, pct_pos=36%) is early-data and flags the lowest pct_pos in the entire dataset. The distribution concentrates at scores 5-7 (10 of 14 respondents) with limited high-end mass. While early-data confidence limits interpretation, the 36% pct_pos is notable and should be monitored closely as n grows — respondent population disambiguation is the highest-priority next step.",
+      "sphere_plain": "Trail has the lowest positive rating proportion in the whole collection. That's notable, and worth taking seriously — but with only 14 responses, it's too early to draw conclusions. The priority is understanding more about who's listening: a caregiver watching a loved one's response will rate very differently from someone listening themselves. Getting clearer on the audience would help a lot here."
     },
     "T-FC-L2": {
       "name": "Waypoint",
@@ -412,7 +455,8 @@
       "vol_counts": {
         "VOL001": 31
       },
-      "sphere": "Waypoint (mean=7.06, n=31) is a notable improvement over Compass and one of the stronger THRIVING signals — the distribution is concentrated in the 6–9 range with minimal low-end mass, and the L1-to-L2 improvement (6.4 to 7.06) is the largest positive level-progression jump in the THRIVING series."
+      "sphere": "T-FC-L2 (Waypoint, n=31, mean=7.06, std=1.5, pct_pos=65%) shows a meaningful uplift from L1 in both mean (+0.66) and pct_pos (+10pp) at developing confidence. Distribution concentrates at scores 7-8 (16 respondents combined). This is the strongest-performing FC protocol and the L2-to-L3 drop (to 6.23) is the most pronounced subcategory regression in the THRIVING series.",
+      "sphere_plain": "Waypoint is the clear high point in the Focus & Clarity series — noticeably better ratings than the L1 and L3 protocols, with more people rating it positively. It seems to hit a sweet spot, possibly because the L2 format suits the focus-seeking listener particularly well."
     },
     "X-ME-L2": {
       "name": "Sunrise",
@@ -443,7 +487,8 @@
       "vol_counts": {
         "VOL001": 25
       },
-      "sphere": "Sunrise (mean=6.48, n=25) shows improvement over Breeze in both mean and pct_pos (43% to 60%), which is an encouraging level-progression signal for the Mood and Energy sub-series; the distribution is concentrated in the 6–8 range with limited extreme-low responses."
+      "sphere": "X-ME-L2 (Sunrise, n=25, mean=6.48, std=1.6, pct_pos=60%) shows meaningful improvement over L1 on pct_pos (+17pp) at developing confidence, with a distribution mode at score 7 (9 respondents). This is one of the cleaner L1-to-L2 improvement signals in TRANSFORMING and suggests the subcategory's ascending arc may be functioning as intended.",
+      "sphere_plain": "Sunrise shows a notable jump in positive responses compared to Breeze — 60% rating it positively, compared to 43% for the first protocol. That's one of the bigger improvements between levels in the Transforming series, and it suggests the ascending arc of this subcategory may be working as intended."
     },
     "T-FC-L1": {
       "name": "Compass",
@@ -474,7 +519,8 @@
       "vol_counts": {
         "VOL001": 42
       },
-      "sphere": "Compass (mean=6.4, n=42) is the baseline for Focus and Clarity; the distribution is broad with a mode at score 7 but significant mass in the 4–6 range, and pct_pos at 55% suggests moderate fit — this is a functioning but not optimised L1 entry point."
+      "sphere": "T-FC-L1 (Compass, n=42, mean=6.4, std=1.75, pct_pos=55%) is the baseline for the Focus & Clarity subcategory at developing confidence. Distribution shows a notable cluster at score 7 (12 respondents) alongside spread across 4-6, producing mild left-skew. The std of 1.75 reflects population diversity consistent with a broad-entry HOLD protocol.",
+      "sphere_plain": "Compass is doing its job as an entry point for Focus & Clarity, with just over half of listeners rating it positively. Results vary more than some other protocols, which probably reflects how different people's focus needs are when they come to it. A solid foundation."
     },
     "X-ME-L3": {
       "name": "Updraft",
@@ -505,7 +551,8 @@
       "vol_counts": {
         "VOL001": 18
       },
-      "sphere": "Updraft (mean=6.28, n=18, early data) shows a slight regression from Sunrise (6.48 to 6.28) with similar variance; at n=18 this is not interpretable as a real pattern, but it is worth monitoring to see whether the L2-to-L3 improvement trajectory holds as data accumulates."
+      "sphere": "X-ME-L3 (Updraft, n=18, mean=6.28, std=1.69, pct_pos=56%) is early-data with a slight mean decline from L2 (-0.20). Distribution spreads across scores 4-8 with a mode at score 7 (5 respondents). The L2-to-L3 regression is modest but mirrors a pattern seen in other series' L3 protocols — worth monitoring as n grows to distinguish genuine plateau from small-n noise.",
+      "sphere_plain": "Updraft is early in data collection and shows a slight dip from Sunrise's positive momentum. The responses are spread fairly evenly across the middle-to-higher range. Not enough data yet to know whether this is a real pattern or just noise — worth monitoring as more listeners reach this level."
     },
     "H-OS-L1": {
       "name": "Pebble",
@@ -536,7 +583,8 @@
       "vol_counts": {
         "VOL001": 72
       },
-      "sphere": "Pebble (mean=6.54, n=72) is the highest-n protocol in the dataset and shows a broad distribution with a mode at score 6 and a long tail into the 7–9 range; pct_pos at 51% is the lowest in the Over-stimulation sub-series, suggesting L1 may be catching a heterogeneous population that includes both mild and severe over-stimulation presentations — a routing or intake framing adjustment could potentially improve fit."
+      "sphere": "H-OS-L1 (Pebble, n=72, mean=6.54, std=1.79, pct_pos=51%) is the largest-n protocol in the overstimulation subcategory and shows the weakest pct_pos of the three OS protocols at meaningful confidence. The distribution mode sits at score 6 (19 respondents), with a long right tail — suggestive of a 'functional but not peak' response profile. The 10-11 percentage point gap in pct_pos relative to OS L2 and L3 is worth investigating, as it inverts the expected L-level performance gradient.",
+      "sphere_plain": "Pebble is the first port of call for overstimulation, and it's helping — but it's landing a bit more modestly than its L2 and L3 siblings, which is unusual. Most listeners are rating it as useful but not dramatically settling. It's possible that people arriving in peak overstimulation need a gentler on-ramp before the main protocol can fully work. Worth exploring."
     },
     "X-ME-L1": {
       "name": "Breeze",
@@ -567,7 +615,8 @@
       "vol_counts": {
         "VOL001": 35
       },
-      "sphere": "Breeze (mean=6.29, n=35) anchors the Mood and Energy sub-series with a moderate signal; pct_pos at 43% is below threshold, consistent with ASCENT-type protocols, and the distribution shows a mode at score 6 with gradual tailing — a plausible baseline for a low-affect entry point."
+      "sphere": "X-ME-L1 (Breeze, n=35, mean=6.29, std=1.68, pct_pos=43%) is the largest-n TRANSFORMING protocol and shows the second-lowest pct_pos in the series at developing confidence. Distribution clusters at scores 5-7 (22 respondents) with limited high-end response. For a Mood & Energy ASCENT protocol, the 43% pct_pos suggests either population mismatch or a protocol that is lifting affect modestly but not dramatically — which may be appropriate as a first-contact protocol for low-affect states.",
+      "sphere_plain": "Breeze is the most-listened-to Transforming protocol, and it's producing a modest but real positive effect for most listeners. For a protocol aiming to lift mood and energy from a low starting point, landing just under half with a clearly positive rating is the beginning of a signal, not a failure. Most listeners end up in a slightly better place, even if not dramatically so."
     },
     "H-CR-L2": {
       "name": "Harbor",
@@ -598,7 +647,8 @@
       "vol_counts": {
         "VOL001": 35
       },
-      "sphere": "Harbor (mean=6.14, n=35) holds the second-lowest mean in the HEALING series, but this is consistent with the acute distress framing; the distribution clusters in the 5–8 range with limited extreme-low responses, suggesting the protocol is not aversive — it is working within a compressed response window typical of crisis populations."
+      "sphere": "H-CR-L2 (Harbor, n=35, mean=6.14, std=1.64, pct_pos=46%) is the lowest-mean HEALING protocol below crisis tier, with pct_pos just under half. The distribution is relatively uniform between scores 5-8, suggesting no strong central response tendency at this n. Low pct_pos in crisis protocols is structurally expected and should not be read as failure; however, the slight decline from L1 to L2 warrants monitoring as n grows.",
+      "sphere_plain": "Harbor shows a similar picture to Anchor — steady, moderate positive impact for listeners in acute distress. Just under half rated it positively, which is structurally expected in this category. Results are spread fairly evenly, without strong clustering at either end. No red flags here, but more data will help clarify who benefits most."
     },
     "H-OS-L3": {
       "name": "Glacier",
@@ -629,7 +679,8 @@
       "vol_counts": {
         "VOL001": 44
       },
-      "sphere": "Glacier (mean=6.98, n=44) is the strongest performer in the Over-stimulation sub-series and shows a well-formed distribution concentrated in the 6–9 range; the progressive improvement across L1–L3 in this sub-series is one of the cleaner level-progression signals in the dataset."
+      "sphere": "H-OS-L3 (Glacier, n=44, mean=6.98, std=1.76, pct_pos=61%) continues the subcategory's counterintuitive ascending gradient across L-levels at developing confidence. Distribution is well-shaped with a mode at scores 7-8. The progressive mean increase from L1 to L3 within OS is worth flagging as a routing question: are listeners self-selecting into higher L-levels after prior positive experience, creating a selection effect?",
+      "sphere_plain": "Glacier, the deepest overstimulation protocol, continues the trend of the later protocols in this subcategory performing better than the first. Scores cluster nicely in the 7–8 range. It's possible that listeners reaching L3 have already had positive experiences and are arriving in a more receptive state — or that the longer format is genuinely more effective for deep settling."
     },
     "H-AX-L2": {
       "name": "Cottage",
@@ -660,7 +711,8 @@
       "vol_counts": {
         "VOL001": 51
       },
-      "sphere": "Cottage (mean=6.9, n=51) shows a cleaner distribution than L1, with 67% positive response and a concentration in the 7–8 range; the tighter spread relative to Meadow is consistent with a more self-selected population reaching L2, and the signal here is stable and encouraging."
+      "sphere": "H-AX-L2 (Cottage, n=51, mean=6.9, std=1.61, pct_pos=67%) shows a tighter distribution than L1 with a clear mode at score 7 (16 respondents), suggesting strong central convergence. The reduced std relative to Meadow is consistent with a more filtered population at L2. Confidence is meaningful; this is one of the more reliable-looking protocols in the anxiety subcategory.",
+      "sphere_plain": "Cottage is performing reliably, with most listeners clustering around a consistent positive response. Results are less variable than Meadow, which often happens as listeners who've already found the approach helpful move deeper into the series. A solid, dependable signal."
     },
     "T-MB-L3": {
       "name": "Orbit",
@@ -691,7 +743,8 @@
       "vol_counts": {
         "VOL001": 15
       },
-      "sphere": "Orbit (mean=6.87, n=15, early data) shows a distribution spike with 9 of 15 responses at score 7 and zeros at adjacent scores 8 and 9, which is an unusual concentration pattern; this could reflect a rating anchoring artefact in a small early cohort and should be monitored closely rather than interpreted structurally at this stage."
+      "sphere": "T-MB-L3 (Orbit, n=15, mean=6.87, std=1.59, pct_pos=73%) is early-data. The unusual distribution — 9 of 15 respondents scoring exactly 7 with near-zero adjacent scores — is almost certainly a small-n artifact. The 73% pct_pos is the highest in the dataset at any confidence level but should not be weighted until n exceeds 30.",
+      "sphere_plain": "Orbit has a striking pattern in its early data: nearly all listeners so far have given it exactly the same score. That's almost certainly a quirk of having very few responses (15), rather than a meaningful finding — but the early positive lean is worth noting. Check back when more people have used it."
     },
     "H-CR-L1": {
       "name": "Anchor",
@@ -722,7 +775,8 @@
       "vol_counts": {
         "VOL001": 48
       },
-      "sphere": "Anchor (mean=6.35, n=48) is performing within the structurally expected range for a crisis-oriented DESCENT protocol — listeners arriving in acute distress bring suppressed baseline scores, and a mean above 6 with pct_pos at 52% should be read as a meaningful outcome signal, not a weakness."
+      "sphere": "H-CR-L1 (Anchor, n=48, mean=6.35, std=1.69, pct_pos=52%) is performing as structurally expected for a crisis-category protocol at developing confidence. The distribution shows a mode at score 8 (13 respondents) alongside a notable cluster at scores 5-6 (16 respondents combined), producing a slight bimodal shape. This is consistent with crisis respondents arriving at heterogeneous distress levels — the protocol may be reaching some listeners more effectively than others depending on presenting acuity.",
+      "sphere_plain": "Anchor is doing what a crisis protocol is expected to do in this framework: reaching people in acute distress and producing measurable positive change for around half of them. That may sound modest, but given how extreme the starting state can be for crisis listeners, it's a meaningful result. Some listeners seem to respond strongly, others more moderately — which makes sense given how different people's distress levels are when they press play."
     },
     "T-FC-L3": {
       "name": "Summit",
@@ -753,7 +807,8 @@
       "vol_counts": {
         "VOL001": 22
       },
-      "sphere": "Summit (mean=6.23, n=22, pct_pos=45%) is a development concern: it underperforms both Compass and Waypoint, has the lowest pct_pos in THRIVING, and shows no scores above 8 — the L2-to-L3 regression warrants routing and protocol review as a priority action."
+      "sphere": "T-FC-L3 (Summit, n=22, mean=6.23, std=1.35, pct_pos=45%) is a flagged protocol. Despite a tight std ruling out high-variance population effects, pct_pos falls below 50% — the only THRIVING protocol to do so. The distribution is compressed into scores 6-7 with very few high responders (3 above score 7), suggesting a ceiling effect or structural design issue. The L2-to-L3 mean drop of 0.83 is the largest within-subcategory L-level decline in the dataset.",
+      "sphere_plain": "Summit is the one protocol in the Thriving series that isn't quite landing — fewer than half of listeners rated it positively, and most responses cluster in a narrow 'okay but not great' range. Notably, the results are very consistent (not just variable), which suggests there may be something about the protocol design itself worth revisiting, rather than just a mismatch with some listeners."
     },
     "X-MD-L3": {
       "name": "Switchback",
@@ -784,7 +839,8 @@
       "vol_counts": {
         "VOL001": 11
       },
-      "sphere": "Switchback (mean=6.91, n=11, early data) shows the highest standard deviation in the dataset at 2.31, with a fragmented distribution [0,0,0,1,2,0,2,0,2,3,1] that suggests extreme response heterogeneity; the mean appears relatively high given the variance, and this protocol requires substantially more data before any signal can be trusted."
+      "sphere": "X-MD-L3 (Switchback, n=11, mean=6.91, std=2.31, pct_pos=55%) is early-data with the joint-highest std in the dataset. The distribution is strikingly sparse: scores at 3, 4, 6, 8, 9, and 10 with gaps — consistent with a bimodal or multimodal response profile. The high mean is driven by a cluster of high scores (3+1 respondents at 9-10) masking a left tail. This pattern is a strong candidate for subgroup investigation once n increases.",
+      "sphere_plain": "Switchback has a very small number of responses, but they're striking — a few people rating it very highly, a few rating it low, and not much in the middle. This kind of split could mean the protocol works brilliantly for some listeners and not for others, perhaps depending on how deep into low affect they are. Interesting signal, but we need more data before reading too much into it."
     },
     "T-CF-L2": {
       "name": "Current",
@@ -815,7 +871,8 @@
       "vol_counts": {
         "VOL001": 24
       },
-      "sphere": "Current (mean=6.58, n=24) shows a compressed distribution (std=1.26) concentrated in the 6–8 range; the slightly lower mean than L1 is not a concern at this sample size, and the tighter spread suggests a more homogeneous population reaching L2."
+      "sphere": "T-CF-L2 (Current, n=24, mean=6.58, std=1.26, pct_pos=54%) shows the tightest distribution in the Creative Flow subcategory at developing confidence. The low std indicates high response convergence; nearly all scores fall between 5-8. The slight mean decline from L1 to L2 (0.08 points) is negligible at this n.",
+      "sphere_plain": "Current shows tight, consistent results — most listeners land in a similar positive range, without much variation. The scores are a bit lower than L1 on average, but the consistency is actually a strength: it suggests a reliable experience rather than a hit-or-miss one."
     },
     "H-OS-L2": {
       "name": "Rainfall",
@@ -846,7 +903,8 @@
       "vol_counts": {
         "VOL001": 58
       },
-      "sphere": "Rainfall (mean=6.71, n=58) improves on Pebble across all metrics — higher mean, similar std, and pct_pos jumping to 62%; this is consistent with L2 self-selection filtering toward listeners who found L1 partially effective and are seeking deeper entrainment."
+      "sphere": "H-OS-L2 (Rainfall, n=58, mean=6.71, std=1.84, pct_pos=62%) outperforms its L1 sibling on both mean and pct_pos at meaningful confidence. Distribution shows a broad mode spanning scores 7-8 (28 respondents combined), with modest tails. The elevated std is consistent with population diversity rather than protocol inconsistency at this n.",
+      "sphere_plain": "Rainfall is doing well, with a solid cluster of listeners rating it in the 7–8 range. It actually outperforms Pebble (L1) in terms of how many people report a clearly positive experience — which is an interesting pattern that deserves more attention as data grows."
     },
     "T-MB-L1": {
       "name": "Stone",
@@ -877,7 +935,8 @@
       "vol_counts": {
         "VOL001": 29
       },
-      "sphere": "Stone (mean=7.17, n=29) is the highest mean in the Maintenance and Balance sub-series and one of the top performers in THRIVING, with pct_pos at 69% and a clean distribution concentrated in the 7–9 range; the low std (1.29) suggests good population-protocol fit."
+      "sphere": "T-MB-L1 (Stone, n=29, mean=7.17, std=1.29, pct_pos=69%) is the joint-highest mean in THRIVING alongside Aurora (T-CF-L3), with a tight distribution concentrated at scores 7-8 (17 respondents combined) at developing confidence. The 69% pct_pos is the highest in the THRIVING series at this confidence level. Maintenance & Balance appears to be a well-matched protocol category for this respondent population.",
+      "sphere_plain": "Stone is the strongest performer in the Maintenance & Balance group, with the highest proportion of positive ratings in the whole Thriving series. Most listeners are clustering comfortably in the 7–8 range. It seems particularly well-matched to the people who seek it out — possibly because 'balance maintenance' is a clearly defined state that the protocol can reliably support."
     },
     "X-MC-L2": {
       "name": "Starlight",
@@ -908,7 +967,8 @@
       "vol_counts": {
         "VOL001": 17
       },
-      "sphere": "Starlight (mean=6.59, n=17, early data) holds close to L1 performance with a cleaner distribution (std=1.33); the absence of extreme scores in either direction suggests a consistent if modest response — interpretation should wait for n to develop."
+      "sphere": "X-MC-L2 (Starlight, n=17, mean=6.59, std=1.33, pct_pos=53%) is early-data with a distribution concentrated at scores 6-7 (11 respondents). The slight mean maintenance from L1 to L2 (drop of 0.03) and tightening std are consistent with a filtered but not dramatically different L2 respondent pool. No actionable signal at this n.",
+      "sphere_plain": "Starlight is early in its data collection, and the picture is similar to Cavern — mild positive lean, most scores in the 6–7 range. Nothing alarming, but too few responses to draw any conclusions yet. The main thing to note is that it's holding its own relative to L1."
     },
     "X-MC-L1": {
       "name": "Cavern",
@@ -939,7 +999,8 @@
       "vol_counts": {
         "VOL001": 24
       },
-      "sphere": "Cavern (mean=6.62, n=24) is a reasonable baseline for the Mind and Clarity sub-series within TRANSFORMING; pct_pos at 50% is exactly at threshold, and the distribution is moderately concentrated in the 6–8 range — a functional but not strong signal."
+      "sphere": "X-MC-L1 (Cavern, n=24, mean=6.62, std=1.52, pct_pos=50%) is the entry point for the Mind & Clarity subcategory at developing confidence. A 50% pct_pos with a mean of 6.62 reflects moderate positive signal; the distribution clusters at score 6 (8 respondents) with a modest right tail. Standard deviation is tighter than series average, suggesting more homogeneous response.",
+      "sphere_plain": "Cavern is a modest but steady entry point for the Mind & Clarity series. Half of listeners rated it positively, with most responses in the 5–7 range. Results are more consistent than the series average, which is a reasonable foundation for a first-level protocol in a challenging category."
     },
     "X-MC-L3": {
       "name": "Cosmos",
@@ -970,7 +1031,8 @@
       "vol_counts": {
         "VOL001": 10
       },
-      "sphere": "Cosmos (mean=5.6, n=10, early data) is the primary anomaly flag in the dataset: the lowest mean across all protocols with std=2.2 and a distribution that suggests a tentative bimodal pattern; this cannot be confirmed at n=10 but warrants prioritised data collection and qualitative investigation."
+      "sphere": "X-MC-L3 (Cosmos, n=10, mean=5.6, std=2.2, pct_pos=50%) is early-data and flagged for monitoring. The std of 2.2 is the highest in the dataset, and the distribution shows score mass at both low (2-4) and high (7-9) ends with a gap at 5-6 — a tentative bimodal pattern. At n=10 this is statistically unreliable, but the pattern warrants specific data collection to test the subgroup hypothesis.",
+      "sphere_plain": "Cosmos is the most variable protocol in the entire collection, and it's too early to know why. A small number of responses are splitting sharply between 'quite helpful' and 'not very helpful', with not much in the middle. This could mean the protocol is working very differently for different types of listeners — a genuine research question worth tracking as more data comes in."
     }
   },
   "series_summary": {
