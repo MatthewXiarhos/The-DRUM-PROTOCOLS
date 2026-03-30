@@ -113,9 +113,11 @@ a { color: inherit; }
 .survey-pair { display: flex; gap: 8px; }
 .btn-survey-quick { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 14px 8px; border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-md); background: var(--dp-slate-deeper); text-decoration: none; transition: all 0.15s; cursor: pointer; font-family: inherit; }
 .btn-survey-quick:hover { border-color: var(--dp-healing-accent); background: rgba(82,183,136,0.08); }
+.btn-survey-single { width: 100%; padding: 16px 12px; gap: 5px; margin-bottom: 10px; }
 .sq-badge { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--dp-healing-accent); margin-bottom: 2px; }
-.sq-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.sq-title { font-size: 13px; font-weight: 500; color: var(--color-text-primary); text-align: center; }
 .sq-sub { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.4; }
+.sq-cta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dp-gold-light); border: 0.5px solid rgba(184,134,11,0.35); border-radius: 4px; padding: 3px 10px; margin-top: 4px; }
 .survey-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 10px; line-height: 1.5; }
 .commentary-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); background: rgba(184,134,11,0.05); }
 .commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
@@ -287,10 +289,11 @@ a { color: inherit; }
         </div>
         <div class="panel-section">
           <div class="section-label">Complete a survey after listening</div>
-          <div class="survey-pair">
-            <a class="btn-survey-quick" id="survey-quick" href="#" target="_blank"><div class="sq-badge">Quick</div><div class="sq-title">1-Second Survey</div><div class="sq-sub">One rating. That&rsquo;s it.</div></a>
-            <a class="btn-survey-quick" id="survey-full" href="#" target="_blank"><div class="sq-badge">Full</div><div class="sq-title">1-Minute Survey</div><div class="sq-sub">Rating + optional context</div></a>
-          </div>
+          <a class="btn-survey-quick btn-survey-single" id="survey-quick" href="#" target="_blank">
+            <div class="sq-title">Take the 1-Second or 1-Minute Survey</div>
+            <div class="sq-sub">Your call. Thank you!</div>
+            <div class="sq-cta">Take Survey →</div>
+          </a>
           <div class="survey-note">Your data drives protocol development.<br>Every response matters &mdash; including ones that didn&rsquo;t work.</div>
         </div>
         <div class="panel-section listen-section">
@@ -612,10 +615,8 @@ function populateResult(p,sk){
   document.getElementById('result-meta').textContent=`${p.code} · ${p.meta}`;
   document.getElementById('result-desc').textContent=p.desc;
   // Build survey URLs with redirectUrl back to adviser.html
-  const url1s=buildSurveyUrl('1AMk7b',p.code);
-  const url1m=buildSurveyUrl('rjKPY5',p.code);
+  const url1s=buildSurveyUrl('kd5jxj',p.code);
   document.getElementById('survey-quick').href=url1s;
-  document.getElementById('survey-full').href=url1m;
   document.getElementById('result-header').className='result-header '+p.series;
   drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
 }

@@ -152,12 +152,11 @@ a{color:inherit;text-decoration:none}
 
 /* ── SURVEY SECTION ── */
 .survey-wrap{padding:20px 24px 24px}
-.survey-pair{display:flex;gap:10px;margin-bottom:12px}
-.btn-survey{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:14px 8px;border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);background:rgba(255,255,255,.03);text-decoration:none;transition:all .15s;font-family:inherit;cursor:pointer}
-.btn-survey:hover{border-color:var(--dp-gold-light);background:rgba(184,134,11,.06)}
-.sq-badge{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dp-healing-accent);margin-bottom:2px}
-.sq-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.btn-survey-single{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:16px 12px;border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);background:rgba(255,255,255,.03);text-decoration:none;transition:all .15s;font-family:inherit;cursor:pointer;width:100%;margin-bottom:12px}
+.btn-survey-single:hover{border-color:var(--dp-gold-light);background:rgba(184,134,11,.06)}
+.sq-title{font-size:13px;font-weight:500;color:var(--color-text-primary);text-align:center}
 .sq-sub{font-size:11px;color:var(--color-text-secondary);text-align:center}
+.sq-cta{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid rgba(184,134,11,.35);border-radius:4px;padding:3px 10px;margin-top:4px}
 .survey-note{font-size:11px;color:var(--color-text-tertiary);text-align:center;line-height:1.6}
 
 /* ── SAFETY NOTE ── */
@@ -230,7 +229,6 @@ a{color:inherit;text-decoration:none}
   .main{padding:20px 16px 48px}
   .header-name{font-size:36px}
   .stats-grid{gap:6px}
-  .survey-pair{flex-direction:column}
   .listing-wrap{padding:24px 16px 48px}
 }
 
@@ -306,18 +304,11 @@ a{color:inherit;text-decoration:none}
   <div class="section">
     <div class="section-head"><div class="section-label">Complete a survey after listening</div></div>
     <div class="survey-wrap">
-      <div class="survey-pair">
-        <a class="btn-survey" id="survey-1s" href="#" target="_blank">
-          <div class="sq-badge">Quick</div>
-          <div class="sq-title">1-Second Survey</div>
-          <div class="sq-sub">One rating · 10 seconds</div>
-        </a>
-        <a class="btn-survey" id="survey-1m" href="#" target="_blank">
-          <div class="sq-badge">Full</div>
-          <div class="sq-title">1-Minute Survey</div>
-          <div class="sq-sub">Rating + context</div>
-        </a>
-      </div>
+      <a class="btn-survey btn-survey-single" id="survey-1s" href="#" target="_blank">
+        <div class="sq-title">Take the 1-Second or 1-Minute Survey</div>
+        <div class="sq-sub">Your call. Thank you!</div>
+        <div class="sq-cta">Take Survey →</div>
+      </a>
       <div class="survey-note">Your response shapes future protocols.<br>Every report matters — including ones that didn't work.</div>
     </div>
     <div class="safety-note">
@@ -451,7 +442,7 @@ a{color:inherit;text-decoration:none}
 </footer>
 
 <script>
-const BASE_URL = 'https://matthewxiarhos.github.io/The-DRUM-PROTOCOLS';
+const BASE_URL = 'https://thedrumprotocols.org';
 
 // ── DATA (populated from protocols.json) ──────────────────────────────────────
 let PROTOCOLS = {};
@@ -684,9 +675,7 @@ function switchVolume(volCode, protocolCode){
   const surveyData = p.surveys && p.surveys[volCode];
   if(surveyData){
     const url1s = surveyData.survey1s;
-    const url1m = surveyData.survey1m;
     document.getElementById('survey-1s').href=url1s;
-    document.getElementById('survey-1m').href=url1m;
   }
 }
 
@@ -807,11 +796,9 @@ function init(){
   // Survey URLs — read from protocols.json surveys object
   const surveyData = p.surveys && p.surveys[volCode];
   const url1s = surveyData ? surveyData.survey1s : '#';
-  const url1m = surveyData ? surveyData.survey1m : '#';
 
   // Wire up survey links
   document.getElementById('survey-1s').href=url1s;
-  document.getElementById('survey-1m').href=url1m;
 
   // Render
   drawCurve(p);

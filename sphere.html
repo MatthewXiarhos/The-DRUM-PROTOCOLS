@@ -191,6 +191,15 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 .placeholder-block{background:rgba(255,255,255,.02);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:24px;text-align:center;color:var(--color-text-tertiary);font-size:13px;line-height:1.7}
 .placeholder-block strong{color:var(--dp-gold-light)}
 
+/* ── BIMODAL BADGE ── */
+.badge-bimodal{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:rgba(176,106,176,.12);border:.5px solid rgba(176,106,176,.35);color:var(--dp-transforming-accent)}
+
+/* ── COMPARE STAT LINE ── */
+.compare-stat{font-size:11px;color:var(--color-text-tertiary);margin-bottom:8px;letter-spacing:.02em}
+
+/* ── SIGNAL CARD — allow p-only layout (no h3 required) ── */
+.signal-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+
 /* ── FOOTER ── */
 .page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 24px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light)}
@@ -555,80 +564,135 @@ Data payload:
 </footer>
 
 <script>
-// ── API HYDRATION ──
-(function hydrateFromApi(){
-  const data=window.SPHERE_DATALAB;
-  if(!data)return;
+// ── DATA FETCH & HYDRATION ────────────────────────────────────────────────────
+// Reads data.json from the repo root. Structure produced by sphere_pipeline.py:
+//   data.protocols        → object keyed by protocol code (e.g. "H-OS-L1")
+//   data.sphere_commentary → { overview, cross_series, anomalies, development_signals, by_protocol, by_protocol_plain }
+//   data.series_summary   → { HEALING: {n,mean,std,protocols}, THRIVING:…, TRANSFORMING:… }
+//   data.total_responses, data.protocols_with_data, data.analysis_date
 
-  if(data.stats){
-    if(data.stats.protocols!=null)document.getElementById('statProtocols').textContent=data.stats.protocols;
-    if(data.stats.series!=null)document.getElementById('statSeries').textContent=data.stats.series;
-    if(data.stats.directions!=null)document.getElementById('statDirections').textContent=data.stats.directions;
+const CONF_PCT = { early: 22, developing: 55, meaningful: 80, strong: 95 };
+const CONF_LABEL = { early: 'Early signal', developing: 'Developing signal', meaningful: 'Meaningful signal', strong: 'Strong signal' };
+
+// Series display copy (static — matches sphere.html hardcoded fallback cards)
+const SERIES_COPY = {
+  HEALING:      { label:'Healing',      body:'The widest entry breadth of any series, spanning acute distress through restorative sleep. HEALING protocols face the most diverse audience expectations — a factor tracked in routing accuracy.' },
+  THRIVING:     { label:'Thriving',     body:'The highest current series mean, with relatively consistent scores across entry points. The THRIVING series may benefit from the clarity of its stated purpose — listeners who reach it may already be well-matched to it.' },
+  TRANSFORMING: { label:'Transforming', body:'The smallest response count and the most varied mean scores. The youngest series in terms of community exposure. Sphere recommends interpreting TRANSFORMING data with particular caution until response depth grows.' },
+};
+
+fetch('data.json')
+  .then(r => r.ok ? r.json() : Promise.reject(r.status))
+  .then(data => hydrateAll(data))
+  .catch(err => console.warn('sphere.html: data.json load failed —', err));
+
+function hydrateAll(data) {
+
+  // ── STAT STRIP ──
+  if (data.protocols_with_data != null) document.getElementById('statProtocols').textContent = data.protocols_with_data;
+  // series count is always 3; future directions stat kept as placeholder
+
+  // ── GLOBAL SIGNALS — built from sphere_commentary ──
+  const sc = data.sphere_commentary || {};
+  if (sc.overview || sc.cross_series || sc.anomalies || sc.development_signals) {
+    const signalDefs = [
+      { label: 'Overview signal',         text: sc.overview },
+      { label: 'Cross-series comparison', text: sc.cross_series },
+      { label: 'Anomaly worth watching',  text: sc.anomalies },
+      { label: 'Development signal',      text: sc.development_signals },
+    ].filter(s => s.text && s.text.trim());
+
+    if (signalDefs.length) {
+      document.getElementById('globalSignals').innerHTML = signalDefs.map(s => `
+        <div class="signal-card">
+          <div class="signal-label">${s.label}</div>
+          <p>${s.text}</p>
+        </div>`).join('');
+    }
   }
 
-  const signals=Array.isArray(data.global_signals)?data.global_signals:null;
-  if(signals&&signals.length){
-    document.getElementById('globalSignals').innerHTML=signals.map(item=>`
-      <div class="signal-card">
-        <div class="signal-label">${item.label||'Signal'}</div>
-        <h3>${item.title||''}</h3>
-        <p>${item.body||''}</p>
-      </div>`).join('');
+  // ── PROTOCOL CARDS — convert dict → array, inject code key ──
+  const protosObj = data.protocols || {};
+  const protosArr = Object.entries(protosObj).map(([code, p]) => ({ code, ...p }));
+
+  // Attach sphere commentary onto each protocol
+  const byProto      = sc.by_protocol       || {};
+  const byProtoPlain = sc.by_protocol_plain || {};
+  protosArr.forEach(p => {
+    p.sphere       = byProto[p.code]      || p.sphere      || '';
+    p.sphere_plain = byProtoPlain[p.code] || p.sphere_plain || '';
+  });
+
+  // Sort: series order (HEALING → THRIVING → TRANSFORMING), then by code
+  const SERIES_ORDER = { HEALING: 0, THRIVING: 1, TRANSFORMING: 2 };
+  protosArr.sort((a, b) => {
+    const sd = (SERIES_ORDER[a.series] ?? 9) - (SERIES_ORDER[b.series] ?? 9);
+    return sd !== 0 ? sd : a.code.localeCompare(b.code);
+  });
+
+  if (protosArr.length) {
+    window._ALL_PROTOCOLS = protosArr;
+    renderProtocolCards(protosArr);
   }
 
-  const protocols=Array.isArray(data.protocols)?data.protocols:null;
-  if(protocols&&protocols.length){
-    window._ALL_PROTOCOLS=protocols;
-    renderProtocolCards(protocols);
+  // ── SERIES COMPARISON — built from series_summary ──
+  const ss = data.series_summary || {};
+  const seriesOrder = ['HEALING', 'THRIVING', 'TRANSFORMING'];
+  const compareCards = seriesOrder.map(s => {
+    const stat = ss[s];
+    const copy = SERIES_COPY[s] || { label: s, body: '' };
+    const statLine = stat ? `<div class="compare-stat">n=${stat.n} · mean ${stat.mean} · std ${stat.std}</div>` : '';
+    return `<div class="compare-card">
+      <h3>${copy.label}</h3>
+      ${statLine}
+      <p>${copy.body}</p>
+    </div>`;
+  }).filter(Boolean);
+  if (compareCards.length) {
+    document.getElementById('compareStrip').innerHTML = compareCards.join('');
   }
+}
 
-  const comparisons=Array.isArray(data.comparisons)?data.comparisons:null;
-  if(comparisons&&comparisons.length){
-    document.getElementById('compareStrip').innerHTML=comparisons.map(item=>`
-      <div class="compare-card">
-        <h3>${item.title||''}</h3>
-        <p>${item.body||''}</p>
-      </div>`).join('');
-  }
+function renderProtocolCards(protocols) {
+  document.getElementById('protocolGrid').innerHTML = protocols.map(item => {
+    const cls = (item.series || '').toLowerCase();
+    const conf     = item.confidence || 'early';
+    const confPct  = CONF_PCT[conf]   ?? 22;
+    const confLbl  = CONF_LABEL[conf] ?? 'Early signal';
+    const bimodalBadge = item.bimodal_flag ? '<span class="badge-bimodal">Bimodal</span>' : '';
+    const tags = [item.series, item.entry, `n=${item.n}`, item.move].filter(Boolean);
+    // Show plain commentary by default, technical as tooltip/alt
+    const commentaryText = item.sphere_plain || item.sphere || '';
+    const meanDisplay = item.mean != null ? item.mean.toFixed(1) : '—';
 
-  const directions=Array.isArray(data.future_directions)?data.future_directions:null;
-  if(directions&&directions.length){
-    document.getElementById('futureDirections').innerHTML=directions.map(item=>`
-      <div class="direction-card">
-        <div class="direction-label">${item.label||'Exploration path'}</div>
-        <h3>${item.title||''}</h3>
-        <p>${item.body||''}</p>
-      </div>`).join('');
-  }
-})();
-
-function renderProtocolCards(protocols){
-  document.getElementById('protocolGrid').innerHTML=protocols.map(item=>{
-    const cls=(item.series||'').toLowerCase();
-    const tags=(item.tags||[item.series,item.n&&`n=${item.n}`]).filter(Boolean);
-    const conf=item.confidence||58;
-    const confLabel=conf>=75?'Strong signal':conf>=50?'Developing signal':'Early signal';
-    return`<article class="protocol-card ${cls}" data-series="${(item.series||'').toUpperCase()}">
+    return `<article class="protocol-card ${cls}" data-series="${(item.series||'').toUpperCase()}">
       <div class="protocol-top">
         <div>
-          <div class="protocol-name">${item.name||''}</div>
-          <div class="protocol-code">${item.code||''}</div>
+          <div class="protocol-name">${item.name || ''}</div>
+          <div class="protocol-code">${item.code || ''}</div>
         </div>
-        <div class="protocol-score">${item.score??''}</div>
+        <div class="protocol-score">${meanDisplay}</div>
       </div>
-      <div class="protocol-meta">${tags.map(t=>`<span>${t}</span>`).join('')}</div>
+      <div class="protocol-meta">
+        ${tags.map(t => `<span>${t}</span>`).join('')}
+        ${bimodalBadge}
+      </div>
       <div class="sphere-module">
         <div class="sphere-module-mark">
           <img src="SPHERE_ICON.jpg" alt="Sphere">
         </div>
         <div class="sphere-module-stack">
-          <div class="sphere-row"><div class="sphere-row-label">Sphere's insight</div><p>${item.summary||''}</p></div>
-          <div class="sphere-row"><div class="sphere-row-label">Sphere's recommendation</div><p>${item.future||''}</p></div>
+          <div class="sphere-row">
+            <div class="sphere-row-label">Sphere's reading</div>
+            <p>${commentaryText || '<em style="opacity:.5">Commentary pending next pipeline run.</em>'}</p>
+          </div>
           <div class="sphere-row">
             <div class="sphere-row-label">Data confidence</div>
             <div class="sphere-confidence">
-              <div class="sphere-confidence-scale"><div class="sphere-confidence-fill" style="width:${conf}%"></div></div>
-              <div class="sphere-confidence-tag">${confLabel}</div>
+              <div class="sphere-confidence-scale">
+                <div class="sphere-confidence-fill" style="width:${confPct}%"></div>
+              </div>
+              <div class="sphere-confidence-tag">${confLbl}</div>
             </div>
           </div>
         </div>
@@ -637,11 +701,13 @@ function renderProtocolCards(protocols){
   }).join('');
 }
 
-function filterProtos(series,btn){
-  document.querySelectorAll('.tool-btn').forEach(b=>b.classList.remove('active'));
+function filterProtos(series, btn) {
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  if(!window._ALL_PROTOCOLS)return;
-  const filtered=series==='all'?window._ALL_PROTOCOLS:window._ALL_PROTOCOLS.filter(p=>p.series&&p.series.toUpperCase()===series);
+  if (!window._ALL_PROTOCOLS) return;
+  const filtered = series === 'all'
+    ? window._ALL_PROTOCOLS
+    : window._ALL_PROTOCOLS.filter(p => p.series && p.series.toUpperCase() === series);
   renderProtocolCards(filtered);
 }
 </script>
