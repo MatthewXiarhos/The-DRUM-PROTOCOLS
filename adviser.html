@@ -119,8 +119,11 @@ a { color: inherit; }
 .sq-sub { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.4; }
 .sq-cta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dp-gold-light); border: 0.5px solid rgba(184,134,11,0.35); border-radius: 4px; padding: 3px 10px; margin-top: 4px; }
 .survey-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 10px; line-height: 1.5; }
-.commentary-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); background: rgba(184,134,11,0.05); }
-.commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
+.commentary-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); background: rgba(184,134,11,0.05); position: relative; }
+.commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; padding-right: 62px; }
+.sphere-badge { position: absolute; top: 14px; right: 14px; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(184,134,11,.22); box-shadow: 0 0 18px rgba(184,134,11,.12), 0 4px 12px rgba(0,0,0,.35); transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
+.sphere-badge:hover { border-color: rgba(184,134,11,.55); box-shadow: 0 0 28px rgba(184,134,11,.22), 0 4px 16px rgba(0,0,0,.4); }
+.sphere-badge img { width:100%; height:100%; object-fit:cover; display:block; }
 .commentary-label { font-size: 10px; letter-spacing: 0.12em; color: var(--dp-gold-light); text-transform: uppercase; }
 .commentary-date { font-size: 10px; color: var(--color-text-tertiary); }
 .commentary-text { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); border-left: 2px solid rgba(212,160,23,0.3); padding-left: 12px; }
@@ -280,7 +283,8 @@ a { color: inherit; }
           <div class="early-badge" id="early-badge">Early data &middot; results will deepen with more responses</div>
         </div>
         <div class="commentary-section">
-          <div class="commentary-header"><div class="commentary-label">Statistical commentary</div><div class="commentary-date" id="commentary-date"></div></div>
+          <div class="sphere-badge" title="Sphere analysis"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>
+          <div class="commentary-header"><div class="commentary-label">Sphere's Analysis</div><div class="commentary-date" id="commentary-date"></div></div>
           <div class="commentary-tabs">
             <button class="commentary-tab active" id="tab-plain" onclick="switchCommentaryTab('plain')">What this means for you</button>
             <button class="commentary-tab" id="tab-technical" onclick="switchCommentaryTab('technical')">Technical details</button>
