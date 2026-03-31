@@ -77,6 +77,44 @@ a { color: inherit; }
 .result-header.transforming { background: var(--dp-transforming); }
 .result-header::before { content: ''; position: absolute; right: -40px; top: -40px; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.10); }
 .result-match-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 6px; opacity: 0.7; color: #fff; }
+/* Adviser recommendation badge — top-right of result header */
+.adviser-rec-badge {
+  position: absolute; top: 14px; right: 16px;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(184,134,11,0.22);
+  border: 1.5px solid rgba(184,134,11,0.70);
+  border-radius: 999px;
+  padding: 7px 16px 7px 11px;
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dp-gold-light);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 16px rgba(184,134,11,0.25);
+  font-weight: 500;
+}
+.adviser-rec-badge::before {
+  content: '';
+  display: block; width: 10px; height: 10px; border-radius: 50%;
+  background: var(--dp-gold-light);
+  box-shadow: 0 0 8px rgba(212,160,23,0.9);
+}
+/* Related card — highlighted when it is the adviser recommendation */
+.related-card.is-adviser-rec {
+  border-color: rgba(184,134,11,0.55) !important;
+  background: rgba(184,134,11,0.07) !important;
+  position: relative;
+}
+.related-card.is-adviser-rec::before {
+  content: 'Adviser Recommendation';
+  position: absolute; top: -1px; left: 12px;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dp-gold-light);
+  background: var(--dp-slate-deepest);
+  padding: 0 8px;
+  transform: translateY(-50%);
+  border: 1px solid rgba(184,134,11,0.45);
+  border-radius: 999px;
+  font-weight: 500;
+}
 .result-name { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 600; color: #fff; margin-bottom: 4px; }
 .result-meta { font-size: 12px; color: rgba(255,255,255,0.55); letter-spacing: 0.05em; }
 .panel-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); }
@@ -119,11 +157,8 @@ a { color: inherit; }
 .sq-sub { font-size: 11px; color: var(--color-text-secondary); text-align: center; line-height: 1.4; }
 .sq-cta { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dp-gold-light); border: 0.5px solid rgba(184,134,11,0.35); border-radius: 4px; padding: 3px 10px; margin-top: 4px; }
 .survey-note { font-size: 11px; color: var(--color-text-tertiary); text-align: center; margin-top: 10px; line-height: 1.5; }
-.commentary-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); background: rgba(184,134,11,0.05); position: relative; }
-.commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; padding-right: 62px; }
-.sphere-badge { position: absolute; top: 14px; right: 14px; width: 52px; height: 52px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(184,134,11,.22); box-shadow: 0 0 18px rgba(184,134,11,.12), 0 4px 12px rgba(0,0,0,.35); transition: border-color .2s, box-shadow .2s; flex-shrink: 0; }
-.sphere-badge:hover { border-color: rgba(184,134,11,.55); box-shadow: 0 0 28px rgba(184,134,11,.22), 0 4px 16px rgba(0,0,0,.4); }
-.sphere-badge img { width:100%; height:100%; object-fit:cover; display:block; }
+.commentary-section { padding: 18px 28px; border-bottom: 0.5px solid var(--color-border); background: rgba(184,134,11,0.05); }
+.commentary-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 12px; }
 .commentary-label { font-size: 10px; letter-spacing: 0.12em; color: var(--dp-gold-light); text-transform: uppercase; }
 .commentary-date { font-size: 10px; color: var(--color-text-tertiary); }
 .commentary-text { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); border-left: 2px solid rgba(212,160,23,0.3); padding-left: 12px; }
@@ -233,6 +268,7 @@ a { color: inherit; }
       <div id="screen-result" class="screen">
         <div class="result-header" id="result-header">
           <div class="result-match-label">Your match</div>
+          <div class="adviser-rec-badge" id="adviser-rec-badge" style="display:none">Adviser Recommendation</div>
           <div class="result-name" id="result-name">&mdash;</div>
           <div class="result-meta" id="result-meta"></div>
         </div>
@@ -283,8 +319,7 @@ a { color: inherit; }
           <div class="early-badge" id="early-badge">Early data &middot; results will deepen with more responses</div>
         </div>
         <div class="commentary-section">
-          <div class="sphere-badge" title="Sphere analysis"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>
-          <div class="commentary-header"><div class="commentary-label">Sphere's Analysis</div><div class="commentary-date" id="commentary-date"></div></div>
+          <div class="commentary-header"><div class="commentary-label">Statistical commentary</div><div class="commentary-date" id="commentary-date"></div></div>
           <div class="commentary-tabs">
             <button class="commentary-tab active" id="tab-plain" onclick="switchCommentaryTab('plain')">What this means for you</button>
             <button class="commentary-tab" id="tab-technical" onclick="switchCommentaryTab('technical')">Technical details</button>
@@ -605,7 +640,13 @@ function renderRelated(currentCode,sk){
   const codes=pool.filter(c=>c!==currentCode).slice(0,3).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
   const list=document.getElementById('related-list');
   if(!codes.length){list.innerHTML='<div style="font-size:13px;color:var(--color-text-tertiary);padding:8px 0">No related protocols found.</div>';return;}
-  list.innerHTML=codes.map(p=>{const s=STATS[p.code];const sc=s&&s.n>0?`<div class="related-score">${s.mean?s.mean.toFixed(1):'—'}</div>`:`<div class="related-score no-data">—</div>`;return `<button class="related-card" onclick="loadRelated('${p.code}')"><div class="related-dot ${p.series}"></div><div class="related-main"><div class="related-name">${p.name}</div><div class="related-meta">${p.meta}</div></div>${sc}</button>`;}).join('');
+  const recCode = sessionStorage.getItem('dp-adviser-rec') || '';
+  list.innerHTML=codes.map(p=>{
+    const s=STATS[p.code];
+    const sc=s&&s.n>0?`<div class="related-score">${s.mean?s.mean.toFixed(1):'—'}</div>`:`<div class="related-score no-data">—</div>`;
+    const isRec = p.code === recCode ? ' is-adviser-rec' : '';
+    return `<button class="related-card${isRec}" onclick="loadRelated('${p.code}')"><div class="related-dot ${p.series}"></div><div class="related-main"><div class="related-name">${p.name}</div><div class="related-meta">${p.meta}</div></div>${sc}</button>`;
+  }).join('');
 }
 
 function loadRelated(code){const p=ALL_PROTOCOLS[code];if(!p)return;populateResult(p,answers[0]);scrollToPanel();}
@@ -624,11 +665,17 @@ function populateResult(p,sk){
   const url1s=buildSurveyUrl('kd5jxj',p.code);
   document.getElementById('survey-quick').href=url1s;
   document.getElementById('result-header').className='result-header '+p.series;
+  // Show adviser recommendation badge only when viewing the originally recommended protocol
+  const recCode = sessionStorage.getItem('dp-adviser-rec') || '';
+  const badge = document.getElementById('adviser-rec-badge');
+  badge.style.display = (recCode && p.code === recCode) ? 'inline-flex' : 'none';
   drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
 }
 
 function showResult(){
   const p=findProtocol();if(!p)return;
+  // Persist this recommendation for the session
+  try { sessionStorage.setItem('dp-adviser-rec', p.code); } catch(e) {}
   document.getElementById('screen-adviser').classList.remove('active');
   document.getElementById('screen-result').classList.add('active');
   populateResult(p,answers[0]);
@@ -637,6 +684,8 @@ function showResult(){
 
 function restart(){
   answers={};currentQ=0;
+  // Clear the stored recommendation when user explicitly starts over
+  try { sessionStorage.removeItem('dp-adviser-rec'); } catch(e) {}
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-adviser').classList.add('active');
   renderQuestion();scrollToPanel();
