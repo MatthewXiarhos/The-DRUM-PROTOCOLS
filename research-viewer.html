@@ -8,45 +8,107 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--dp-gold:#B8860B;--dp-gold-light:#D4A017;--dp-gold-faint:#FFFCF0;--dp-slate:#2C3E50;--dp-slate-deep:#223244;--cream:#FAFAF7;--surface:#fff;--text:#1a1a1a;--sub:#56606b;--border:rgba(0,0,0,.10);--radius:16px;--shadow:0 12px 34px rgba(17,24,32,.09)}
-body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text)}
+:root{
+  --dp-gold:#B8860B;--dp-gold-light:#D4A017;--dp-gold-pale:#3a2e10;
+  --dp-slate:#2C3E50;--dp-slate-mid:#243345;--dp-slate-dark:#1a2633;
+  --dp-slate-deeper:#131e28;--dp-slate-deepest:#0d1720;
+  --dp-slate-light:#4A5F72;
+  --color-text-primary:#e8e4dc;--color-text-secondary:#9aabb8;--color-text-tertiary:#607080;
+  --color-border:rgba(255,255,255,0.06);--color-border-mid:rgba(255,255,255,0.10);
+  --color-border-gold:rgba(184,134,11,0.22);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --shadow-soft:0 10px 30px rgba(0,0,0,0.3);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--dp-slate-deepest);color:var(--color-text-primary)}
 a{color:inherit}
-.site-nav{background:var(--dp-slate);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200}
-.nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);text-decoration:none;font-weight:500}
-.nav-links{display:flex;gap:24px;align-items:center}.nav-link{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);text-decoration:none}.nav-link:hover,.nav-link.active{color:#fff}
+
+/* NAV */
+.site-nav{background:var(--dp-slate-deeper);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--color-border)}
+.nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);text-decoration:none;font-weight:500;white-space:nowrap}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-link{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);text-decoration:none;transition:color .15s;white-space:nowrap}
+.nav-link:hover{color:#fff}.nav-link.active{color:var(--dp-gold-light)}
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
+.nav-hamburger span{display:block;height:2px;width:100%;background:rgba(255,255,255,0.55)}
+.nav-hamburger:hover span{background:#fff}
+@media(max-width:640px){
+  .site-nav{padding:0 16px}
+  .nav-links{display:none;position:fixed;top:52px;left:0;right:0;background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);flex-direction:column;gap:0;z-index:199}
+  .nav-links.open{display:flex}
+  .nav-link{padding:14px 20px;border-bottom:1px solid var(--color-border);font-size:12px}
+  .nav-link:last-child{border-bottom:none}
+  .nav-hamburger{display:flex}
+}
+
+/* LAYOUT */
 .page{max-width:1280px;margin:0 auto;padding:28px 24px 40px}
 .viewer-shell{display:grid;grid-template-columns:360px minmax(0,1fr);gap:16px;align-items:start}
-.panel,.viewer{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
-.panel{padding:22px 22px 24px;position:sticky;top:72px}
-.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold);margin-bottom:10px}
-.title{font-family:'Cormorant Garamond',serif;font-size:42px;line-height:1;margin-bottom:12px}
-.authors{font-size:14px;line-height:1.65;color:var(--sub);margin-bottom:16px}
-.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}.badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;border:1px solid rgba(184,134,11,.18);background:var(--dp-gold-faint);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--dp-gold)}
-.abstract{padding:16px;border-radius:14px;background:linear-gradient(180deg,var(--dp-gold-faint),#fff);border:1px solid rgba(184,134,11,.2);margin-bottom:14px}
-.abstract-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#7c6b3a;margin-bottom:8px}
-.abstract p,.citation-box,.tools-copy{font-size:13px;line-height:1.75;color:var(--sub)}
-.citation-wrap{margin-top:14px}.small-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;margin-bottom:8px}.citation-box{border:1px solid var(--border);background:#fbfbfa;border-radius:12px;padding:12px 14px}
-.actions{display:grid;gap:10px;margin-top:16px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:10px;text-decoration:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s ease;border:1px solid transparent;cursor:pointer}
-.btn-primary{background:var(--dp-gold);color:#fff;border-color:var(--dp-gold)}.btn-primary:hover{background:var(--dp-gold-light);border-color:var(--dp-gold-light)}.btn-secondary{background:#fff;color:var(--dp-slate);border-color:rgba(44,62,80,.14)}.btn-secondary:hover{border-color:rgba(184,134,11,.35)}
-.copy-status{font-size:12px;color:#6a6a6a;min-height:16px}
-.viewer{overflow:hidden}
-.viewer-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);background:#fcfcfb}.viewer-name{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#68727c}
-.viewer-frame{width:100%;height:calc(100vh - 150px);border:0;display:block;background:#f0f2f4}
-.back-link{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-gold);margin-bottom:14px}
-@media (max-width: 1024px){.viewer-shell{grid-template-columns:1fr}.panel{position:relative;top:0}.viewer-frame{height:78vh}}
-@media (max-width: 720px){.site-nav{padding:0 16px}.nav-links{gap:14px}.nav-link{font-size:11px}.page{padding:18px 16px 28px}.title{font-size:34px}}
-@media (max-width: 520px){.nav-links{display:none}.viewer-top{flex-direction:column;align-items:flex-start;gap:8px}}
+
+/* SIDE PANEL */
+.panel{
+  background:var(--dp-slate-deeper);
+  border:1px solid var(--color-border-mid);
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-soft);
+  padding:22px 22px 24px;
+  position:sticky;top:72px;
+}
+.eyebrow{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
+.title{font-family:'Cormorant Garamond',serif;font-size:38px;line-height:1.05;margin-bottom:12px;color:#fff}
+.authors{font-size:13px;line-height:1.65;color:var(--color-text-secondary);margin-bottom:16px}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:999px;border:1px solid var(--color-border-gold);background:var(--dp-gold-pale);font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:var(--dp-gold-light)}
+
+/* ABSTRACT */
+.abstract{padding:16px;border-radius:14px;background:rgba(184,134,11,0.06);border:1px solid var(--color-border-gold);margin-bottom:14px}
+.abstract-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--dp-gold-light);opacity:.7;margin-bottom:8px}
+.abstract p,.citation-box{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+
+/* CITATION */
+.citation-wrap{margin-top:14px}
+.small-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px}
+.citation-box{border:1px solid var(--color-border-mid);background:var(--dp-slate-dark);border-radius:12px;padding:12px 14px}
+
+/* BUTTONS */
+.actions{display:grid;gap:10px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 16px;border-radius:var(--radius-md);text-decoration:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;transition:all .15s ease;border:1px solid transparent;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-primary{background:var(--dp-gold);color:#fff;border-color:var(--dp-gold)}
+.btn-primary:hover{background:var(--dp-gold-light);border-color:var(--dp-gold-light)}
+.btn-secondary{background:rgba(255,255,255,.04);color:var(--color-text-primary);border-color:var(--color-border-mid)}
+.btn-secondary:hover{border-color:var(--color-border-gold);background:rgba(255,255,255,.07)}
+.copy-status{font-size:12px;color:var(--color-text-tertiary);min-height:16px}
+
+/* PDF VIEWER */
+.viewer{overflow:hidden;background:var(--dp-slate-deeper);border:1px solid var(--color-border-mid);border-radius:var(--radius-lg);box-shadow:var(--shadow-soft)}
+.viewer-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--color-border);background:var(--dp-slate-dark)}
+.viewer-name{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary)}
+.viewer-frame{width:100%;height:calc(100vh - 150px);border:0;display:block;background:var(--dp-slate-mid)}
+
+/* BACK LINK */
+.back-link{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:14px;opacity:.8;transition:opacity .15s}
+.back-link:hover{opacity:1}
+
+@media(max-width:1024px){.viewer-shell{grid-template-columns:1fr}.panel{position:relative;top:0}.viewer-frame{height:78vh}}
+@media(max-width:720px){.page{padding:18px 16px 28px}.title{font-size:32px}}
+@media(max-width:520px){.viewer-top{flex-direction:column;align-items:flex-start;gap:8px}}
 </style>
 </head>
 <body>
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-links">
-    <a class="nav-link active" href="research.html">Research</a>
-    <a class="nav-link" href="drum_protocols_adviser_ux.html">Adviser</a>
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="learn.html">Learn About</a>
+    <a class="nav-link" href="adviser.html">Adviser</a>
+    <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
-    <a class="nav-link" href="insights.html">Data Insights</a>
-    <a class="nav-link" href="legal.html">Safety</a>
+    <a class="nav-link" href="sphere.html">Data Lab</a>
+    <a class="nav-link active" href="research.html">Research</a>
+    <a class="nav-link" href="about.html">About Me</a>
+    <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
 <div class="page">
@@ -82,6 +144,18 @@ a{color:inherit}
   </div>
 </div>
 <script>
+function toggleNav(btn) {
+  const links = document.querySelector('.nav-links');
+  const open = links.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.site-nav')) {
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn = document.querySelector('.nav-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
 const docs = {
   'clinical-overview-brief': {
     title: 'Clinical Overview Brief',
