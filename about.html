@@ -164,19 +164,14 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.10);
   box-shadow: 0 16px 44px rgba(0,0,0,0.35);
-  min-height: 180px;
-  background:
-    linear-gradient(135deg, rgba(12,20,28,0.72), rgba(12,20,28,0.42)),
-    radial-gradient(circle at center, rgba(212,160,23,0.18), transparent 38%),
-    url('about_background.jpg') center 52% / cover no-repeat;
-  position: relative;
+  background: var(--dp-slate-mid);
 }
-.header-banner::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(90deg, rgba(9,14,20,0.72) 0%, rgba(9,14,20,0.34) 42%, rgba(9,14,20,0.18) 100%);
+.header-banner img {
+  display: block;
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center 45%;
 }
 
 .hero {
@@ -506,19 +501,22 @@ a { color: inherit; text-decoration: none; }
   </button>
   <div class="nav-links">
     <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="learn.html">Learn About</a>
     <a class="nav-link" href="adviser.html">Adviser</a>
     <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
     <a class="nav-link" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link active" href="about.html">About</a>
+    <a class="nav-link active" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
 
 <header class="page-header">
   <div class="header-banner-wrap">
-    <div class="header-banner"></div>
+    <div class="header-banner">
+      <img src="about_banner.jpg" alt="About Me · The Drum Protocols">
+    </div>
   </div>
   <div class="hero">
     <div class="hero-copy">
@@ -656,12 +654,13 @@ a { color: inherit; text-decoration: none; }
   <div class="footer-brand">The Drum Protocols</div>
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link" href="learn.html">Learn About</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
     <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
     <a class="footer-link" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
-    <a class="footer-link active" href="about.html">About</a>
+    <a class="footer-link active" href="about.html">About Me</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>

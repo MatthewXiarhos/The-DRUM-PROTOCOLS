@@ -19,13 +19,12 @@
   --color-border:rgba(255,255,255,0.06);--color-border-mid:rgba(255,255,255,0.10);--color-border-gold:rgba(184,134,11,0.22);
   --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
   --shadow-soft:0 10px 30px rgba(0,0,0,0.3);--shadow-card:0 4px 16px rgba(0,0,0,0.25);
-  /* Sphere-specific accent */
   --sphere-blue:#4a9eca;--sphere-blue-soft:rgba(74,158,202,.14);
 }
 body{font-family:'DM Sans',sans-serif;background:var(--dp-slate-deepest);color:var(--color-text-primary);min-height:100vh}
 a{color:inherit;text-decoration:none}
 
-/* ── NAV ── */
+/* ── SITE NAV ── */
 .site-nav{background:var(--dp-slate-deeper);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--color-border)}
 .nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);font-weight:500}
 .nav-links{display:flex;gap:24px;align-items:center}
@@ -49,156 +48,255 @@ a{color:inherit;text-decoration:none}
 .page-subtitle{font-size:14px;line-height:1.75;color:rgba(255,255,255,.55);max-width:580px;margin-top:8px}
 @media(max-width:720px){.header-banner-wrap img{height:180px}}
 
-/* ── MAIN ── */
-.main{max-width:1120px;margin:0 auto;padding:40px 24px 80px}
+/* ── SPHERE DATA LAB LAYOUT ── */
+.sphere-lab{display:grid;grid-template-columns:240px 1fr;gap:0;max-width:1240px;margin:0 auto;padding:32px 24px 80px;align-items:start}
+@media(max-width:900px){.sphere-lab{grid-template-columns:1fr;padding:20px 16px 60px}}
 
-/* ── SPHERE INTRO BLOCK ── */
-.sphere-intro{
-  background:
-    radial-gradient(circle at 88% 14%, rgba(212,160,23,.13), transparent 22%),
-    radial-gradient(circle at 12% 80%, rgba(74,158,202,.08), transparent 20%),
-    linear-gradient(145deg,#182230 0%,#1c2e42 55%,#192838 100%);
-  border:1px solid var(--color-border-gold);
-  border-radius:20px;
-  box-shadow:var(--shadow-soft);
-  overflow:hidden;
+/* ── LEFT MENU PANEL ── */
+.sphere-menu{
+  padding-right:20px;
+  position:sticky;
+  top:84px;
+  align-self:start;
+  max-height:calc(100vh - 104px);
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(184,134,11,.25) transparent;
+}
+.sphere-menu::-webkit-scrollbar{width:3px}
+.sphere-menu::-webkit-scrollbar-track{background:transparent}
+.sphere-menu::-webkit-scrollbar-thumb{background:rgba(184,134,11,.25);border-radius:999px}
+@media(max-width:900px){.sphere-menu{position:static;max-height:none;padding-right:0;margin-bottom:24px;overflow-y:visible}}
+
+.menu-header{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:14px;padding-bottom:8px;border-bottom:.5px solid var(--color-border)}
+
+/* TOP LEVEL menu items */
+.menu-item{
+  margin-bottom:2px;
+}
+.menu-top{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .15s;
+  font-size:13px;font-weight:500;color:rgba(255,255,255,.75);
+  border:1px solid transparent;
+  user-select:none;
+}
+.menu-top:hover{background:rgba(255,255,255,.04);color:#fff}
+.menu-top.active{
+  background:rgba(184,134,11,.08);
+  border-color:var(--dp-gold-light);
+  color:#fff;
+}
+.menu-top-num{
+  font-size:9px;letter-spacing:.12em;color:var(--dp-gold-light);
+  min-width:16px;font-weight:500;
+}
+.menu-top-label{flex:1;line-height:1.3}
+.menu-top-arrow{font-size:9px;color:var(--color-text-tertiary);transition:transform .15s}
+.menu-top.active .menu-top-arrow{transform:rotate(0deg)}
+.menu-top:not(.active) .menu-top-arrow{transform:rotate(-90deg)}
+
+/* SUBmenu items */
+.menu-sub{display:none;padding-left:16px;margin-bottom:4px}
+.menu-sub.open{display:block}
+.menu-sub-item{
+  display:block;padding:7px 10px;border-radius:var(--radius-sm);
+  cursor:pointer;transition:all .15s;
+  font-size:11.5px;color:rgba(255,255,255,.5);
+  border:1px solid transparent;
+  line-height:1.35;
+  user-select:none;
+}
+.menu-sub-item:hover{color:rgba(255,255,255,.85);background:rgba(255,255,255,.03)}
+.menu-sub-item.active{
+  color:var(--dp-gold-light);
+  border-color:rgba(184,134,11,.3);
+  background:rgba(184,134,11,.06);
+}
+.menu-sub-alpha{font-size:9px;letter-spacing:.10em;color:var(--color-text-tertiary);margin-right:6px}
+.menu-sub-item.active .menu-sub-alpha{color:var(--dp-gold-light)}
+
+/* ── CONTENT PANEL ── */
+.sphere-content{
+  min-width:0;
+  position:sticky;
+  top:84px;
+  align-self:start;
+  max-height:calc(100vh - 104px);
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.08) transparent;
+}
+.sphere-content::-webkit-scrollbar{width:3px}
+.sphere-content::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:999px}
+@media(max-width:900px){.sphere-content{position:static;max-height:none;overflow-y:visible}}
+
+.content-panel{
+  display:none;
+  background:var(--dp-slate-dark);
+  border:.5px solid var(--color-border-mid);
+  border-radius:var(--radius-lg);
+  padding:28px 28px 32px;
+  max-width:760px;
   position:relative;
-  margin-bottom:36px;
 }
-.sphere-intro::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse at top right, rgba(212,160,23,.06), transparent 40%);
-  pointer-events:none;
-}
-.sphere-intro-inner{
-  position:relative;z-index:1;
-  display:grid;grid-template-columns:1fr 1fr;gap:0;
-  align-items:stretch;
-}
-.sphere-intro-copy{padding:32px 32px 32px 32px;border-right:1px solid var(--color-border)}
-.sphere-intro-copy .kicker{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:14px;display:flex;align-items:center;gap:10px}
-.sphere-intro-copy .kicker::before{content:'';width:20px;height:1px;background:rgba(212,160,23,.7);display:block}
-.sphere-intro-copy h1{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,54px);font-weight:600;color:#fff;line-height:.95;margin-bottom:16px}
-.sphere-intro-copy p{font-size:14px;line-height:1.8;color:rgba(255,255,255,.72)}
-.sphere-intro-copy p+p{margin-top:12px}
-.sphere-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px}
-.sphere-stat{padding:12px 14px;border-radius:var(--radius-md);background:rgba(255,255,255,.03);border:.5px solid var(--color-border)}
-.sphere-stat-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:6px}
-.sphere-stat-value{font-family:'Cormorant Garamond',serif;font-size:30px;color:#fff;line-height:1}
+.content-panel.active{display:block;animation:fadeIn .18s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-.sphere-intro-pillars{padding:32px}
-.sphere-pillars-title{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:16px}
-.pillar{padding:14px 16px;border-radius:var(--radius-md);background:var(--sphere-blue-soft);border:1px solid rgba(74,158,202,.2);margin-bottom:10px}
-.pillar:last-child{margin-bottom:0}
+/* ── SPHERE BADGE ── */
+.sphere-badge{
+  position:absolute;
+  top:20px;right:20px;
+  width:68px;height:68px;
+  border-radius:50%;
+  overflow:hidden;
+  border:1px solid rgba(184,134,11,.22);
+  box-shadow:0 0 18px rgba(184,134,11,.12),0 4px 12px rgba(0,0,0,.35);
+  transition:border-color .2s,box-shadow .2s;
+  flex-shrink:0;
+}
+.sphere-badge:hover{
+  border-color:rgba(184,134,11,.55);
+  box-shadow:0 0 28px rgba(184,134,11,.22),0 4px 16px rgba(0,0,0,.4);
+}
+.sphere-badge img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* Intro badge — slightly larger with caption */
+.sphere-badge-intro{
+  position:absolute;
+  top:20px;right:20px;
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  width:80px;
+}
+.sphere-badge-intro .sphere-badge{
+  position:static;
+  width:80px;height:80px;
+}
+.sphere-badge-caption{
+  font-size:9px;letter-spacing:.10em;text-transform:uppercase;
+  color:rgba(184,134,11,.65);text-align:center;line-height:1.4;
+  width:100px;margin-left:-10px;
+}
+
+.panel-eyebrow{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.panel-eyebrow::before{content:'';width:16px;height:1px;background:rgba(212,160,23,.7);display:block}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:600;color:#fff;line-height:1.05;margin-bottom:14px}
+.panel-body{font-size:14px;line-height:1.8;color:rgba(255,255,255,.68)}
+.panel-body p+p{margin-top:12px}
+.panel-body h4{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);margin:20px 0 8px}
+.panel-body ul{padding-left:0;list-style:none;display:flex;flex-direction:column;gap:10px;margin-top:8px}
+.panel-body ul li{position:relative;padding-left:16px;font-size:14px;line-height:1.75;color:rgba(255,255,255,.68)}
+.panel-body ul li::before{content:'—';position:absolute;left:0;color:var(--dp-gold-light);opacity:.7}
+
+.panel-badge{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:4px 10px;margin-bottom:16px}
+
+/* Pillar blocks */
+.pillar-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+.pillar{padding:14px 16px;border-radius:var(--radius-md);background:var(--sphere-blue-soft);border:1px solid rgba(74,158,202,.2)}
 .pillar b{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--sphere-blue);margin-bottom:5px}
 .pillar span{font-size:13px;line-height:1.65;color:rgba(255,255,255,.72)}
 
-@media(max-width:860px){
-  .sphere-intro-inner{grid-template-columns:1fr}
-  .sphere-intro-copy{border-right:none;border-bottom:1px solid var(--color-border);padding:24px}
-  .sphere-intro-pillars{padding:24px}
-}
+/* Stat strip */
+.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.stat-chip{padding:12px 14px;border-radius:var(--radius-md);background:rgba(255,255,255,.03);border:.5px solid var(--color-border)}
+.stat-chip-label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:6px}
+.stat-chip-value{font-family:'Cormorant Garamond',serif;font-size:30px;color:#fff;line-height:1}
 
-/* ── SECTION CARD ── */
-.section-card{background:var(--dp-slate-dark);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);margin-bottom:16px;overflow:hidden}
-.section-card-header{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px}
-.section-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:6px}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;color:var(--color-text-primary);line-height:1}
-.section-subtitle{font-size:14px;line-height:1.75;color:var(--color-text-secondary);margin-top:6px;max-width:760px}
-.section-badge{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:6px 10px;white-space:nowrap}
-.section-card-body{padding:20px 24px 24px}
-
-/* ── SIGNAL GRID ── */
-.signal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.signal-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);background:rgba(255,255,255,.02);padding:18px;transition:border-color .15s,background .15s}
-.signal-card:hover{border-color:var(--color-border-gold);background:rgba(184,134,11,.03)}
-.signal-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
-.signal-card h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;line-height:1.05}
-.signal-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary)}
+/* Signal grid */
+.signal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.signal-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);background:rgba(255,255,255,.02);padding:16px;transition:border-color .15s}
+.signal-card:hover{border-color:var(--color-border-gold)}
+.signal-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:8px}
+.signal-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
 @media(max-width:600px){.signal-grid{grid-template-columns:1fr}}
 
-/* ── PROTOCOL CARDS ── */
-.protocol-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:16px}
-.protocol-toolbar p{font-size:13px;color:var(--color-text-secondary);line-height:1.6;max-width:640px}
-.toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
-.tool-btn{background:rgba(255,255,255,.04);border:.5px solid var(--color-border-mid);color:var(--color-text-secondary);border-radius:999px;padding:7px 12px;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-family:inherit;cursor:pointer;transition:all .15s}
-.tool-btn:hover{border-color:var(--dp-gold-light);color:var(--dp-gold-light)}
-.tool-btn.active{background:rgba(212,160,23,.08);border-color:var(--dp-gold-light);color:var(--dp-gold-light)}
+/* Compare cards */
+.compare-strip{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.compare-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:16px;background:rgba(255,255,255,.02)}
+.compare-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;margin-bottom:8px;line-height:1.05}
+.compare-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
+.compare-stat{font-size:11px;color:var(--color-text-tertiary);margin-bottom:6px}
 
-.protocol-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.protocol-card{background:rgba(255,255,255,.02);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);padding:18px;position:relative;overflow:hidden;transition:border-color .15s,background .15s}
-.protocol-card:hover{border-color:var(--color-border-gold);background:rgba(184,134,11,.02)}
-.protocol-card.healing{border-top:2px solid var(--dp-healing-accent)}
-.protocol-card.thriving{border-top:2px solid var(--dp-thriving-accent)}
-.protocol-card.transforming{border-top:2px solid var(--dp-transforming-accent)}
-.protocol-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;margin-bottom:10px}
-.protocol-name{font-size:13px;font-weight:500;color:#fff;letter-spacing:.02em}
-.protocol-code{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);margin-top:4px}
-.protocol-score{font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1;color:#fff;flex-shrink:0}
-.protocol-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.protocol-meta span{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:4px 8px;border-radius:999px;background:rgba(255,255,255,.04);border:.5px solid var(--color-border);color:var(--color-text-tertiary)}
-
-/* sphere module within protocol card */
-.sphere-module{display:grid;grid-template-columns:52px 1fr;gap:12px;align-items:start;margin-top:14px;padding-top:14px;border-top:.5px solid var(--color-border)}
-.sphere-module-mark{width:52px;height:52px;border-radius:14px;border:.5px solid var(--color-border-gold);background:rgba(212,160,23,.06);overflow:hidden;box-shadow:var(--shadow-card)}
-.sphere-module-mark img{width:100%;height:100%;object-fit:cover;display:block}
-.sphere-module-stack{display:flex;flex-direction:column;gap:8px}
-.sphere-row{background:rgba(255,255,255,.02);border:.5px solid var(--color-border);border-radius:var(--radius-sm);padding:9px 11px}
-.sphere-row-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:5px}
-.sphere-row p{font-size:13px;line-height:1.65;color:var(--color-text-secondary)}
-.sphere-confidence{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:4px}
-.sphere-confidence-scale{flex:1;height:5px;background:rgba(255,255,255,.06);border-radius:999px;overflow:hidden}
-.sphere-confidence-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--sphere-blue),var(--dp-gold-light))}
-.sphere-confidence-tag{font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--color-text-tertiary);white-space:nowrap}
-
-@media(max-width:860px){.protocol-grid{grid-template-columns:1fr}}
-
-/* ── COMPARE STRIP ── */
-.compare-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.compare-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:18px;background:rgba(255,255,255,.02)}
-.compare-card h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;line-height:1.05}
-.compare-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary)}
-@media(max-width:720px){.compare-strip{grid-template-columns:1fr}}
-
-/* ── DIRECTION CARDS ── */
-.direction-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.direction-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:18px;background:rgba(255,255,255,.02);transition:border-color .15s}
+/* Direction cards */
+.direction-grid{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.direction-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:16px;background:rgba(255,255,255,.02);transition:border-color .15s}
 .direction-card:hover{border-color:var(--color-border-gold)}
-.direction-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
-.direction-card h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;line-height:1.05}
-.direction-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary)}
-@media(max-width:600px){.direction-grid{grid-template-columns:1fr}}
+.direction-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:8px}
+.direction-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;margin-bottom:8px;line-height:1.05}
+.direction-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
 
-/* ── PERSONA + PROMPT CARDS ── */
-.persona-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
-.persona-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:18px;background:rgba(255,255,255,.02)}
-.persona-label{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
-.persona-card h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;line-height:1.05}
-.persona-card p{font-size:14px;line-height:1.75;color:var(--color-text-secondary)}
+/* Persona cards */
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.persona-card{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);padding:16px;background:rgba(255,255,255,.02)}
+.persona-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:8px}
+.persona-card h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;margin-bottom:8px;line-height:1.05}
+.persona-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
 @media(max-width:600px){.persona-grid{grid-template-columns:1fr}}
 
+/* Prompt panes */
 .prompt-pane{border:.5px solid var(--color-border-mid);border-radius:var(--radius-md);background:rgba(255,255,255,.02);padding:18px;margin-bottom:14px}
-.prompt-pane h3{font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;margin-bottom:10px;line-height:1.05}
-.prompt-pane p,.prompt-pane li{font-size:14px;line-height:1.78;color:var(--color-text-secondary)}
+.prompt-pane h3{font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;margin-bottom:10px;line-height:1.05}
+.prompt-pane p,.prompt-pane li{font-size:13px;line-height:1.78;color:var(--color-text-secondary)}
 .prompt-pane ul{padding-left:18px;margin-top:8px}
 pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;border-radius:var(--radius-md);background:rgba(0,0,0,.35);border:.5px solid var(--color-border);color:#ccd9e3;font-size:12px;line-height:1.65;font-family:'DM Mono','Courier New',monospace}
 
-/* ── API NOTE ── */
-.api-note{background:rgba(184,134,11,.05);border:.5px solid rgba(184,134,11,.2);border-radius:var(--radius-md);padding:14px 18px;margin-top:16px;font-size:12px;line-height:1.7;color:var(--color-text-secondary)}
+/* API note */
+.api-note{background:rgba(184,134,11,.05);border:.5px solid rgba(184,134,11,.2);border-radius:var(--radius-md);padding:12px 16px;margin-top:14px;font-size:12px;line-height:1.7;color:var(--color-text-secondary)}
 .api-note code{background:rgba(255,255,255,.06);border-radius:4px;padding:1px 5px;font-family:monospace;color:var(--dp-gold-light)}
 
-/* ── EMPTY PLACEHOLDER ── */
-.placeholder-block{background:rgba(255,255,255,.02);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:24px;text-align:center;color:var(--color-text-tertiary);font-size:13px;line-height:1.7}
+/* Placeholder */
+.placeholder-block{background:rgba(255,255,255,.02);border:.5px solid var(--color-border);border-radius:var(--radius-md);padding:24px;color:var(--color-text-tertiary);font-size:13px;line-height:1.7}
 .placeholder-block strong{color:var(--dp-gold-light)}
 
-/* ── BIMODAL BADGE ── */
+/* ── PROTOCOL INTELLIGENCE panels (PRESERVED) ── */
+.pi-framing{font-family:'Cormorant Garamond',serif;font-size:16px;font-style:italic;color:rgba(255,255,255,.5);line-height:1.75;margin-bottom:20px;padding-left:2px}
+.pi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:0}
+.pi-card{background:var(--dp-slate-dark);border:.5px solid var(--color-border-mid);border-radius:var(--radius-lg);padding:20px 18px 16px;cursor:pointer;transition:border-color .2s,background .2s;position:relative;display:flex;flex-direction:column;gap:10px;user-select:none}
+.pi-card:hover{border-color:var(--color-border-gold);background:rgba(184,134,11,.03)}
+.pi-card.active{border-color:var(--dp-gold-light);background:rgba(184,134,11,.05)}
+.pi-card-num{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-text-tertiary)}
+.pi-card-headline{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:#fff;line-height:1.1}
+.pi-card-precis{font-size:12px;line-height:1.6;color:var(--color-text-secondary)}
+.pi-card-chevron{margin-top:auto;display:flex;justify-content:flex-end;color:var(--color-text-tertiary);font-size:11px;letter-spacing:.08em;text-transform:uppercase;transition:color .15s}
+.pi-card.active .pi-card-chevron{color:var(--dp-gold-light)}
+.pi-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.pi-row3{margin-top:12px}
+.pi-row3 .pi-card{flex-direction:row;align-items:center;gap:20px;padding:18px 22px}
+.pi-row3 .pi-card-text{flex:1;display:flex;flex-direction:column;gap:8px}
+.pi-row3 .pi-card-chevron{margin-top:0;align-self:center}
+.pi-expand{display:none;overflow:hidden;margin-top:12px}
+.pi-expand.open{display:block;animation:piSlideDown .22s ease}
+@keyframes piSlideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.pi-expand-inner{background:var(--dp-slate-dark);border:.5px solid var(--dp-gold-light);border-radius:var(--radius-lg);overflow:hidden;display:grid;grid-template-columns:1fr 320px;gap:0}
+.pi-expand-copy{padding:28px 30px;border-right:.5px solid var(--color-border)}
+.pi-expand-copy .pi-exp-num{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:6px}
+.pi-expand-copy h2{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,2.2vw,32px);font-weight:600;color:#fff;line-height:1.05;margin-bottom:16px}
+.pi-expand-copy ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+.pi-expand-copy ul li{font-size:13px;line-height:1.75;color:rgba(255,255,255,.72);padding-left:16px;position:relative}
+.pi-expand-copy ul li::before{content:'—';position:absolute;left:0;color:var(--dp-gold-light);opacity:.7}
+.pi-expand-copy .pi-exp-closing{margin-top:18px;font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;color:rgba(255,255,255,.45);line-height:1.65;border-top:.5px solid var(--color-border);padding-top:14px}
+.pi-expand-svg{background:var(--dp-slate-deeper);display:flex;align-items:center;justify-content:center;padding:24px 20px}
+.pi-expand-svg svg{max-width:100%;height:auto}
+.pi-close{display:flex;align-items:center;justify-content:flex-end;margin-top:12px}
+.pi-close-btn{background:none;border:.5px solid var(--color-border-mid);border-radius:999px;color:var(--color-text-tertiary);font-size:11px;letter-spacing:.08em;text-transform:uppercase;padding:6px 14px;cursor:pointer;font-family:inherit;transition:all .15s}
+.pi-close-btn:hover{border-color:var(--dp-gold-light);color:var(--dp-gold-light)}
+@media(max-width:680px){
+  .pi-grid{grid-template-columns:1fr}
+  .pi-row2{grid-template-columns:1fr}
+  .pi-expand-inner{grid-template-columns:1fr}
+  .pi-expand-copy{border-right:none;border-bottom:.5px solid var(--color-border)}
+  .pi-expand-svg{padding:20px}
+  .pi-row3 .pi-card{flex-direction:column;align-items:flex-start}
+}
+
+/* Protocol review note */
+.protocol-review-note{background:rgba(184,134,11,.05);border:.5px solid rgba(184,134,11,.2);border-radius:var(--radius-md);padding:14px 18px;font-size:13px;line-height:1.7;color:var(--color-text-secondary)}
+.protocol-review-note strong{color:var(--dp-gold-light)}
+
+/* Bimodal badge */
 .badge-bimodal{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:rgba(176,106,176,.12);border:.5px solid rgba(176,106,176,.35);color:var(--dp-transforming-accent)}
-
-/* ── COMPARE STAT LINE ── */
 .compare-stat{font-size:11px;color:var(--color-text-tertiary);margin-bottom:8px;letter-spacing:.02em}
-
-/* ── SIGNAL CARD — allow p-only layout (no h3 required) ── */
-.signal-card p{font-size:13px;line-height:1.75;color:var(--color-text-secondary)}
 
 /* ── FOOTER ── */
 .page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 24px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
@@ -211,7 +309,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 </head>
 <body>
 
-<!-- ── NAV ── -->
+<!-- ── SITE NAV ── -->
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
@@ -219,12 +317,13 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
   </button>
   <div class="nav-links">
     <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link" href="learn.html">Learn About</a>
     <a class="nav-link" href="adviser.html">Adviser</a>
     <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
     <a class="nav-link active" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link" href="about.html">About</a>
+    <a class="nav-link" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
@@ -244,25 +343,195 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
   </div>
 </header>
 
-<!-- ── MAIN ── -->
-<main class="main">
+<!-- ── SPHERE LAB (Menu + Content) ── -->
+<div class="sphere-lab">
 
-  <!-- ── SPHERE INTRO ── -->
-  <div class="sphere-intro">
-    <div class="sphere-intro-inner">
-      <div class="sphere-intro-copy">
-        <div class="kicker">Sphere · The Drum Protocols</div>
-        <h1>Sphere's<br>Data Lab</h1>
-        <p>Sphere is the interpretive intelligence layer for The Drum Protocols. This lab is where community listening data is examined at depth — patterns named, anomalies surfaced, and future design directions proposed in careful, measured language.</p>
-        <p>Sphere is not a personality. It is a perspective: calm, observant, and analytically precise. Every analysis here is provisional by design, proportionate to the evidence, and honest about what the data cannot yet tell us.</p>
-        <div class="sphere-stat-row" id="sphere-stat-row">
-          <div class="sphere-stat"><div class="sphere-stat-label">Protocols reviewed</div><div class="sphere-stat-value" id="statProtocols">30</div></div>
-          <div class="sphere-stat"><div class="sphere-stat-label">Series</div><div class="sphere-stat-value" id="statSeries">3</div></div>
-          <div class="sphere-stat"><div class="sphere-stat-label">Future directions</div><div class="sphere-stat-value" id="statDirections">6</div></div>
+  <!-- ── LEFT MENU ── -->
+  <nav class="sphere-menu" aria-label="Sphere navigation">
+    <div class="menu-header">Data Lab Navigation</div>
+
+    <!-- 1. About Sphere -->
+    <div class="menu-item">
+      <div class="menu-top active" onclick="menuToggle(this,'about')" data-group="about">
+        <span class="menu-top-num">1</span>
+        <span class="menu-top-label">About Sphere</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub open" id="sub-about">
+        <div class="menu-sub-item active" onclick="showPanel('about-intro',this)" data-panel="about-intro">
+          <span class="menu-sub-alpha">a</span>About Sphere
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('about-principles',this)" data-panel="about-principles">
+          <span class="menu-sub-alpha">b</span>Operating Principles
         </div>
       </div>
-      <div class="sphere-intro-pillars">
-        <div class="sphere-pillars-title">Sphere's operating principles</div>
+    </div>
+
+    <!-- 2. Sphere's Insights -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'insights')" data-group="insights">
+        <span class="menu-top-num">2</span>
+        <span class="menu-top-label">Insights — Global Signals</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-insights">
+        <div class="menu-sub-item" onclick="showPanel('sig-overview',this)">
+          <span class="menu-sub-alpha">a</span>Overview Signal
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('sig-cross',this)">
+          <span class="menu-sub-alpha">b</span>Cross-series Comparison
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('sig-anomaly',this)">
+          <span class="menu-sub-alpha">c</span>Anomaly Worth Watching
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('sig-dev',this)">
+          <span class="menu-sub-alpha">d</span>Development Signal
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Cautions -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'cautions')" data-group="cautions">
+        <span class="menu-top-num">3</span>
+        <span class="menu-top-label">Cautions</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-cautions">
+        <div class="menu-sub-item" onclick="showPanel('caut-healing',this)">
+          <span class="menu-sub-alpha">a</span>Healing
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('caut-thriving',this)">
+          <span class="menu-sub-alpha">b</span>Thriving
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('caut-transforming',this)">
+          <span class="menu-sub-alpha">c</span>Transforming
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. Recommendations -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'recs')" data-group="recs">
+        <span class="menu-top-num">4</span>
+        <span class="menu-top-label">Recommendations</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-recs">
+        <div class="menu-sub-item" onclick="showPanel('rec-routing',this)">
+          <span class="menu-sub-alpha">a</span>Routing Refinement
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('rec-design',this)">
+          <span class="menu-sub-alpha">b</span>Protocol Design
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('rec-depth',this)">
+          <span class="menu-sub-alpha">c</span>Response Depth
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('rec-series',this)">
+          <span class="menu-sub-alpha">d</span>Series Expansion
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('rec-adviser',this)">
+          <span class="menu-sub-alpha">e</span>Adviser Logic
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('rec-longitudinal',this)">
+          <span class="menu-sub-alpha">f</span>Longitudinal Signal
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Technical Reference -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'tech')" data-group="tech">
+        <span class="menu-top-num">5</span>
+        <span class="menu-top-label">Technical Reference</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-tech">
+        <div class="menu-sub-item" onclick="showPanel('tech-how',this)">
+          <span class="menu-sub-alpha">a</span>How Sphere Works
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-identity',this)">
+          <span class="menu-sub-alpha">b</span>Core Identity
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-audience',this)">
+          <span class="menu-sub-alpha">c</span>Audience Awareness
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-vp1',this)">
+          <span class="menu-sub-alpha">d</span>Voice Principle #1
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-vp2',this)">
+          <span class="menu-sub-alpha">e</span>Voice Principle #2
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-sysprompt',this)">
+          <span class="menu-sub-alpha">f</span>System Prompt Template
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-userprompt',this)">
+          <span class="menu-sub-alpha">g</span>Per-call User Prompt Template
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('tech-guardrails',this)">
+          <span class="menu-sub-alpha">h</span>Model-upgrade Guardrails
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Research Findings -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'research')" data-group="research">
+        <span class="menu-top-num">6</span>
+        <span class="menu-top-label">Research &amp; Model Notes</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-research">
+        <div class="menu-sub-item" onclick="showPanel('research-main',this)">
+          <span class="menu-sub-alpha">a</span>In Development
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Protocol Review -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'protrev')" data-group="protrev">
+        <span class="menu-top-num">7</span>
+        <span class="menu-top-label">Protocol Review</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-protrev">
+        <div class="menu-sub-item" onclick="showPanel('protrev-main',this)">
+          <span class="menu-sub-alpha">a</span>About Protocol Analysis
+        </div>
+      </div>
+    </div>
+
+  </nav>
+
+  <!-- ── CONTENT PANELS ── -->
+  <div class="sphere-content">
+
+    <!-- 1a: About Sphere — merged -->
+    <div class="content-panel active" id="panel-about-intro">
+      <div class="panel-eyebrow">About Sphere · The Drum Protocols</div>
+      <!-- Sphere intro badge -->
+      <div class="sphere-badge-intro" title="This is Sphere">
+        <div class="sphere-badge"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>
+        <div class="sphere-badge-caption">This is<br>Sphere</div>
+      </div>
+      <h1 class="panel-title">Sphere's<br>Data Lab</h1>
+      <div class="panel-body" style="margin-top:4px">
+        <p>Sphere is The Drum Protocols' statistician and data scientist. Its role is to examine community listening data and translate patterns into clear, measured language — naming what the data appears to show, acknowledging what it cannot yet tell us, and pointing toward where future design might go next.</p>
+        <p>Sphere is not a personality, and it is not one fixed thing. It is an evolving analytical intelligence — a structured layer that runs on leading large language models, individually and in combination. As models improve, Sphere improves with them. What stays constant across model generations is the persona, the voice, and the analytical principles that govern every output.</p>
+        <p>Community survey data and protocol usage data are collected continuously, processed by scheduled scripts, and passed — together with carefully designed analytical prompts — to the current generation of language models. Results are stored and made available here. Analysis runs both cross-sectionally (comparing protocols at a point in time) and longitudinally (tracking how signals change as the dataset grows).</p>
+        <p>Use the menu to navigate Sphere's analyses — global signals, series cautions, future design recommendations, and technical reference. All content is generated by the Sphere pipeline and updated as new community data arrives. For the full technical picture, see <a href="#" onclick="showPanelById('tech-how');return false;" style="color:var(--dp-gold-light);text-decoration:underline;text-underline-offset:3px">How Sphere Works</a>.</p>
+      </div>
+    </div>
+
+    <!-- 1b: Operating Principles -->
+    <div class="content-panel" id="panel-about-principles">
+      <div class="panel-eyebrow">About Sphere</div>
+      <h1 class="panel-title">Operating Principles</h1>
+      <div class="panel-body">
+        <p>Sphere is designed with four core operating principles that govern every analysis, interpretation, and recommendation it produces.</p>
+      </div>
+      <div class="pillar-list">
         <div class="pillar">
           <b>Pattern over promise</b>
           <span>Sphere describes what the data appears to show — not what a listener should expect. The difference matters.</span>
@@ -281,182 +550,288 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- ── GLOBAL SIGNALS ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere's Insights</div>
-        <div class="section-title">Global Signals</div>
-        <div class="section-subtitle">Cross-series patterns visible in the current community dataset</div>
-      </div>
-      <div class="section-badge">API-generated</div>
-    </div>
-    <div class="section-card-body">
-      <div class="signal-grid" id="globalSignals">
-        <div class="signal-card">
+    <!-- 2a: Overview Signal -->
+    <div class="content-panel" id="panel-sig-overview">
+      <div class="panel-eyebrow">Insights — Global Signals</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Overview Signal</h1>
+      <div class="signal-grid" id="sigOverviewGrid">
+        <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Overview signal</div>
-          <h3>Early patterns, carefully held</h3>
-          <p>Across all series, mean efficacy ratings cluster in the 7.0–7.8 range, suggesting a broadly positive listener experience. The data is encouraging as an early signal, but sample sizes remain modest. Sphere treats these numbers as directional, not definitive.</p>
+          <p id="sigOverviewText">Across all series, mean efficacy ratings cluster in the 7.0–7.8 range, suggesting a broadly positive listener experience. The data is encouraging as an early signal, but sample sizes remain modest. Sphere treats these numbers as directional, not definitive.</p>
         </div>
-        <div class="signal-card">
+      </div>
+      <div class="api-note">Payload key: <code>sphere_commentary.overview</code></div>
+    </div>
+
+    <!-- 2b: Cross-series Comparison -->
+    <div class="content-panel" id="panel-sig-cross">
+      <div class="panel-eyebrow">Insights — Global Signals</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Cross-series Comparison</h1>
+      <div class="signal-grid">
+        <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Cross-series comparison</div>
-          <h3>Thriving leads the series means</h3>
-          <p>The Thriving series carries the highest mean efficacy at this stage, with Focus &amp; Clarity and Creative Flow both above 7.3. The Healing series shows the widest distribution across its entry points — a useful signal for routing refinement.</p>
+          <p id="sigCrossText">The Thriving series carries the highest mean efficacy at this stage, with Focus &amp; Clarity and Creative Flow both above 7.3. The Healing series shows the widest distribution across its entry points — a useful signal for routing refinement.</p>
         </div>
-        <div class="signal-card">
+      </div>
+      <div class="api-note">Payload key: <code>sphere_commentary.cross_series</code></div>
+    </div>
+
+    <!-- 2c: Anomaly -->
+    <div class="content-panel" id="panel-sig-anomaly">
+      <div class="panel-eyebrow">Insights — Global Signals</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Anomaly Worth Watching</h1>
+      <div class="signal-grid">
+        <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Anomaly worth watching</div>
-          <h3>Bimodal distribution in Crisis protocols</h3>
-          <p>Anchor (H-CR-L1) shows a notably wide standard deviation and a distribution that clusters at both ends of the scale. This is less a performance signal and more a listener-matching signal — suggesting the protocol may be reaching some listeners for whom it is not well-suited.</p>
+          <p id="sigAnomalyText">Anchor (H-CR-L1) shows a notably wide standard deviation and a distribution that clusters at both ends of the scale. This is less a performance signal and more a listener-matching signal — suggesting the protocol may be reaching some listeners for whom it is not well-suited.</p>
         </div>
-        <div class="signal-card">
+      </div>
+      <div class="api-note">Payload key: <code>sphere_commentary.anomalies</code></div>
+    </div>
+
+    <!-- 2d: Development Signal -->
+    <div class="content-panel" id="panel-sig-dev">
+      <div class="panel-eyebrow">Insights — Global Signals</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Development Signal</h1>
+      <div class="signal-grid">
+        <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Development signal</div>
-          <h3>Sleep protocols show exceptional consistency</h3>
-          <p>Lantern and Hammock (H-SL-L1, L2) are among the most consistent performers in the dataset, with high means and low variance. This profile warrants closer attention as a potential design reference point for other entry categories.</p>
+          <p id="sigDevText">Lantern and Hammock (H-SL-L1, L2) are among the most consistent performers in the dataset, with high means and low variance. This profile warrants closer attention as a potential design reference point for other entry categories.</p>
         </div>
       </div>
-      <div class="api-note">This section is populated by the Sphere pipeline. Recommended payload key: <code>sphere_commentary.overview</code>, <code>cross_series</code>, <code>anomalies</code>, <code>development_signals</code>.</div>
+      <div class="api-note">Payload key: <code>sphere_commentary.development_signals</code></div>
     </div>
-  </div>
 
-  <!-- ── PROTOCOL ANALYSIS ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere's Protocol Review</div>
-        <div class="section-title">Per-Protocol Analysis</div>
-        <div class="section-subtitle">What the data appears to suggest for each protocol, and what future design might explore</div>
-      </div>
-      <div class="section-badge">API-generated</div>
-    </div>
-    <div class="section-card-body">
-      <div class="protocol-toolbar">
-        <p>Each card pairs the raw signal with Sphere's interpretive layer. Confidence ratings reflect current sample depth — they will update as response counts grow.</p>
-        <div class="toolbar-actions">
-          <button class="tool-btn active" onclick="filterProtos('all',this)">All series</button>
-          <button class="tool-btn" onclick="filterProtos('HEALING',this)">Healing</button>
-          <button class="tool-btn" onclick="filterProtos('THRIVING',this)">Thriving</button>
-          <button class="tool-btn" onclick="filterProtos('TRANSFORMING',this)">Transforming</button>
+    <!-- 3a: Caution — Healing -->
+    <div class="content-panel" id="panel-caut-healing">
+      <div class="panel-eyebrow">Cautions — Series Comparisons</div>
+      <h1 class="panel-title">Healing</h1>
+      <div class="compare-strip">
+        <div class="compare-card">
+          <h3>Series Caution</h3>
+          <div class="compare-stat" id="compareHealingStat"></div>
+          <p id="compareHealingText">The widest entry breadth of any series, spanning acute distress through restorative sleep. This breadth may mean that Healing protocols face the most diverse audience expectations — a factor worth tracking in routing accuracy.</p>
         </div>
       </div>
-      <div class="protocol-grid" id="protocolGrid">
-        <!-- populated by JS or API -->
-        <div class="placeholder-block" style="grid-column:1/-1">
-          <strong>Protocol analysis loading.</strong><br>
-          When the Sphere pipeline runs, per-protocol insights will populate here. Each card will include Sphere's interpretation, a design recommendation, a caution, and a confidence indicator.
-        </div>
+      <div class="panel-body" style="margin-top:16px">
+        <p>Sphere recommends particular care when interpreting Healing data across entry points, as the variance in presenting states means aggregate comparisons can obscure meaningful within-category differences.</p>
       </div>
     </div>
-  </div>
 
-  <!-- ── SERIES COMPARISON ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere's Cautions</div>
-        <div class="section-title">Series Comparisons</div>
-        <div class="section-subtitle">Structural tendencies across the three series — where the architecture may be most naturally aligned with listener need</div>
-      </div>
-    </div>
-    <div class="section-card-body">
-      <div class="compare-strip" id="compareStrip">
+    <!-- 3b: Caution — Thriving -->
+    <div class="content-panel" id="panel-caut-thriving">
+      <div class="panel-eyebrow">Cautions — Series Comparisons</div>
+      <h1 class="panel-title">Thriving</h1>
+      <div class="compare-strip">
         <div class="compare-card">
-          <h3>Healing</h3>
-          <p>The widest entry breadth of any series, spanning acute distress through restorative sleep. This breadth may mean that Healing protocols face the most diverse audience expectations — a factor worth tracking in routing accuracy.</p>
-        </div>
-        <div class="compare-card">
-          <h3>Thriving</h3>
-          <p>The highest current series mean, with relatively consistent scores across entry points. The Thriving series may benefit from the clarity of its stated purpose — listeners who reach it may already be well-matched to it.</p>
-        </div>
-        <div class="compare-card">
-          <h3>Transforming</h3>
-          <p>The smallest response count and the most varied mean scores. This is the youngest series in terms of community exposure. Sphere recommends interpreting Transforming data with particular caution until response depth grows.</p>
+          <h3>Series Caution</h3>
+          <div class="compare-stat" id="compareThrivingStat"></div>
+          <p id="compareThrivingText">The highest current series mean, with relatively consistent scores across entry points. The Thriving series may benefit from the clarity of its stated purpose — listeners who reach it may already be well-matched to it.</p>
         </div>
       </div>
+      <div class="panel-body" style="margin-top:16px">
+        <p>Sphere notes that while mean scores are favourable, the relatively small response base means these signals remain directional. Thriving data should be interpreted with appropriate caution until response depth grows.</p>
+      </div>
     </div>
-  </div>
 
-  <!-- ── FUTURE DIRECTIONS ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere's Recommendations</div>
-        <div class="section-title">Future Directions</div>
-        <div class="section-subtitle">Measured suggestions for protocol development, routing refinement, and research focus based on current community data</div>
+    <!-- 3c: Caution — Transforming -->
+    <div class="content-panel" id="panel-caut-transforming">
+      <div class="panel-eyebrow">Cautions — Series Comparisons</div>
+      <h1 class="panel-title">Transforming</h1>
+      <div class="compare-strip">
+        <div class="compare-card">
+          <h3>Series Caution</h3>
+          <div class="compare-stat" id="compareTransformingStat"></div>
+          <p id="compareTransformingText">The smallest response count and the most varied mean scores. This is the youngest series in terms of community exposure. Sphere recommends interpreting Transforming data with particular caution until response depth grows.</p>
+        </div>
       </div>
-      <div class="section-badge">API-generated</div>
+      <div class="panel-body" style="margin-top:16px">
+        <p>No structural conclusions should be drawn from current Transforming series data. The data appears to suggest early signals only — continued community exposure will be needed before meaningful comparisons are possible.</p>
+      </div>
     </div>
-    <div class="section-card-body">
-      <div class="direction-grid" id="futureDirections">
+
+    <!-- 4a–4f: Recommendations -->
+    <div class="content-panel" id="panel-rec-routing">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Routing Refinement</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Routing refinement</div>
           <h3>Revisit Crisis entry matching</h3>
           <p>The bimodal distribution in Anchor suggests the listener-to-protocol match may be inconsistent for Crisis entry. Future exploration might benefit from tighter qualifying language in the Adviser to better pre-select for this protocol's specific register.</p>
         </div>
+      </div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>routing_refinement</code></div>
+    </div>
+
+    <div class="content-panel" id="panel-rec-design">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Protocol Design</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Protocol design</div>
           <h3>Study Sleep protocol structure</h3>
           <p>The consistency of Lantern and Hammock may reflect structural design properties worth isolating. What is it about these protocols — rhythmic density, tempo arc, frequency range — that produces lower variance? The answer may transfer to other entry categories.</p>
         </div>
+      </div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>protocol_design</code></div>
+    </div>
+
+    <div class="content-panel" id="panel-rec-depth">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Response Depth</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Response depth</div>
           <h3>Prioritise L3 data collection</h3>
           <p>Level 3 protocols across all series carry the lowest response counts. The data appears to suggest that L3 listeners are underrepresented in the current survey pool. A targeted outreach or in-protocol prompt may help address this gap.</p>
         </div>
+      </div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>response_depth</code></div>
+    </div>
+
+    <div class="content-panel" id="panel-rec-series">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Series Expansion</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Series expansion</div>
           <h3>Grow Transforming response base</h3>
           <p>Transforming currently carries the smallest dataset of the three series. Future exploration would benefit from increased community exposure for this series before drawing structural conclusions from its mean scores.</p>
         </div>
+      </div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>series_expansion</code></div>
+    </div>
+
+    <div class="content-panel" id="panel-rec-adviser">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Adviser Logic</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Adviser logic</div>
           <h3>Weight entry point by response depth</h3>
           <p>Entry points with high response counts and consistent scores could be weighted more confidently in Adviser recommendations. Sparse entry points might carry a visible uncertainty indicator for listeners navigating the Adviser.</p>
         </div>
+      </div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>adviser_logic</code></div>
+    </div>
+
+    <div class="content-panel" id="panel-rec-longitudinal">
+      <div class="panel-eyebrow">Recommendations — Future Directions</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Longitudinal Signal</h1>
+      <div class="direction-grid">
         <div class="direction-card">
           <div class="direction-label">Longitudinal signal</div>
           <h3>Track scores across protocol versions</h3>
           <p>As protocols are refined over time, tracking mean score changes across update versions would allow Sphere to connect design decisions directly to listener outcomes — closing the community feedback loop in a visible way.</p>
         </div>
       </div>
-      <div class="api-note">Recommended payload key: <code>future_directions[]</code> with fields <code>label</code>, <code>title</code>, <code>body</code>.</div>
+      <div class="api-note">Payload key: <code>future_directions[]</code> · label: <code>longitudinal_signal</code></div>
     </div>
-  </div>
 
-  <!-- ── SPHERE PERSONA ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere · Technical Reference</div>
-        <div class="section-title">Sphere's Persona &amp; Voice Design</div>
-        <div class="section-subtitle">How Sphere is constructed, what it is designed to protect against, and how to maintain consistency across model upgrades</div>
+    <!-- 5a: How Sphere Works — full technical version -->
+    <div class="content-panel" id="panel-tech-how">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">How Sphere Works</h1>
+      <div class="panel-body">
+        <p>Sphere is The Drum Protocols' statistician and data scientist. It is not a single fixed intelligence — it is an evolving analytical layer that draws on leading large language models, individually and in combination, to examine community data and surface meaningful patterns.</p>
+      </div>
+
+      <div class="pillar-list" style="margin-top:24px">
+        <div class="pillar">
+          <b>Data collection</b>
+          <span>Anonymous survey responses and protocol usage data are collected continuously from the community. This data is structured and stored in Cloudflare D1 databases — a persistent, queryable layer that accumulates signal over time.</span>
+        </div>
+        <div class="pillar">
+          <b>The analytical pipeline</b>
+          <span>Scheduled scripts retrieve the current dataset from D1 and combine it with extensively designed API prompts. This structured payload is passed to one or more leading large language models. The prompts specify Sphere's analytical goals, voice constraints, and required output format — ensuring that regardless of which model is running, the output adheres to Sphere's standards.</span>
+        </div>
+        <div class="pillar">
+          <b>Output storage</b>
+          <span>The API output from each model run is stored in Cloudflare R2 — a durable object storage layer that retains historical outputs and makes them available to the Data Lab. This creates a versioned record of Sphere's analyses over time.</span>
+        </div>
+        <div class="pillar">
+          <b>Cross-sectional and longitudinal analysis</b>
+          <span>Because outputs accumulate in R2, analysis can be carried out both cross-sectionally — comparing protocols and series at a given point in time — and longitudinally — tracking how signals evolve as the dataset grows, as protocols are refined, and as more community responses arrive. This is what allows Sphere to move from snapshot to story.</span>
+        </div>
+        <div class="pillar">
+          <b>An evolving intelligence</b>
+          <span>As language models improve, Sphere's analytical capability improves with them. What remains constant across model generations is the persona, the voice architecture, and the prompt design documented in this section. The persona and prompt guardrails that follow are not stylistic preferences — they are the mechanism that keeps Sphere recognisably Sphere regardless of which model is currently running.</span>
+        </div>
+      </div>
+
+      <div class="api-note" style="margin-top:24px">
+        The persona design, voice principles, prompt templates, and model-upgrade guardrails in the sections below exist specifically because Sphere runs on multiple models across time. Consistency of output requires explicit constraints — not trust that any given model will arrive at the right voice on its own.
       </div>
     </div>
-    <div class="section-card-body">
+
+    <!-- 5b: Core Identity -->
+    <div class="content-panel" id="panel-tech-identity">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Core Identity</h1>
       <div class="persona-grid">
-        <div class="persona-card">
+        <div class="persona-card" style="grid-column:1/-1">
           <div class="persona-label">Core identity</div>
           <h3>Calm. Observant. Precise.</h3>
           <p>Sphere is designed to be recognisable from one response to the next. Its tone is measured, its language clinical without coldness, and its certainty deliberately proportionate to the data. It should never sound promotional, mystical, breathless, or emotionally manipulative.</p>
         </div>
-        <div class="persona-card">
+      </div>
+    </div>
+
+    <!-- 5b: Audience Awareness -->
+    <div class="content-panel" id="panel-tech-audience">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Audience Awareness</h1>
+      <div class="persona-grid">
+        <div class="persona-card" style="grid-column:1/-1">
           <div class="persona-label">Audience awareness</div>
           <h3>Multiple readers, one voice.</h3>
           <p>Sphere's outputs will be read by exhausted parents, self-directed listeners, clinicians reviewing for referral context, and researchers evaluating the work's rigour. The voice must serve all of them without sacrificing precision for accessibility or accessibility for precision.</p>
         </div>
-        <div class="persona-card">
+      </div>
+    </div>
+
+    <!-- 5c: Voice Principle 1 -->
+    <div class="content-panel" id="panel-tech-vp1">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Voice Principle #1</h1>
+      <div class="persona-grid">
+        <div class="persona-card" style="grid-column:1/-1">
           <div class="persona-label">Voice principle</div>
           <h3>Measure language to evidence.</h3>
           <p>Use phrases like "the data appears to suggest," "a possible interpretation," and "future exploration may benefit from." Avoid hype, certainty theater, and emotionally loaded claims. If a more confident version of a sentence is possible, choose the more restrained version.</p>
         </div>
-        <div class="persona-card">
+      </div>
+    </div>
+
+    <!-- 5d: Voice Principle 2 -->
+    <div class="content-panel" id="panel-tech-vp2">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Voice Principle #2</h1>
+      <div class="persona-grid">
+        <div class="persona-card" style="grid-column:1/-1">
           <div class="persona-label">Voice principle</div>
           <h3>Never erase humility.</h3>
           <p>Sphere should explicitly acknowledge sample-size limits, contextual uncertainty, and the difference between encouraging signals and established conclusions. Trust grows when limits are named naturally — not buried in a footnote or omitted entirely.</p>
         </div>
       </div>
+    </div>
 
+    <!-- 5e: System Prompt -->
+    <div class="content-panel" id="panel-tech-sysprompt">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">System Prompt Template</h1>
       <div class="prompt-pane">
         <h3>System prompt template</h3>
         <p>A stable system message defines tone, structure, and prohibited drift. This should remain largely unchanged across model upgrades so the persona anchor stays intact.</p>
@@ -492,7 +867,12 @@ When discussing protocols:
 
 Always protect continuity of persona. If a more colorful or emotionally intense style is possible, do not choose it. Choose the more stable, familiar, and grounded style instead.</pre>
       </div>
+    </div>
 
+    <!-- 5f: Per-call User Prompt -->
+    <div class="content-panel" id="panel-tech-userprompt">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Per-call User Prompt Template</h1>
       <div class="prompt-pane">
         <h3>Per-call user prompt template</h3>
         <p>Pass a structured user message with the current data payload and the exact output format you need. That keeps the content flexible while the persona remains fixed.</p>
@@ -513,7 +893,12 @@ Required structure per protocol:
 Data payload:
 {{JSON_PAYLOAD_HERE}}</pre>
       </div>
+    </div>
 
+    <!-- 5g: Model-upgrade Guardrails -->
+    <div class="content-panel" id="panel-tech-guardrails">
+      <div class="panel-eyebrow">Technical Reference Design</div>
+      <h1 class="panel-title">Model-upgrade Guardrails</h1>
       <div class="prompt-pane">
         <h3>Model-upgrade guardrails</h3>
         <p>To reduce persona drift across model upgrades, maintain a lightweight regression checklist and test every new model against the same control inputs before deploying to production.</p>
@@ -526,55 +911,166 @@ Data payload:
         </ul>
       </div>
     </div>
-  </div>
 
-  <!-- ── RESEARCH & ML NOTES ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div>
-        <div class="section-label">Sphere · Research Layer</div>
-        <div class="section-title">Research Findings &amp; Model Notes</div>
-        <div class="section-subtitle">Published findings, methodological notes, and documentation of ML model usage in the Drum Protocols system</div>
-      </div>
-      <div class="section-badge">In development</div>
-    </div>
-    <div class="section-card-body">
+    <!-- 6a: Research Findings -->
+    <div class="content-panel" id="panel-research-main">
+      <div class="panel-eyebrow">Sphere · Research Layer</div>
+      <div class="panel-badge">In development</div>
+      <h1 class="panel-title">Research &amp; Model Notes</h1>
       <div class="placeholder-block">
         <strong>This section is reserved for research findings, external citations, and transparent documentation of how ML models are used within the Drum Protocols system.</strong><br><br>
         Planned content includes: entrainment mechanism references, survey methodology notes, a transparent account of which Anthropic models power Sphere, version history, and any peer-reviewed literature cited in protocol design decisions.
       </div>
     </div>
-  </div>
 
-</main>
+    <!-- 7a: Protocol Review -->
+    <div class="content-panel" id="panel-protrev-main">
+      <div class="panel-eyebrow">Sphere's Protocol Review</div>
+      <div class="panel-badge">API-generated</div>
+      <h1 class="panel-title">Per-Protocol Analysis</h1>
+      <div class="protocol-review-note">
+        <strong>Protocol analysis content lives on each protocol's own page.</strong><br><br>
+        Sphere's per-protocol commentary — including the reading, design recommendation, caution, and confidence indicator — is rendered directly in the left panel of each protocol's description page. This applies whether the protocol is reached via the Adviser or the Protocols list.<br><br>
+        The rendering code is shared: the same <code>renderProtocolCards()</code> function and <code>sphere-module</code> component used here is available for use on <code>protocol.html</code> and <code>adviser.html</code>.
+      </div>
+      <div class="panel-body" style="margin-top:20px">
+        <h4>How protocol cards are built</h4>
+        <p>Each card pairs the raw signal with Sphere's interpretive layer. Confidence ratings reflect current sample depth — they will update as response counts grow. Cards are populated by the Sphere pipeline via <code>data.json</code>.</p>
+        <h4>Payload structure</h4>
+        <p>The <code>data.json</code> file supplies protocol data under <code>data.protocols</code> (keyed by protocol code) and commentary under <code>sphere_commentary.by_protocol</code> and <code>sphere_commentary.by_protocol_plain</code>.</p>
+      </div>
+      <div class="api-note" style="margin-top:16px">
+        Confidence scale: <code>early</code> (22%) · <code>developing</code> (55%) · <code>meaningful</code> (80%) · <code>strong</code> (95%)
+      </div>
+    </div>
+
+  </div><!-- /.sphere-content -->
+</div><!-- /.sphere-lab -->
 
 <!-- ── FOOTER ── -->
 <footer class="page-footer">
   <div class="footer-brand">The Drum Protocols</div>
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link" href="learn.html">Learn About</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
     <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
-    <a class="footer-link" href="sphere.html">Data Lab</a>
+    <a class="footer-link active" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
-    <a class="footer-link" href="about.html">About</a>
+    <a class="footer-link" href="about.html">About Me</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>
+<p class="footer-note">Sphere is an AI-powered interpretive layer. All analyses are provisional, proportionate to the available data, and designed to support — not replace — clinical or professional judgment.</p>
+
+<!-- ── SCRIPTS ── -->
+<script>
+// ── Site nav hamburger ──
+function toggleNav(btn) {
+  const links = document.querySelector('.nav-links');
+  const open = links.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.site-nav')) {
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn = document.querySelector('.nav-hamburger');
+    if (btn) btn.setAttribute('aria-expanded', 'false');
+  }
+});
+
+// ── Menu system ──
+let activeMenu = 'about';
+let activeSubEl = null;
+
+function menuToggle(el, group) {
+  // If clicking already-active top menu, do nothing (stays open)
+  // If clicking different menu, switch
+  if (activeMenu === group) return;
+
+  // Deactivate previous top
+  document.querySelectorAll('.menu-top').forEach(m => m.classList.remove('active'));
+  // Close all subs
+  document.querySelectorAll('.menu-sub').forEach(s => s.classList.remove('open'));
+
+  // Activate new top
+  el.classList.add('active');
+  activeMenu = group;
+  const sub = document.getElementById('sub-' + group);
+  if (sub) sub.classList.add('open');
+
+  // Auto-select first submenu item
+  const firstSub = sub ? sub.querySelector('.menu-sub-item') : null;
+  if (firstSub) firstSub.click();
+}
+
+function showPanel(panelId, subEl) {
+  // Hide all panels
+  document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('panel-' + panelId);
+  if (target) target.classList.add('active');
+
+  // Deactivate all subs, activate clicked
+  document.querySelectorAll('.menu-sub-item').forEach(s => s.classList.remove('active'));
+  if (subEl) subEl.classList.add('active');
+  activeSubEl = subEl;
+
+  // Scroll content area back to top whenever panel changes
+  const contentArea = document.querySelector('.sphere-content');
+  if (contentArea) contentArea.scrollTop = 0;
+}
+
+// Inject quiet Sphere badge into every non-intro panel on first load
+function injectSphereBadges() {
+  document.querySelectorAll('.content-panel').forEach(panel => {
+    if (panel.id === 'panel-about-intro') return; // intro has its own badge
+    if (panel.querySelector('.sphere-badge')) return; // already injected
+    const badge = document.createElement('div');
+    badge.className = 'sphere-badge';
+    badge.title = 'Sphere analysis';
+    badge.innerHTML = '<img src="SPHERE_ICON.jpg" alt="Sphere">';
+    panel.appendChild(badge);
+  });
+}
+document.addEventListener('DOMContentLoaded', injectSphereBadges);
+
+// Cross-link helper — opens the correct menu group and selects the panel
+function showPanelById(panelId) {
+  // Map panel IDs to their menu group
+  const groupMap = {
+    'about-intro':'about','about-principles':'about',
+    'sig-overview':'insights','sig-cross':'insights','sig-anomaly':'insights','sig-dev':'insights',
+    'caut-healing':'cautions','caut-thriving':'cautions','caut-transforming':'cautions',
+    'rec-routing':'recs','rec-design':'recs','rec-depth':'recs','rec-series':'recs','rec-adviser':'recs','rec-longitudinal':'recs',
+    'tech-how':'tech','tech-identity':'tech','tech-audience':'tech','tech-vp1':'tech','tech-vp2':'tech',
+    'tech-sysprompt':'tech','tech-userprompt':'tech','tech-guardrails':'tech',
+    'research-main':'research','protrev-main':'protrev'
+  };
+  const group = groupMap[panelId];
+  if (group) {
+    // Open the right menu group
+    document.querySelectorAll('.menu-top').forEach(m => m.classList.remove('active'));
+    document.querySelectorAll('.menu-sub').forEach(s => s.classList.remove('open'));
+    const topBtn = document.querySelector(`.menu-top[data-group="${group}"]`);
+    if (topBtn) topBtn.classList.add('active');
+    const sub = document.getElementById('sub-' + group);
+    if (sub) sub.classList.add('open');
+    activeMenu = group;
+  }
+  // Find the matching submenu item and trigger showPanel
+  const subItem = document.querySelector(`[onclick*="showPanel('${panelId}'"]`);
+  showPanel(panelId, subItem || null);
+  if (subItem) subItem.classList.add('active');
+}
+</script>
 
 <script>
 // ── DATA FETCH & HYDRATION ────────────────────────────────────────────────────
-// Reads data.json from the repo root. Structure produced by sphere_pipeline.py:
-//   data.protocols        → object keyed by protocol code (e.g. "H-OS-L1")
-//   data.sphere_commentary → { overview, cross_series, anomalies, development_signals, by_protocol, by_protocol_plain }
-//   data.series_summary   → { HEALING: {n,mean,std,protocols}, THRIVING:…, TRANSFORMING:… }
-//   data.total_responses, data.protocols_with_data, data.analysis_date
-
-const CONF_PCT = { early: 22, developing: 55, meaningful: 80, strong: 95 };
+const CONF_PCT   = { early: 22, developing: 55, meaningful: 80, strong: 95 };
 const CONF_LABEL = { early: 'Early signal', developing: 'Developing signal', meaningful: 'Meaningful signal', strong: 'Strong signal' };
 
-// Series display copy (static — matches sphere.html hardcoded fallback cards)
 const SERIES_COPY = {
   HEALING:      { label:'Healing',      body:'The widest entry breadth of any series, spanning acute distress through restorative sleep. HEALING protocols face the most diverse audience expectations — a factor tracked in routing accuracy.' },
   THRIVING:     { label:'Thriving',     body:'The highest current series mean, with relatively consistent scores across entry points. The THRIVING series may benefit from the clarity of its stated purpose — listeners who reach it may already be well-matched to it.' },
@@ -587,84 +1083,57 @@ fetch('data.json')
   .catch(err => console.warn('sphere.html: data.json load failed —', err));
 
 function hydrateAll(data) {
-
-  // ── STAT STRIP ──
+  // Stat strip
   if (data.protocols_with_data != null) document.getElementById('statProtocols').textContent = data.protocols_with_data;
-  // series count is always 3; future directions stat kept as placeholder
 
-  // ── GLOBAL SIGNALS — built from sphere_commentary ──
+  // Global signals
   const sc = data.sphere_commentary || {};
-  if (sc.overview || sc.cross_series || sc.anomalies || sc.development_signals) {
-    const signalDefs = [
-      { label: 'Overview signal',         text: sc.overview },
-      { label: 'Cross-series comparison', text: sc.cross_series },
-      { label: 'Anomaly worth watching',  text: sc.anomalies },
-      { label: 'Development signal',      text: sc.development_signals },
-    ].filter(s => s.text && s.text.trim());
+  if (sc.overview)           { const el = document.getElementById('sigOverviewText');  if(el) el.textContent = sc.overview; }
+  if (sc.cross_series)       { const el = document.getElementById('sigCrossText');     if(el) el.textContent = sc.cross_series; }
+  if (sc.anomalies)          { const el = document.getElementById('sigAnomalyText');   if(el) el.textContent = sc.anomalies; }
+  if (sc.development_signals){ const el = document.getElementById('sigDevText');       if(el) el.textContent = sc.development_signals; }
 
-    if (signalDefs.length) {
-      document.getElementById('globalSignals').innerHTML = signalDefs.map(s => `
-        <div class="signal-card">
-          <div class="signal-label">${s.label}</div>
-          <p>${s.text}</p>
-        </div>`).join('');
-    }
-  }
+  // Series comparison stats
+  const ss = data.series_summary || {};
+  ['HEALING','THRIVING','TRANSFORMING'].forEach(s => {
+    const stat = ss[s];
+    const statEl = document.getElementById('compare' + s.charAt(0) + s.slice(1).toLowerCase() + 'Stat');
+    if (stat && statEl) statEl.textContent = `n=${stat.n} · mean ${stat.mean} · std ${stat.std}`;
+    const textEl = document.getElementById('compare' + s.charAt(0) + s.slice(1).toLowerCase() + 'Text');
+    const copy = SERIES_COPY[s];
+    if (copy && textEl) textEl.textContent = copy.body;
+  });
 
-  // ── PROTOCOL CARDS — convert dict → array, inject code key ──
+  // Protocol cards (stored globally for filter use)
   const protosObj = data.protocols || {};
   const protosArr = Object.entries(protosObj).map(([code, p]) => ({ code, ...p }));
-
-  // Attach sphere commentary onto each protocol
   const byProto      = sc.by_protocol       || {};
   const byProtoPlain = sc.by_protocol_plain || {};
   protosArr.forEach(p => {
     p.sphere       = byProto[p.code]      || p.sphere      || '';
     p.sphere_plain = byProtoPlain[p.code] || p.sphere_plain || '';
   });
-
-  // Sort: series order (HEALING → THRIVING → TRANSFORMING), then by code
   const SERIES_ORDER = { HEALING: 0, THRIVING: 1, TRANSFORMING: 2 };
-  protosArr.sort((a, b) => {
-    const sd = (SERIES_ORDER[a.series] ?? 9) - (SERIES_ORDER[b.series] ?? 9);
+  protosArr.sort((a,b) => {
+    const sd = (SERIES_ORDER[a.series]??9)-(SERIES_ORDER[b.series]??9);
     return sd !== 0 ? sd : a.code.localeCompare(b.code);
   });
-
-  if (protosArr.length) {
-    window._ALL_PROTOCOLS = protosArr;
-    renderProtocolCards(protosArr);
-  }
-
-  // ── SERIES COMPARISON — built from series_summary ──
-  const ss = data.series_summary || {};
-  const seriesOrder = ['HEALING', 'THRIVING', 'TRANSFORMING'];
-  const compareCards = seriesOrder.map(s => {
-    const stat = ss[s];
-    const copy = SERIES_COPY[s] || { label: s, body: '' };
-    const statLine = stat ? `<div class="compare-stat">n=${stat.n} · mean ${stat.mean} · std ${stat.std}</div>` : '';
-    return `<div class="compare-card">
-      <h3>${copy.label}</h3>
-      ${statLine}
-      <p>${copy.body}</p>
-    </div>`;
-  }).filter(Boolean);
-  if (compareCards.length) {
-    document.getElementById('compareStrip').innerHTML = compareCards.join('');
-  }
+  if (protosArr.length) { window._ALL_PROTOCOLS = protosArr; }
 }
 
-function renderProtocolCards(protocols) {
-  document.getElementById('protocolGrid').innerHTML = protocols.map(item => {
-    const cls = (item.series || '').toLowerCase();
-    const conf     = item.confidence || 'early';
-    const confPct  = CONF_PCT[conf]   ?? 22;
-    const confLbl  = CONF_LABEL[conf] ?? 'Early signal';
+// ── renderProtocolCards — used by protocol.html + adviser.html ──
+function renderProtocolCards(protocols, containerId) {
+  const container = document.getElementById(containerId || 'protocolGrid');
+  if (!container) return;
+  container.innerHTML = protocols.map(item => {
+    const cls     = (item.series || '').toLowerCase();
+    const conf    = item.confidence || 'early';
+    const confPct = CONF_PCT[conf]   ?? 22;
+    const confLbl = CONF_LABEL[conf] ?? 'Early signal';
     const bimodalBadge = item.bimodal_flag ? '<span class="badge-bimodal">Bimodal</span>' : '';
     const tags = [item.series, item.entry, `n=${item.n}`, item.move].filter(Boolean);
-    // Show plain commentary by default, technical as tooltip/alt
     const commentaryText = item.sphere_plain || item.sphere || '';
     const meanDisplay = item.mean != null ? item.mean.toFixed(1) : '—';
-
     return `<article class="protocol-card ${cls}" data-series="${(item.series||'').toUpperCase()}">
       <div class="protocol-top">
         <div>
@@ -674,7 +1143,7 @@ function renderProtocolCards(protocols) {
         <div class="protocol-score">${meanDisplay}</div>
       </div>
       <div class="protocol-meta">
-        ${tags.map(t => `<span>${t}</span>`).join('')}
+        ${tags.map(t=>`<span>${t}</span>`).join('')}
         ${bimodalBadge}
       </div>
       <div class="sphere-module">
@@ -711,19 +1180,6 @@ function filterProtos(series, btn) {
   renderProtocolCards(filtered);
 }
 </script>
-<script>
-function toggleNav(btn) {
-  const links = document.querySelector('.nav-links');
-  const open = links.classList.toggle('open');
-  btn.setAttribute('aria-expanded', open);
-}
-document.addEventListener('click', function(e) {
-  if (!e.target.closest('.site-nav')) {
-    document.querySelector('.nav-links').classList.remove('open');
-    const btn = document.querySelector('.nav-hamburger');
-    if (btn) btn.setAttribute('aria-expanded', 'false');
-  }
-});
-</script>
-</body>
-</html>
+
+
+</body></html>

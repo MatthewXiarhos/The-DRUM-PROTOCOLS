@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Drum Protocols</title>
+<title>The Drum Protocols — Nervous System Regulation Through Rhythm</title>
+<meta name="description" content="Free rhythmic audio protocols for nervous system regulation. Built for neurodivergent people and anyone struggling with dysregulation. Backed by community data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
   --dp-gold: #B8860B;
   --dp-gold-light: #D4A017;
@@ -20,7 +20,6 @@
   --dp-slate-deeper: #131e28;
   --dp-slate-deepest: #0d1720;
   --dp-slate-light: #4A5F72;
-  --dp-slate-muted: #5a7085;
   --dp-healing: #1a4a35;
   --dp-healing-accent: #52B788;
   --dp-thriving: #0f3a5c;
@@ -36,304 +35,418 @@
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
-  --shadow-soft: 0 10px 30px rgba(0,0,0,0.3);
-  --shadow-card: 0 4px 16px rgba(0,0,0,0.25);
 }
-
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--dp-slate-deepest);
   color: var(--color-text-primary);
   min-height: 100vh;
 }
-
-a { color: inherit; }
+a { color: inherit; text-decoration: none; }
 
 /* ── NAV ── */
 .site-nav {
-  background: var(--dp-slate-deeper);
+  background: rgba(13,23,32,0.96);
+  backdrop-filter: blur(8px);
   padding: 0 32px;
   display: flex; align-items: center; justify-content: space-between;
   height: 52px;
-  position: sticky; top: 0; z-index: 200;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
   border-bottom: 1px solid var(--color-border);
 }
 .nav-brand {
   font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--dp-gold-light); text-decoration: none; font-weight: 500;
-  white-space: nowrap;
+  color: var(--dp-gold-light); font-weight: 500; white-space: nowrap;
 }
-.nav-links { display: flex; gap: 20px; }
+.nav-links { display: flex; gap: 20px; align-items: center; }
 .nav-link {
   font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
-  color: rgba(255,255,255,0.45); text-decoration: none; transition: color 0.15s;
-  white-space: nowrap;
+  color: rgba(255,255,255,0.45); transition: color 0.15s; white-space: nowrap;
 }
 .nav-link:hover { color: #fff; }
 .nav-link.active { color: var(--dp-gold-light); }
 .nav-hamburger {
-  display: none;
-  flex-direction: column; justify-content: center; gap: 5px;
-  width: 32px; height: 32px; cursor: pointer;
+  display: none; flex-direction: column; justify-content: center;
+  gap: 5px; width: 32px; height: 32px; cursor: pointer;
   background: none; border: none; padding: 4px; flex-shrink: 0;
 }
-.nav-hamburger span {
-  display: block; height: 2px; width: 100%;
-  background: rgba(255,255,255,0.55);
-}
+.nav-hamburger span { display: block; height: 2px; width: 100%; background: rgba(255,255,255,0.55); }
 .nav-hamburger:hover span { background: #fff; }
 @media (max-width: 640px) {
   .site-nav { padding: 0 16px; }
   .nav-links {
-    display: none;
-    position: fixed; top: 52px; left: 0; right: 0;
-    background: var(--dp-slate-deeper);
-    border-bottom: 1px solid var(--color-border-mid);
-    flex-direction: column; gap: 0;
-    z-index: 199;
+    display: none; position: fixed; top: 52px; left: 0; right: 0;
+    background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid);
+    flex-direction: column; gap: 0; z-index: 199;
   }
   .nav-links.open { display: flex; }
-  .nav-link {
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--color-border);
-    font-size: 12px;
-  }
+  .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; }
   .nav-link:last-child { border-bottom: none; }
   .nav-hamburger { display: flex; }
 }
 
-/* ── PAGE HEADER ── */
-.page-header {
-  background: var(--dp-slate-darker, #1c2d3e);
-  position: relative;
-  overflow: hidden;
-}
-.page-header::before {
-  content: '';
-  position: absolute;
-  right: -80px; top: -80px;
-  width: 360px; height: 360px; border-radius: 50%;
-  border: 1px solid rgba(184,134,11,0.12);
-  pointer-events: none;
-}
-.page-header::after {
-  content: '';
-  position: absolute;
-  right: -20px; top: -20px;
-  width: 200px; height: 200px; border-radius: 50%;
-  border: 1px solid rgba(184,134,11,0.08);
-  pointer-events: none;
-}
-
-.header-banner-wrap {
-  position: relative;
-  z-index: 1;
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 18px 24px 0;
-}
-.header-banner {
-  display: block;
-  width: 100%;
-  border-radius: 18px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.10);
-  box-shadow: 0 16px 44px rgba(0,0,0,0.35);
-  background: var(--dp-slate-mid);
-  min-height: 120px;
-}
-.header-banner img {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 /* ── HERO ── */
 .hero {
-  max-width: 1120px;
-  margin: 0 auto;
-  padding: 38px 24px 44px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(300px, 0.9fr);
-  gap: 36px;
-  align-items: center;
+  min-height: 100vh;
+  padding-top: 52px;
+  display: flex; flex-direction: column; justify-content: center;
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+  background: var(--dp-slate-deepest);
 }
-.hero-copy { max-width: 560px; }
-.eyebrow {
-  font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--dp-gold-light); margin-bottom: 12px;
+
+/* Atmospheric background */
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,134,11,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 20% 80%, rgba(82,183,136,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(176,106,176,0.04) 0%, transparent 60%);
+  pointer-events: none;
 }
+
+.hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 32px 48px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+  position: relative; z-index: 1;
+  width: 100%;
+}
+
+/* ── LEFT: COPY + CTA ── */
+.hero-copy {}
+
+.hero-eyebrow {
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--dp-gold-light); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  display: block; width: 28px; height: 1px;
+  background: var(--dp-gold-light); flex-shrink: 0;
+}
+
 .hero-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(40px, 5vw, 64px);
-  line-height: 1.0;
-  color: #fff;
+  font-size: clamp(38px, 4.5vw, 60px);
+  line-height: 1.05;
   font-weight: 600;
-  margin-bottom: 16px;
-}
-.hero-sub {
-  font-size: 15px;
-  line-height: 1.78;
-  color: rgba(255,255,255,0.60);
-  margin-bottom: 28px;
-  max-width: 520px;
-}
-.hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.btn-primary, .btn-secondary {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-height: 44px; padding: 0 20px; border-radius: var(--radius-md);
-  text-decoration: none; font-size: 12px; letter-spacing: 0.08em;
-  text-transform: uppercase; transition: all 0.15s ease;
-}
-.btn-primary {
-  background: var(--dp-gold);
-  color: #fff; border: 1px solid var(--dp-gold);
-}
-.btn-primary:hover { background: var(--dp-gold-light); border-color: var(--dp-gold-light); }
-.btn-secondary {
-  color: rgba(255,255,255,0.80); border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.04);
-}
-.btn-secondary:hover { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.08); }
-
-.hero-art {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-  background: var(--dp-slate-mid);
-  border: 1px solid rgba(255,255,255,0.08);
-  aspect-ratio: 16/9;
-  display: flex; align-items: center; justify-content: center;
-}
-.hero-art img { width: 100%; display: block; }
-.hero-art-placeholder {
-  width: 100%; height: 100%;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 10px;
-  color: var(--color-text-tertiary);
-  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-  padding: 32px;
-}
-.hero-art-placeholder svg { opacity: 0.3; }
-
-/* ── MAIN ── */
-.main { max-width: 1120px; margin: 0 auto; padding: 28px 24px 80px; }
-
-/* ── QUICK GRID ── */
-.quick-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-  margin-top: -22px;
-  position: relative;
-  z-index: 3;
-  margin-bottom: 24px;
-}
-.quick-card {
-  display: block;
-  background: var(--dp-slate-dark);
-  border: 0.5px solid var(--color-border-mid);
-  border-radius: var(--radius-lg);
-  padding: 18px 16px 20px;
-  text-decoration: none;
-  box-shadow: var(--shadow-card);
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-.quick-card:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-border-gold);
-  background: var(--dp-slate-mid);
-  box-shadow: 0 12px 28px rgba(0,0,0,0.35);
-}
-.quick-label {
-  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--color-text-tertiary); margin-bottom: 8px;
-}
-.quick-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 21px; line-height: 1.1; color: var(--color-text-primary);
-  margin-bottom: 8px;
-}
-.quick-text { font-size: 12px; line-height: 1.65; color: var(--color-text-secondary); }
-.quick-arrow { margin-top: 14px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dp-gold-light); }
-
-/* 6-col with sphere getting a slightly wider slot */
-.quick-card:nth-child(5) { grid-column: span 1; }
-
-/* ── SECTION CARD ── */
-.section-card {
-  background: var(--dp-slate-dark);
-  border: 0.5px solid var(--color-border-mid);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-bottom: 16px;
-}
-.section-head { padding: 22px 24px 0; }
-.section-label {
-  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
-  color: var(--color-text-tertiary); margin-bottom: 8px;
-}
-.section-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 30px; line-height: 1.1; color: var(--color-text-primary);
-  margin-bottom: 8px;
-}
-.section-sub { font-size: 14px; line-height: 1.75; color: var(--color-text-secondary); max-width: 760px; }
-.section-body { padding: 20px 24px 24px; }
-
-/* ── PATH GRID ── */
-.path-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.path-card {
-  border-radius: var(--radius-md);
-  padding: 20px;
-  border: 0.5px solid var(--color-border);
-  text-decoration: none;
-  display: block;
-  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.path-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(0,0,0,0.3);
-}
-.path-card.healing {
-  background: var(--dp-healing);
-  border-color: rgba(82,183,136,0.18);
-}
-.path-card.healing:hover { border-color: rgba(82,183,136,0.38); }
-.path-card.thriving {
-  background: var(--dp-thriving);
-  border-color: rgba(74,158,202,0.18);
-}
-.path-card.thriving:hover { border-color: rgba(74,158,202,0.38); }
-.path-card.transforming {
-  background: var(--dp-transforming);
-  border-color: rgba(176,106,176,0.18);
-}
-.path-card.transforming:hover { border-color: rgba(176,106,176,0.38); }
-
-.path-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 26px; line-height: 1.1; margin-bottom: 10px;
   color: #fff;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
 }
-.path-meta {
-  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+.hero-title em {
+  font-style: italic;
+  color: rgba(255,255,255,0.65);
+}
+
+.hero-sub {
+  font-size: 15px; line-height: 1.8;
+  color: rgba(255,255,255,0.52);
+  margin-bottom: 32px;
+  max-width: 440px;
+}
+
+/* Triage CTA — gold, prominent */
+.cta-triage {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  background: var(--dp-gold);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 26px;
+  height: 52px;
+  font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase;
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+  box-shadow: 0 4px 24px rgba(184,134,11,0.35);
+  width: 100%;
+  max-width: 340px;
+}
+.cta-triage:hover {
+  background: var(--dp-gold-light);
+  box-shadow: 0 6px 32px rgba(184,134,11,0.5);
+  transform: translateY(-1px);
+}
+.cta-triage svg { flex-shrink: 0; }
+
+.cta-secondary-row {
+  margin-top: 14px;
+  display: flex; gap: 14px; align-items: center;
+}
+.cta-learn {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.50);
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+  border-radius: var(--radius-md);
+  padding: 0 18px; height: 40px;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+}
+.cta-learn:hover {
+  color: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.06);
+}
+
+.cta-note {
+  font-size: 11px; color: rgba(255,255,255,0.28);
+  letter-spacing: 0.04em;
+  margin-top: 14px;
+}
+
+/* ── RIGHT: GROOVE VISUAL ── */
+.hero-visual {
+  display: flex; flex-direction: column; gap: 0;
+}
+.groove-card {
+  background: var(--dp-slate-deeper);
+  border: 1px solid var(--color-border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+}
+.groove-label-bar {
+  padding: 12px 18px 8px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.groove-label-bar-left {
+  font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+.groove-label-bar-right {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(82,183,136,0.5);
+}
+.groove-svg-wrap {
+  padding: 8px 4px 4px;
+  background: var(--dp-slate-deeper);
+}
+
+.groove-caption {
+  padding: 14px 18px;
+  font-size: 12px; line-height: 1.7;
+  color: rgba(255,255,255,0.38);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.groove-caption strong {
+  color: rgba(255,255,255,0.60);
+  font-weight: 500;
+}
+
+/* ── DIVIDER ── */
+.section-divider {
+  max-width: 1100px; margin: 0 auto;
+  padding: 0 32px;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── TRUST BAR ── */
+.trust-bar {
+  background: var(--dp-slate-deeper);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.trust-bar-inner {
+  max-width: 1100px; margin: 0 auto;
+  padding: 22px 32px;
+  display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
+}
+.trust-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(255,255,255,0.38);
+}
+.trust-item svg { flex-shrink: 0; opacity: 0.6; }
+
+/* ── STORY SECTION ── */
+.story-section {
+  max-width: 1100px; margin: 0 auto;
+  padding: 72px 32px 64px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+.story-copy {}
+.story-eyebrow {
+  font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--dp-gold-light); margin-bottom: 18px;
+}
+.story-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.15; font-weight: 600; color: #fff;
+  margin-bottom: 22px;
+}
+.story-body p {
+  font-size: 14px; line-height: 1.85;
+  color: rgba(255,255,255,0.55);
+  margin-bottom: 16px;
+}
+.story-body p:last-child { margin-bottom: 0; }
+.story-body strong {
+  color: rgba(255,255,255,0.78);
+  font-weight: 500;
+}
+
+.story-pillars {
+  display: flex; flex-direction: column; gap: 16px;
+  padding-top: 4px;
+}
+.pillar {
+  background: var(--dp-slate-deeper);
+  border: 1px solid var(--color-border-mid);
+  border-radius: var(--radius-md);
+  padding: 20px 22px;
+  border-left: 3px solid var(--dp-gold);
+  transition: border-left-color 0.15s;
+}
+.pillar:hover { border-left-color: var(--dp-gold-light); }
+.pillar-head {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--dp-gold-light); margin-bottom: 6px;
+}
+.pillar-body {
+  font-size: 13px; line-height: 1.7;
+  color: rgba(255,255,255,0.50);
+}
+
+/* ── SERIES SECTION ── */
+.series-section {
+  background: var(--dp-slate-deeper);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+.series-inner {
+  max-width: 1100px; margin: 0 auto;
+  padding: 64px 32px 72px;
+}
+.series-head {
+  margin-bottom: 36px;
+}
+.series-eyebrow {
+  font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--dp-gold-light); margin-bottom: 14px;
+}
+.series-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 600; color: #fff; line-height: 1.15;
+  margin-bottom: 12px;
+}
+.series-sub {
+  font-size: 14px; line-height: 1.8;
+  color: rgba(255,255,255,0.45); max-width: 600px;
+}
+.series-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.series-card {
+  border-radius: var(--radius-md);
+  padding: 28px 24px 24px;
+  border: 1px solid transparent;
+  transition: border-color 0.15s, transform 0.12s;
+  position: relative; overflow: hidden;
+}
+.series-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+}
+.series-card:hover { transform: translateY(-2px); }
+.series-card.healing {
+  background: rgba(26,74,53,0.45);
+  border-color: rgba(82,183,136,0.12);
+}
+.series-card.healing::before { background: var(--dp-healing-accent); }
+.series-card.healing:hover { border-color: rgba(82,183,136,0.28); }
+.series-card.thriving {
+  background: rgba(15,58,92,0.45);
+  border-color: rgba(74,158,202,0.12);
+}
+.series-card.thriving::before { background: var(--dp-thriving-accent); }
+.series-card.thriving:hover { border-color: rgba(74,158,202,0.28); }
+.series-card.transforming {
+  background: rgba(61,26,60,0.45);
+  border-color: rgba(176,106,176,0.12);
+}
+.series-card.transforming::before { background: var(--dp-transforming-accent); }
+.series-card.transforming:hover { border-color: rgba(176,106,176,0.28); }
+
+.series-direction {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
   margin-bottom: 10px;
 }
-.path-card.healing .path-meta { color: var(--dp-healing-accent); }
-.path-card.thriving .path-meta { color: var(--dp-thriving-accent); }
-.path-card.transforming .path-meta { color: var(--dp-transforming-accent); }
+.series-card.healing .series-direction { color: var(--dp-healing-accent); }
+.series-card.thriving .series-direction { color: var(--dp-thriving-accent); }
+.series-card.transforming .series-direction { color: var(--dp-transforming-accent); }
 
-.path-copy { font-size: 13px; line-height: 1.65; color: rgba(255,255,255,0.58); }
-.path-link {
-  display: inline-flex; align-items: center; gap: 5px;
-  margin-top: 16px; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+.series-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px; font-weight: 600; color: #fff; line-height: 1.1;
+  margin-bottom: 10px;
 }
-.path-card.healing .path-link { color: var(--dp-healing-accent); }
-.path-card.thriving .path-link { color: var(--dp-thriving-accent); }
-.path-card.transforming .path-link { color: var(--dp-transforming-accent); }
+.series-desc {
+  font-size: 13px; line-height: 1.68;
+  color: rgba(255,255,255,0.50);
+  margin-bottom: 20px;
+}
+.series-link {
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.series-card.healing .series-link { color: var(--dp-healing-accent); }
+.series-card.thriving .series-link { color: var(--dp-thriving-accent); }
+.series-card.transforming .series-link { color: var(--dp-transforming-accent); }
+
+/* ── BOTTOM CTA ── */
+.bottom-cta {
+  max-width: 1100px; margin: 0 auto;
+  padding: 72px 32px 80px;
+  text-align: center;
+}
+.bottom-cta-eyebrow {
+  font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: rgba(255,255,255,0.28); margin-bottom: 18px;
+}
+.bottom-cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 600; color: #fff; line-height: 1.15;
+  margin-bottom: 14px;
+}
+.bottom-cta-sub {
+  font-size: 14px; line-height: 1.8;
+  color: rgba(255,255,255,0.45); max-width: 460px;
+  margin: 0 auto 32px;
+}
+.bottom-cta-btn {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--dp-gold);
+  color: #fff; border-radius: var(--radius-md);
+  padding: 0 32px; height: 52px;
+  font-size: 13px; letter-spacing: 0.10em; text-transform: uppercase;
+  font-weight: 500;
+  box-shadow: 0 4px 24px rgba(184,134,11,0.35);
+  transition: background 0.15s, transform 0.12s, box-shadow 0.15s;
+}
+.bottom-cta-btn:hover {
+  background: var(--dp-gold-light);
+  box-shadow: 0 6px 32px rgba(184,134,11,0.5);
+  transform: translateY(-1px);
+}
 
 /* ── FOOTER ── */
 .page-footer {
@@ -348,38 +461,44 @@ a { color: inherit; }
 }
 .footer-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px; }
 .footer-link {
-  font-size: 12px; color: rgba(255,255,255,0.42); text-decoration: none; transition: color 0.15s;
+  font-size: 12px; color: rgba(255,255,255,0.42); transition: color 0.15s;
 }
 .footer-link:hover { color: rgba(255,255,255,0.80); }
 
+/* ── FADE IN ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-copy  { animation: fadeUp 0.7s ease both; }
+.hero-visual{ animation: fadeUp 0.7s 0.15s ease both; }
+.trust-bar  { animation: fadeUp 0.5s 0.3s ease both; }
+
 /* ── RESPONSIVE ── */
-@media (max-width: 1080px) {
-  .quick-grid { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 920px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 40px 24px 44px;
+  }
+  .hero-copy { order: 1; }
+  .hero-visual { order: 2; }
+  .story-section { grid-template-columns: 1fr; gap: 40px; padding: 52px 24px 48px; }
+  .series-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 980px) {
-  .hero { grid-template-columns: 1fr; }
-  .path-grid { grid-template-columns: 1fr 1fr; }
-  .path-card:last-child { grid-column: 1 / -1; }
-}
-@media (max-width: 720px) {
-  .header-banner-wrap { padding: 12px 16px 0; }
-  .hero { padding: 24px 16px 36px; gap: 22px; }
-  .main { padding: 18px 16px 64px; }
-  .quick-grid { grid-template-columns: 1fr 1fr; margin-top: 12px; }
-  .path-grid { grid-template-columns: 1fr; }
-  .path-card:last-child { grid-column: auto; }
-  .section-title { font-size: 26px; }
-}
-@media (max-width: 520px) {
-  .hero-title { font-size: 40px; }
-  .hero-actions { flex-direction: column; align-items: stretch; }
-  .btn-primary, .btn-secondary { width: 100%; }
-  .quick-grid { grid-template-columns: 1fr; }
+@media (max-width: 640px) {
+  .hero-inner { padding: 32px 18px 36px; }
+  .cta-triage { max-width: 100%; }
+  .trust-bar-inner { gap: 20px; padding: 18px 20px; }
+  .trust-item span { display: none; }
+  .series-inner { padding: 48px 18px 52px; }
+  .bottom-cta { padding: 52px 18px 64px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ── NAV ── -->
 <nav class="site-nav">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
@@ -387,123 +506,271 @@ a { color: inherit; }
   </button>
   <div class="nav-links">
     <a class="nav-link active" href="index.html">Home</a>
+    <a class="nav-link" href="learn.html">Learn About</a>
     <a class="nav-link" href="adviser.html">Adviser</a>
     <a class="nav-link" href="insights.html">Insights</a>
     <a class="nav-link" href="protocol.html">Protocols</a>
     <a class="nav-link" href="sphere.html">Data Lab</a>
     <a class="nav-link" href="research.html">Research</a>
-    <a class="nav-link" href="about.html">About</a>
+    <a class="nav-link" href="about.html">About me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
 </nav>
 
-<header class="page-header">
-  <div class="header-banner-wrap">
-    <picture class="header-banner">
-      <source media="(min-width: 900px)" srcset="index_banner.jpg">
-      <img src="index_banner.jpg" alt="The Drum Protocols">
-    </picture>
-  </div>
-  <div class="hero">
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-inner">
+
+    <!-- LEFT: copy + CTA -->
     <div class="hero-copy">
-      <h1 class="hero-title">Rhythm as a tool for nervous system regulation.</h1>
-      <p class="hero-sub">The Drum Protocols are a structured library of rhythmic audio sessions designed to support nervous system regulation. Each protocol is mapped to a physiological state — helping listeners move toward calm, sustain focus, or build upward from depletion.</p>
-      <div class="hero-actions">
-        <a class="btn-primary" href="adviser.html">Find Your Protocol</a>
+      <div class="hero-eyebrow">Nervous System Regulation</div>
+      <h1 class="hero-title">
+        Your nervous system<br>
+        can be<br>
+        <em>guided back.</em>
+      </h1>
+      <p class="hero-sub">
+        Rhythmic audio protocols, built on mathematics, tested by a community. 
+        Designed for people who are dysregulated, neurodivergent, or simply running on empty. 
+        Free. Always.
+      </p>
+
+      <!-- Primary CTA — triage path -->
+      <a class="cta-triage" href="adviser.html">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.6)" stroke-width="1.2"/>
+          <path d="M6 8h4M8 6l2 2-2 2" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Find Your Protocol Now
+      </a>
+
+      <div class="cta-secondary-row">
+        <a class="cta-learn" href="learn.html">
+          How it works
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 6h8M7 3l3 3-3 3" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </div>
+
+      <div class="cta-note">Three questions · under 60 seconds · no account required</div>
+    </div>
+
+    <!-- RIGHT: Groove animation -->
+    <div class="hero-visual">
+      <div class="groove-card">
+        <div class="groove-label-bar">
+          <div class="groove-label-bar-left">Nervous system · entrainment response</div>
+          <div class="groove-label-bar-right">● Live model</div>
+        </div>
+        <div class="groove-svg-wrap">
+          <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block">
+            <defs>
+              <linearGradient id="nsGradL" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#e05a2b"/>
+                <stop offset="60%" stop-color="#d4a017"/>
+                <stop offset="100%" stop-color="#52B788"/>
+              </linearGradient>
+            </defs>
+
+            <!-- Labels -->
+            <text x="24" y="32" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(220,100,60,.75)">NERVOUS SYSTEM — dysregulated · non-periodic</text>
+            <text x="24" y="178" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(212,160,23,.75)">ENTRAINMENT SIGNAL — steady · periodic · subcortical</text>
+
+            <!-- Time axis -->
+            <text x="400" y="295" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.22)" letter-spacing="1">TIME →</text>
+            <text x="56"  y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,.18)">Begins</text>
+            <text x="744" y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(82,183,136,.4)">Entrained</text>
+
+            <!-- Divider -->
+            <line x1="24" y1="150" x2="776" y2="150" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+
+            <!-- Nervous system: chaotic left section (static) -->
+            <path d="M24,88 C32,66 38,108 46,78 C54,48 58,100 66,72 C74,44 80,96 90,60 C100,24 106,90 116,68 C126,46 130,94 140,64 C150,34 158,88 168,58 C178,28 184,86 196,62 C206,38 210,90 222,60"
+              fill="none" stroke="#e05a2b" stroke-width="2" opacity=".85"/>
+
+            <!-- Animated middle: morphs chaos → order -->
+            <path d="M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68"
+              fill="none" stroke="url(#nsGradL)" stroke-width="2" opacity=".85">
+              <animate attributeName="d" dur="4s" repeatCount="indefinite"
+                values="
+                  M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68;
+                  M222,62 C234,44 242,80 256,66 C270,52 276,78 290,66 C304,54 312,76 328,68 C344,60 350,74 368,68 C384,62 390,72 408,68 C422,65 428,70 444,68 C456,66 462,70 476,68;
+                  M222,65 C234,52 242,78 256,67 C270,56 276,76 290,67 C304,58 312,74 328,68 C344,62 350,73 368,68 C384,63 390,71 408,68 C422,65 428,70 444,68 C456,67 462,70 476,68;
+                  M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68"
+                calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+            </path>
+
+            <!-- Ordered right: clean sine -->
+            <path d="M476,68 C490,50 504,86 518,68 C532,50 546,86 560,68 C574,50 588,86 602,68 C616,50 630,86 644,68 C658,50 672,86 686,68 C700,50 714,86 728,68 C742,50 756,84 770,68"
+              fill="none" stroke="#52B788" stroke-width="2.2" opacity=".9"/>
+
+            <text x="720" y="56" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(82,183,136,.7)">Synchronised</text>
+
+            <!-- Entrainment signal: steady gold sine -->
+            <path d="M24,218 C42,196 60,240 78,218 C96,196 114,240 132,218 C150,196 168,240 186,218 C204,196 222,240 240,218 C258,196 276,240 294,218 C312,196 330,240 348,218 C366,196 384,240 402,218 C420,196 438,240 456,218 C474,196 492,240 510,218 C528,196 546,240 564,218 C582,196 600,240 618,218 C636,196 654,240 672,218 C690,196 708,240 726,218 C744,196 762,238 776,218"
+              fill="none" stroke="#D4A017" stroke-width="2.5" opacity=".8"/>
+
+            <!-- BPM ticks -->
+            <line x1="78"  y1="238" x2="78"  y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="186" y1="238" x2="186" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="294" y1="238" x2="294" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="402" y1="238" x2="402" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="510" y1="238" x2="510" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="618" y1="238" x2="618" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <line x1="726" y1="238" x2="726" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+            <text x="400" y="258" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(212,160,23,.35)" letter-spacing="1">100 BPM · constant throughout</text>
+          </svg>
+        </div>
+        <div class="groove-caption">
+          <strong>What you're seeing:</strong> A dysregulated nervous system (top, red/chaotic) entraining to a steady rhythmic signal (gold). The auditory brainstem locks onto the periodic pulse — over time, the chaos resolves into synchrony (green).
+        </div>
       </div>
     </div>
-    <div class="hero-art">
-      <img src="index_hero.jpg" alt="Drum Protocols rhythm curve visualization" onerror="this.parentElement.innerHTML='<div class=\'hero-art-placeholder\'><svg width=\'48\' height=\'48\' viewBox=\'0 0 48 48\' fill=\'none\'><path d=\'M4 24 Q12 10 20 24 Q28 38 36 24 Q42 14 44 24\' stroke=\'#D4A017\' stroke-width=\'2\' fill=\'none\'/></svg><span>index_hero.jpg</span></div>'">
+
+  </div>
+</section>
+
+<!-- ── TRUST BAR ── -->
+<div class="trust-bar">
+  <div class="trust-bar-inner">
+    <div class="trust-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 1l1.5 3.5L12 5l-2.5 2.5.5 3.5L7 9.5 4 11l.5-3.5L2 5l3.5-.5L7 1z" stroke="#D4A017" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      <span>Free · always</span>
+    </div>
+    <div class="trust-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#D4A017" stroke-width="1.2"/>
+        <path d="M4.5 7l2 2 3-3" stroke="#D4A017" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>No account required</span>
+    </div>
+    <div class="trust-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 2a5 5 0 100 10A5 5 0 007 2zM7 5v4M5 7h4" stroke="#D4A017" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span>Anonymous data · community-driven</span>
+    </div>
+    <div class="trust-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M3 7c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="#D4A017" stroke-width="1.2" stroke-linecap="round"/>
+        <path d="M3 7H1M7 3V1" stroke="#D4A017" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span>φ-based mathematical design</span>
+    </div>
+    <div class="trust-item">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 2c-2.8 0-5 2-5 5s2.2 5 5 5 5-2 5-5-2.2-5-5-5z" stroke="#D4A017" stroke-width="1.2"/>
+        <path d="M4 7c0-1.65 1.35-3 3-3" stroke="#D4A017" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <span>Neurodivergent-informed</span>
     </div>
   </div>
-</header>
+</div>
 
-<main class="main">
-  <section class="quick-grid">
-    <a class="quick-card" href="adviser.html">
-      <div class="quick-label">Best place to begin</div>
-      <div class="quick-title">Protocol Adviser</div>
-      <div class="quick-text">Three guided questions to match your current state and available time to the right protocol.</div>
-      <div class="quick-arrow">Open Adviser →</div>
-    </a>
-
-    <a class="quick-card" href="insights.html">
-      <div class="quick-label">Anonymous listener data</div>
-      <div class="quick-title">Data Insights</div>
-      <div class="quick-text">Response patterns, rankings, series-level outcomes, and emerging signal from anonymous listener reports.</div>
-      <div class="quick-arrow">View Insights →</div>
-    </a>
-
-    <a class="quick-card" href="protocol.html">
-      <div class="quick-label">Protocol library</div>
-      <div class="quick-title">Protocols</div>
-      <div class="quick-text">Browse the full protocol library with series color coding, curve visualization, and deep context for each session.</div>
-      <div class="quick-arrow">Open Library →</div>
-    </a>
-
-    <a class="quick-card" href="sphere.html">
-      <div class="quick-label">Data analysis</div>
-      <div class="quick-title">Sphere's Data Lab</div>
-      <div class="quick-text">Advanced analytics and deeper signal processing from the accumulated listener dataset.</div>
-      <div class="quick-arrow">Enter Lab →</div>
-    </a>
-
-    <a class="quick-card" href="research.html">
-      <div class="quick-label">Research & evidence</div>
-      <div class="quick-title">Research Library</div>
-      <div class="quick-text">Publication-style document pages, abstract blocks, citation support, and direct PDF downloads.</div>
-      <div class="quick-arrow">Open Research →</div>
-    </a>
-
-    <a class="quick-card" href="safety.html">
-      <div class="quick-label">Before listening</div>
-      <div class="quick-title">Safety</div>
-      <div class="quick-text">Contraindications, research boundaries, and how anonymous survey data is handled.</div>
-      <div class="quick-arrow">Read Guidance →</div>
-    </a>
-  </section>
-
-  <section class="section-card">
-    <div class="section-head">
-      <div class="section-label">Three series · one shared framework</div>
-      <h2 class="section-title">Every protocol belongs to a direction of change.</h2>
-      <p class="section-sub">The library is organized around three physiological directions — Healing, Thriving, and Transforming. Each series uses a distinct rhythmic architecture matched to the nervous system state it addresses. Select a series below to explore its protocols.</p>
+<!-- ── STORY SECTION ── -->
+<section class="story-section">
+  <div class="story-copy">
+    <div class="story-eyebrow">The Why Behind This</div>
+    <h2 class="story-title">Built by someone who needed it. Free because you might need it too.</h2>
+    <div class="story-body">
+      <p>
+        The Drum Protocols started with a personal struggle — a dysregulated nervous system that wasn't responding to the usual interventions. Not therapy. Not medication adjustments. Not mindfulness apps. Something was missing at the level of the body's own rhythmic processing.
+      </p>
+      <p>
+        The research pointed to <strong>entrainment</strong> — the auditory brainstem's ability to synchronise with a periodic rhythmic signal. But nothing existed that was <strong>systematically designed</strong> around that mechanism, built to be comparable across protocols, or validated by real listener data.
+      </p>
+      <p>
+        So it was built from scratch. Thirty protocols across three physiological directions. Each one grounded in the same φ-derived mathematical constant so they can be directly compared. An anonymous feedback system so the community shapes what works.
+      </p>
+      <p>
+        This is not a product. <strong>There is nothing to buy.</strong> Every protocol, every insight, every piece of data is free — because the people who need nervous system support the most are often the least resourced to pay for it.
+      </p>
+      <p style="margin-top:24px;">
+        <a href="about.html" style="display:inline-flex;align-items:center;gap:7px;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;color:var(--dp-gold-light);border-bottom:0.5px solid rgba(212,160,23,0.3);padding-bottom:2px;">Read the full story →</a>
+      </p>
     </div>
-    <div class="section-body">
-      <div class="path-grid">
-        <a class="path-card healing" href="protocol.html?series=healing">
-          <div class="path-meta">Healing</div>
-          <div class="path-name">Downshift safely</div>
-          <div class="path-copy">For over-stimulation, anxiety, distress, and recovery-oriented states where the nervous system needs less activation and more room to settle.</div>
-          <div class="path-link">Explore Healing protocols →</div>
-        </a>
-        <a class="path-card thriving" href="protocol.html?series=thriving">
-          <div class="path-meta">Thriving</div>
-          <div class="path-name">Hold what works</div>
-          <div class="path-copy">For stable cognitive or contemplative states — focus, clarity, meditation, and creative work — where the goal is sustaining what is already working.</div>
-          <div class="path-link">Explore Thriving protocols →</div>
-        </a>
-        <a class="path-card transforming" href="protocol.html?series=transforming">
-          <div class="path-meta">Transforming</div>
-          <div class="path-name">Build upward</div>
-          <div class="path-copy">For low-affect or depleted states where the listener may benefit from a carefully structured ascent into more engagement, motivation, and drive.</div>
-          <div class="path-link">Explore Transforming protocols →</div>
-        </a>
-      </div>
-    </div>
-  </section>
-</main>
+  </div>
 
+  <div class="story-pillars">
+    <div class="pillar">
+      <div class="pillar-head">Built for dysregulation</div>
+      <div class="pillar-body">Designed with neurodivergent people and dysregulated nervous systems in mind — not as an edge case, but as the primary user.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head">Community efficacy loop</div>
+      <div class="pillar-body">Every listener who completes a protocol and submits anonymous feedback makes the next version of that protocol more effective. The data shapes the design.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head">Mathematically grounded</div>
+      <div class="pillar-body">Every arc, every protocol, every curve is built on a φ-derived constant — making results directly comparable and isolating entrainment parameters as the only variable.</div>
+    </div>
+    <div class="pillar">
+      <div class="pillar-head">AI-assisted analysis</div>
+      <div class="pillar-body">Sphere — an AI analytical layer — processes listener data to surface signals, flag anomalies, and guide protocol development decisions. The data talks; Sphere listens.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SERIES SECTION ── -->
+<div class="series-section">
+  <div class="series-inner">
+    <div class="series-head">
+      <div class="series-eyebrow">Three series · one shared framework</div>
+      <h2 class="series-title">Every protocol moves in a direction.</h2>
+      <p class="series-sub">The library is organised around three physiological directions. Each one uses a distinct rhythmic architecture matched to where your nervous system is right now.</p>
+    </div>
+    <div class="series-grid">
+      <a class="series-card healing" href="protocol.html?series=healing">
+        <div class="series-direction">↓ Healing · Downshift</div>
+        <div class="series-name">Healing</div>
+        <div class="series-desc">For over-stimulation, anxiety, distress, and recovery. Your nervous system needs less activation and more room to settle.</div>
+        <div class="series-link">Explore Healing →</div>
+      </a>
+      <a class="series-card thriving" href="protocol.html?series=thriving">
+        <div class="series-direction">→ Thriving · Sustain</div>
+        <div class="series-name">Thriving</div>
+        <div class="series-desc">For focus, clarity, meditation, and creative work. Your nervous system is working — the goal is holding what's already there.</div>
+        <div class="series-link">Explore Thriving →</div>
+      </a>
+      <a class="series-card transforming" href="protocol.html?series=transforming">
+        <div class="series-direction">↑↓ Transforming · Shift</div>
+        <div class="series-name">Transforming</div>
+        <div class="series-desc">For depletion, low affect, or those needing a structured ascent upward — or a path toward depth and contemplation.</div>
+        <div class="series-link">Explore Transforming →</div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ── BOTTOM CTA ── -->
+<section class="bottom-cta">
+  <div class="bottom-cta-eyebrow">Not sure where to start?</div>
+  <h2 class="bottom-cta-title">The Adviser will find the right protocol for you.</h2>
+  <p class="bottom-cta-sub">Three questions about your current state and how much time you have. Under a minute. No account. No cost.</p>
+  <a class="bottom-cta-btn" href="adviser.html">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.6)" stroke-width="1.2"/>
+      <path d="M6 8h4M8 6l2 2-2 2" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Open the Adviser
+  </a>
+</section>
+
+<!-- ── FOOTER ── -->
 <footer class="page-footer">
   <div class="footer-brand">THE DRUM PROTOCOLS</div>
   <div class="footer-links">
     <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link" href="learn.html">Learn About</a>
     <a class="footer-link" href="adviser.html">Adviser</a>
     <a class="footer-link" href="insights.html">Insights</a>
     <a class="footer-link" href="protocol.html">Protocols</a>
     <a class="footer-link" href="sphere.html">Data Lab</a>
     <a class="footer-link" href="research.html">Research</a>
-    <a class="footer-link" href="about.html">About</a>
+    <a class="footer-link" href="about.html">About me</a>
     <a class="footer-link" href="safety.html">Safety</a>
   </div>
 </footer>

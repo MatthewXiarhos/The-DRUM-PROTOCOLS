@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learn About · The Drum Protocols</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --dp-gold:#B8860B;--dp-gold-light:#D4A017;--dp-gold-pale:#3a2e10;
+  --dp-slate:#2C3E50;--dp-slate-mid:#243345;--dp-slate-dark:#1a2633;
+  --dp-slate-deeper:#131e28;--dp-slate-deepest:#0d1720;
+  --dp-slate-light:#4A5F72;--dp-slate-muted:#5a7085;
+  --dp-healing:#1a4a35;--dp-healing-accent:#52B788;
+  --dp-thriving:#0f3a5c;--dp-thriving-accent:#4a9eca;
+  --dp-transforming:#3d1a3c;--dp-transforming-accent:#b06ab0;
+  --color-text-primary:#e8e4dc;--color-text-secondary:#9aabb8;--color-text-tertiary:#607080;
+  --color-border:rgba(255,255,255,0.06);--color-border-mid:rgba(255,255,255,0.10);
+  --color-border-gold:rgba(184,134,11,0.22);
+  --radius-sm:6px;--radius-md:10px;--radius-lg:16px;
+  --shadow-soft:0 10px 30px rgba(0,0,0,0.3);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--dp-slate-deepest);color:var(--color-text-primary);min-height:100vh}
+a{color:inherit;text-decoration:none}
+
+/* ── SITE NAV ── */
+.site-nav{background:var(--dp-slate-deeper);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:200;border-bottom:1px solid var(--color-border)}
+.nav-brand{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);font-weight:500;white-space:nowrap}
+.nav-links{display:flex;gap:20px;align-items:center}
+.nav-link{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.45);transition:color .15s;white-space:nowrap}
+.nav-link:hover{color:#fff}
+.nav-link.active{color:var(--dp-gold-light)}
+.nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
+.nav-hamburger span{display:block;height:2px;width:100%;background:rgba(255,255,255,0.55)}
+.nav-hamburger:hover span{background:#fff}
+@media(max-width:700px){
+  .site-nav{padding:0 16px}
+  .nav-links{display:none;position:fixed;top:52px;left:0;right:0;background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);flex-direction:column;gap:0;z-index:199}
+  .nav-links.open{display:flex}
+  .nav-link{padding:13px 20px;border-bottom:1px solid var(--color-border);font-size:12px}
+  .nav-link:last-child{border-bottom:none}
+  .nav-hamburger{display:flex}
+}
+
+/* ── PAGE HEADER ── */
+.page-header{background:var(--dp-slate-deeper);position:relative;overflow:hidden;padding:18px 24px 0;border-bottom:1px solid var(--color-border)}
+.page-header::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;border:1px solid rgba(184,134,11,.12);pointer-events:none}
+.page-header::after{content:'';position:absolute;top:-40px;right:-40px;width:260px;height:260px;border-radius:50%;border:1px solid rgba(184,134,11,.08);pointer-events:none}
+.header-banner-wrap{border-radius:18px;border:1px solid var(--color-border-mid);box-shadow:0 16px 44px rgba(0,0,0,.35);overflow:hidden;max-height:280px}
+.header-banner-wrap img{width:100%;height:400px;object-fit:cover;object-position:center 45%;display:block}
+.page-intro{padding:22px 0 26px;max-width:1100px}
+.page-eyebrow{font-size:10px;letter-spacing:.20em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
+.page-subtitle{font-size:14px;line-height:1.75;color:rgba(255,255,255,.52);max-width:520px;margin-top:4px}
+@media(max-width:700px){
+  .page-header{padding:12px 16px 0}
+  .header-banner-wrap img{height:180px}
+  .page-intro{padding:16px 0 20px}
+}
+
+/* ── TAB NAVIGATION ── */
+.tab-nav-wrap{background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);position:sticky;top:52px;z-index:100}
+.tab-nav{max-width:1100px;margin:0 auto;padding:0 32px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tab-nav::-webkit-scrollbar{display:none}
+.tab-btn{
+  flex-shrink:0;
+  padding:14px 18px 12px;
+  font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(255,255,255,.42);
+  background:none;border:none;border-bottom:2px solid transparent;
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+  transition:color .15s,border-color .15s;
+  position:relative;top:1px;
+}
+.tab-btn:hover{color:rgba(255,255,255,.75)}
+.tab-btn.active{
+  color:#fff;
+  border-bottom-color:var(--dp-gold-light);
+  font-weight:500;
+}
+/* Series colour accents on active */
+.tab-btn.active[data-color="healing"]{border-bottom-color:var(--dp-healing-accent);color:var(--dp-healing-accent)}
+.tab-btn.active[data-color="thriving"]{border-bottom-color:var(--dp-thriving-accent);color:var(--dp-thriving-accent)}
+.tab-btn.active[data-color="transforming"]{border-bottom-color:var(--dp-transforming-accent);color:var(--dp-transforming-accent)}
+
+@media(max-width:700px){.tab-nav{padding:0 12px}}
+
+/* ── MOBILE ACCORDION (hidden on desktop) ── */
+.tab-accordion{display:none}
+@media(max-width:700px){
+  .tab-nav-wrap{position:static}
+  .tab-nav{display:none}
+  .tab-accordion{display:block;border-bottom:1px solid var(--color-border-mid)}
+  .accordion-item{border-top:1px solid var(--color-border)}
+  .accordion-btn{
+    width:100%;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;letter-spacing:.08em;text-transform:uppercase;
+    color:rgba(255,255,255,.55);background:var(--dp-slate-deeper);
+    border:none;cursor:pointer;font-family:inherit;text-align:left;
+  }
+  .accordion-btn.active{color:#fff;background:rgba(184,134,11,.06)}
+  .accordion-btn .acc-arrow{font-size:10px;transition:transform .15s}
+  .accordion-btn.active .acc-arrow{transform:rotate(180deg)}
+  .accordion-content{display:none}
+  .accordion-content.open{display:block}
+}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:0 auto;padding:40px 32px 80px}
+@media(max-width:700px){.main{padding:24px 12px 60px}.body-text{padding-left:8px}.panel-intro{padding-left:8px}.phi-callout{margin-left:0}.curve-annotation{margin-left:0}.series-band{padding:20px 16px}.code-ref-grid{grid-template-columns:1fr}}
+
+/* ── CONTENT PANELS ── */
+.panel{display:none}
+.panel.active{display:block;animation:fadeUp .2s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PANEL ANATOMY ── */
+.panel-eyebrow{font-size:9px;letter-spacing:.20em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.panel-eyebrow::before{content:'';width:18px;height:1px;background:rgba(212,160,23,.7);display:block}
+.panel-title{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,4vw,46px);font-weight:600;color:#fff;line-height:1;margin-bottom:20px}
+.panel-intro{font-size:15px;line-height:1.8;color:rgba(255,255,255,.65);max-width:660px;margin-bottom:32px}
+.panel-intro p+p{margin-top:12px}
+
+/* ── GRAPHIC ZONE ── */
+.graphic-zone{
+  width:100%;border-radius:var(--radius-lg);overflow:hidden;
+  background:var(--dp-slate-dark);border:.5px solid var(--color-border-mid);
+  margin-bottom:36px;
+  display:flex;align-items:center;justify-content:center;
+}
+.graphic-zone img{width:100%;height:auto;display:block}
+.graphic-zone.tall{min-height:380px}
+.graphic-zone.medium{min-height:300px}
+.graphic-zone.svg-pad{padding:40px 48px}
+.graphic-zone svg{width:100%;height:auto;max-width:none}
+
+/* ── SERIES COLOUR BANDS ── */
+.series-band{
+  border-radius:var(--radius-lg);border:.5px solid var(--color-border-mid);
+  padding:28px 32px;margin-bottom:20px;
+}
+.series-band.healing{border-top:3px solid var(--dp-healing-accent);background:linear-gradient(135deg,rgba(26,74,53,.25) 0%,rgba(13,23,32,.6) 100%)}
+.series-band.thriving{border-top:3px solid var(--dp-thriving-accent);background:linear-gradient(135deg,rgba(15,58,92,.25) 0%,rgba(13,23,32,.6) 100%)}
+.series-band.transforming{border-top:3px solid var(--dp-transforming-accent);background:linear-gradient(135deg,rgba(61,26,60,.25) 0%,rgba(13,23,32,.6) 100%)}
+.series-label{font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;font-weight:500}
+.healing .series-label{color:var(--dp-healing-accent)}
+.thriving .series-label{color:var(--dp-thriving-accent)}
+.transforming .series-label{color:var(--dp-transforming-accent)}
+.series-band h2{font-family:'Cormorant Garamond',serif;font-size:clamp(22px,3vw,32px);font-weight:600;color:#fff;line-height:1.05;margin-bottom:12px}
+.series-band p{font-size:14px;line-height:1.8;color:rgba(255,255,255,.68)}
+.series-band p+p{margin-top:10px}
+.series-direction{display:inline-flex;align-items:center;gap:8px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-top:14px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.04);border:.5px solid var(--color-border-mid)}
+.healing .series-direction{color:var(--dp-healing-accent);border-color:rgba(82,183,136,.25)}
+.thriving .series-direction{color:var(--dp-thriving-accent);border-color:rgba(74,158,202,.25)}
+.transforming .series-direction{color:var(--dp-transforming-accent);border-color:rgba(176,106,176,.25)}
+
+/* ── ENTRY POINT GRID ── */
+.entry-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:20px}
+.entry-card{border-radius:var(--radius-md);padding:16px 18px;border:.5px solid var(--color-border-mid);background:rgba(255,255,255,.02)}
+.entry-card.healing{border-left:2px solid var(--dp-healing-accent)}
+.entry-card.thriving{border-left:2px solid var(--dp-thriving-accent)}
+.entry-card.transforming{border-left:2px solid var(--dp-transforming-accent)}
+.entry-series{font-size:8px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.healing .entry-series,.entry-card.healing .entry-series{color:var(--dp-healing-accent)}
+.thriving .entry-series,.entry-card.thriving .entry-series{color:var(--dp-thriving-accent)}
+.transforming .entry-series,.entry-card.transforming .entry-series{color:var(--dp-transforming-accent)}
+.entry-name{font-size:14px;font-weight:500;color:#fff;margin-bottom:4px}
+.entry-desc{font-size:12px;line-height:1.6;color:rgba(255,255,255,.5)}
+.entry-levels{font-size:9px;letter-spacing:.10em;color:var(--color-text-tertiary);margin-top:8px}
+
+/* ── CODE ANATOMY ── */
+.code-display{font-family:'Cormorant Garamond',serif;font-size:clamp(44px,7vw,72px);font-weight:600;color:#fff;letter-spacing:6px;text-align:center;padding:32px;margin-bottom:8px}
+.code-parts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:28px}
+.code-part{border-radius:var(--radius-md);padding:16px;background:rgba(255,255,255,.02);border:.5px solid var(--color-border-mid);text-align:center}
+.code-part-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.code-part-value{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:rgba(255,255,255,.7)}
+.code-part.s{border-top:2px solid var(--dp-healing-accent)}.code-part.s .code-part-label{color:var(--dp-healing-accent)}
+.code-part.e{border-top:2px solid var(--dp-thriving-accent)}.code-part.e .code-part-label{color:var(--dp-thriving-accent)}
+.code-part.l{border-top:2px solid var(--dp-gold-light)}.code-part.l .code-part-label{color:var(--dp-gold-light)}
+
+/* ── TEXT BODY ── */
+.body-text{font-size:14px;line-height:1.82;color:rgba(255,255,255,.65);max-width:700px}
+.body-text p+p{margin-top:13px}
+.body-text h4{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin:22px 0 8px}
+.body-text ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:9px;margin-top:8px}
+.body-text ul li{position:relative;padding-left:18px}
+.body-text ul li::before{content:'—';position:absolute;left:0;color:var(--dp-gold-light);opacity:.7}
+
+/* ── CURVE ANNOTATION ── */
+.curve-annotation{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0}
+.curve-seg{border-radius:var(--radius-md);padding:14px 16px;background:rgba(255,255,255,.02);border:.5px solid var(--color-border-mid)}
+.curve-seg-label{font-size:9px;letter-spacing:.13em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:6px}
+.curve-seg h4{font-size:13px;font-weight:500;color:#fff;margin-bottom:5px}
+.curve-seg p{font-size:12px;line-height:1.6;color:rgba(255,255,255,.52)}
+@media(max-width:600px){.curve-annotation{grid-template-columns:1fr}.code-parts{grid-template-columns:1fr}}
+
+/* ── PHI CALLOUT ── */
+.phi-callout{background:rgba(184,134,11,.06);border:.5px solid rgba(184,134,11,.22);border-radius:var(--radius-md);padding:16px 20px;margin:24px 0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.65)}
+.phi-callout strong{color:var(--dp-gold-light)}
+
+/* ── DIVIDER ── */
+.panel-divider{height:.5px;background:var(--color-border-mid);margin:32px 0}
+
+/* ── FOOTER ── */
+.page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 32px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light)}
+.footer-links{display:flex;gap:20px;flex-wrap:wrap}
+.footer-link{font-size:12px;color:rgba(255,255,255,.40);transition:color .15s}
+.footer-link:hover{color:rgba(255,255,255,.80)}
+
+/* ── PROTOCOL CODE FLOW ── */
+.code-flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;gap:0;align-items:center;width:100%;max-width:800px;margin:0 auto}
+.code-flow-arrow{text-align:center;padding:0 8px;color:rgba(184,134,11,.6);font-size:20px;font-weight:300}
+.code-flow-box{border-radius:10px;padding:14px 10px;text-align:center}
+.code-flow-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;font-weight:500}
+.code-flow-val{font-size:12px;color:rgba(255,255,255,.8);line-height:1.6}
+.code-flow-h{background:rgba(82,183,136,.08);border:1px solid rgba(82,183,136,.3)}
+.code-flow-h .code-flow-label{color:#52B788}
+.code-flow-e{background:rgba(74,158,202,.08);border:1px solid rgba(74,158,202,.3)}
+.code-flow-e .code-flow-label{color:#4a9eca}
+.code-flow-l{background:rgba(184,134,11,.08);border:1px solid rgba(184,134,11,.3)}
+.code-flow-l .code-flow-label{color:#D4A017}
+.code-flow-p{background:rgba(176,106,176,.08);border:1px solid rgba(176,106,176,.3)}
+.code-flow-p .code-flow-label{color:#b06ab0}
+.code-eg{font-size:12px;color:rgba(255,255,255,.32);letter-spacing:.5px;text-align:center;margin-top:4px}
+@media(max-width:640px){
+  .code-flow{grid-template-columns:1fr;gap:8px}
+  .code-flow-arrow{transform:rotate(90deg);padding:4px 0}
+}
+
+/* ── CODE REFERENCE TABLE ── */
+.code-ref-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:28px}
+.code-ref-col{border-radius:10px;overflow:hidden;border:.5px solid var(--color-border-mid)}
+.code-ref-head{padding:10px 14px;font-size:10px;letter-spacing:.16em;text-transform:uppercase}
+.code-ref-head-h{background:rgba(26,74,53,.6);color:#52B788;border-bottom:.5px solid rgba(82,183,136,.2)}
+.code-ref-head-t{background:rgba(15,58,92,.6);color:#4a9eca;border-bottom:.5px solid rgba(74,158,202,.2)}
+.code-ref-head-x{background:rgba(61,26,60,.6);color:#b06ab0;border-bottom:.5px solid rgba(176,106,176,.2)}
+.code-ref-rows{}
+.code-ref-row{display:flex;align-items:baseline;border-bottom:.5px solid rgba(255,255,255,.04)}
+.code-ref-row:last-child{border-bottom:none}
+.code-ref-code{flex-shrink:0;width:42px;padding:8px 12px;font-size:11px;font-weight:600;letter-spacing:.08em}
+.cr-h{color:#52B788}.cr-t{color:#4a9eca}.cr-x{color:#b06ab0}
+.code-ref-desc{padding:8px 12px 8px 0;font-size:11px;color:rgba(255,255,255,.65);line-height:1.4}
+@media(max-width:600px){.code-ref-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ── SITE NAV ── -->
+<nav class="site-nav">
+  <a class="nav-brand" href="index.html">The Drum Protocols</a>
+  <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Home</a>
+    <a class="nav-link active" href="learn.html">Learn About</a>
+    <a class="nav-link" href="adviser.html">Adviser</a>
+    <a class="nav-link" href="insights.html">Insights</a>
+    <a class="nav-link" href="protocol.html">Protocols</a>
+    <a class="nav-link" href="sphere.html">Data Lab</a>
+    <a class="nav-link" href="research.html">Research</a>
+    <a class="nav-link" href="about.html">About Me</a>
+    <a class="nav-link" href="safety.html">Safety</a>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<header class="page-header">
+  <div class="header-banner-wrap">
+    <img src="learn_banner.jpg" alt="Learn About The Drum Protocols">
+  </div>
+  <div class="page-intro">
+    <div class="page-eyebrow">The Drum Protocols · System Overview</div>
+    <div class="page-subtitle">Thirty precision-designed audio protocols across three series — built on mathematics, tested by community, and guided by data.</div>
+  </div>
+</header>
+
+<!-- ── TAB NAVIGATION — desktop ── -->
+<div class="tab-nav-wrap">
+  <div class="tab-nav" role="tablist">
+    <button class="tab-btn active" onclick="showTab('overview',this)" role="tab">Overview</button>
+    <button class="tab-btn" data-color="healing" onclick="showTab('healing',this)" role="tab">Healing</button>
+    <button class="tab-btn" data-color="thriving" onclick="showTab('thriving',this)" role="tab">Thriving</button>
+    <button class="tab-btn" data-color="transforming" onclick="showTab('transforming',this)" role="tab">Transforming</button>
+    <button class="tab-btn" onclick="showTab('entry',this)" role="tab">Ten Entry Points</button>
+    <button class="tab-btn" onclick="showTab('code',this)" role="tab">Protocol Code</button>
+    <button class="tab-btn" onclick="showTab('descending',this)" role="tab">Descending</button>
+    <button class="tab-btn" onclick="showTab('ascending',this)" role="tab">Ascending</button>
+    <button class="tab-btn" onclick="showTab('signal',this)" role="tab">Entrainment Signal</button>
+    <button class="tab-btn" onclick="showTab('groove',this)" role="tab">Groove</button>
+  </div>
+</div>
+
+<!-- ── TAB NAVIGATION — mobile accordion ── -->
+<div class="tab-accordion">
+  <div class="accordion-item">
+    <button class="accordion-btn active" onclick="toggleAccordion(this,'overview')">Overview <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content open" id="acc-overview"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'healing')">Healing <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-healing"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'thriving')">Thriving <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-thriving"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'transforming')">Transforming <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-transforming"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'entry')">Ten Entry Points <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-entry"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'code')">Protocol Code <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-code"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'descending')">Descending <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-descending"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'ascending')">Ascending <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-ascending"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'signal')">Entrainment Signal <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-signal"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'groove')">Groove <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-groove"></div>
+  </div>
+</div>
+
+<!-- ── MAIN CONTENT ── -->
+<main class="main">
+
+  <!-- ══ OVERVIEW ══ -->
+  <div class="panel active" id="panel-overview">
+    <div class="panel-eyebrow">System Overview</div>
+    <div class="graphic-zone tall">
+      <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#52B788" stop-opacity=".9"/><stop offset="100%" stop-color="#1a4a35"/></linearGradient>
+          <linearGradient id="tg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a9eca"/><stop offset="100%" stop-color="#0f3a5c"/></linearGradient>
+          <linearGradient id="xg" x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stop-color="#b06ab0" stop-opacity=".9"/><stop offset="100%" stop-color="#3d1a3c"/></linearGradient>
+        </defs>
+
+        <!-- Root -->
+        <rect x="350" y="18" width="200" height="36" rx="8" fill="rgba(184,134,11,.12)" stroke="rgba(184,134,11,.4)" stroke-width="1"/>
+        <text x="450" y="41" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" letter-spacing="2" fill="#D4A017">30 PROTOCOLS</text>
+
+        <!-- Trunk lines -->
+        <line x1="450" y1="54" x2="155" y2="110" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <line x1="450" y1="54" x2="450" y2="110" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+        <line x1="450" y1="54" x2="745" y2="110" stroke="rgba(255,255,255,.12)" stroke-width="1"/>
+
+        <!-- HEALING column -->
+        <rect x="60" y="110" width="190" height="260" rx="12" fill="url(#hg)" opacity=".15"/>
+        <rect x="60" y="110" width="190" height="260" rx="12" fill="none" stroke="#52B788" stroke-width="1" opacity=".5"/>
+        <text x="155" y="140" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="2.5" fill="#52B788">HEALING</text>
+        <line x1="155" y1="155" x2="155" y2="330" stroke="#52B788" stroke-width="2" opacity=".5"/>
+        <polygon points="155,348 146,328 164,328" fill="#52B788" opacity=".7"/>
+        <text x="155" y="370" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="15" fill="rgba(255,255,255,.5)">Downward</text>
+        <text x="155" y="388" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)" letter-spacing="1.5">REGULATION</text>
+
+        <!-- THRIVING column -->
+        <rect x="355" y="110" width="190" height="260" rx="12" fill="url(#tg)" opacity=".15"/>
+        <rect x="355" y="110" width="190" height="260" rx="12" fill="none" stroke="#4a9eca" stroke-width="1" opacity=".5"/>
+        <text x="450" y="140" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="2.5" fill="#4a9eca">THRIVING</text>
+        <line x1="420" y1="240" x2="478" y2="240" stroke="#4a9eca" stroke-width="2" opacity=".6"/>
+        <polygon points="482,240 468,234 468,246" fill="#4a9eca" opacity=".8"/>
+        <line x1="480" y1="220" x2="422" y2="220" stroke="#4a9eca" stroke-width="1.2" opacity=".3"/>
+        <polygon points="418,220 432,214 432,226" fill="#4a9eca" opacity=".3"/>
+        <text x="450" y="370" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="15" fill="rgba(255,255,255,.5)">Sustained</text>
+        <text x="450" y="388" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)" letter-spacing="1.5">FUNCTIONAL STATE</text>
+
+        <!-- TRANSFORMING column — bidirectional -->
+        <rect x="650" y="110" width="190" height="260" rx="12" fill="url(#xg)" opacity=".15"/>
+        <rect x="650" y="110" width="190" height="260" rx="12" fill="none" stroke="#b06ab0" stroke-width="1" opacity=".5"/>
+        <text x="745" y="140" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="2" fill="#b06ab0">TRANSFORMING</text>
+        <!-- UP arrow — Activation (left of centre) -->
+        <line x1="718" y1="330" x2="718" y2="168" stroke="#b06ab0" stroke-width="2" opacity=".6" stroke-linecap="round"/>
+        <polygon points="718,150 710,172 726,172" fill="#b06ab0" opacity=".8"/>
+        <!-- DOWN arrow — Depth (right of centre) -->
+        <line x1="772" y1="168" x2="772" y2="330" stroke="#b06ab0" stroke-width="2" opacity=".4" stroke-linecap="round"/>
+        <polygon points="772,348 764,328 780,328" fill="#b06ab0" opacity=".6"/>
+        <!-- Divider between arrows -->
+        <line x1="745" y1="160" x2="745" y2="340" stroke="rgba(176,106,176,.15)" stroke-width=".8" stroke-dasharray="3,3"/>
+        <!-- Labels inside column -->
+        <text x="718" y="355" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(176,106,176,.65)" letter-spacing="1">ACTIVATE</text>
+        <text x="772" y="355" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(176,106,176,.45)" letter-spacing="1">DEPTH</text>
+        <text x="745" y="378" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="14" fill="rgba(255,255,255,.45)">Bidirectional</text>
+        <text x="745" y="394" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,.22)" letter-spacing="1.2">TRANSFORMATION</text>
+      </svg>
+    </div>
+    <div class="panel-intro">
+      <p>The Drum Protocols is a library of thirty audio protocols built to move the nervous system — down toward regulation, sideways into sustained focus, or upward toward engagement and activation.</p>
+      <p>Everything in the system is organised around one question: <em>where is your nervous system right now, and where does it need to go?</em> The answer determines which of three series you enter, which of ten entry points applies to your current state, and which of three intensity levels matches where you are today.</p>
+      <p>The tabs above walk through each layer of the system — from the broad categories down to the precise mathematics that shapes every protocol's arc. Start anywhere. The system reveals itself in pieces.</p>
+    </div>
+  </div>
+
+  <!-- ══ HEALING ══ -->
+  <div class="panel" id="panel-healing">
+    <div class="panel-eyebrow">The Three Series · Series One</div>
+    <div class="graphic-zone medium svg-pad" style="background:linear-gradient(135deg,rgba(26,74,53,.35) 0%,var(--dp-slate-dark) 100%);border-top:2px solid var(--dp-healing-accent)">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:700px">
+        <defs>
+          <linearGradient id="hg2" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#52B788" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#1a4a35" stop-opacity=".4"/>
+          </linearGradient>
+        </defs>
+        <!-- Large downward arrow -->
+        <rect x="280" y="20" width="140" height="200" rx="10" fill="rgba(82,183,136,.06)" stroke="rgba(82,183,136,.2)" stroke-width="1"/>
+        <text x="350" y="55" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="3" fill="#52B788">HEALING</text>
+        <!-- Down arrow shaft -->
+        <line x1="350" y1="70" x2="350" y2="188" stroke="#52B788" stroke-width="3" opacity=".7" stroke-linecap="round"/>
+        <polygon points="350,210 334,186 366,186" fill="#52B788" opacity=".85"/>
+
+        <!-- State labels -->
+        <text x="180" y="80" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Overload</text>
+        <text x="180" y="98" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Anxiety</text>
+        <text x="180" y="116" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Distress</text>
+        <text x="180" y="134" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Sleeplessness</text>
+        <line x1="238" y1="106" x2="280" y2="130" stroke="rgba(82,183,136,.2)" stroke-width=".8"/>
+
+        <text x="520" y="170" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="22" font-style="italic" fill="rgba(255,255,255,.55)">Regulation</text>
+        <text x="520" y="192" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(82,183,136,.55)">DESTINATION STATE</text>
+        <line x1="420" y1="194" x2="480" y2="176" stroke="rgba(82,183,136,.2)" stroke-width=".8"/>
+
+        <!-- Frequency annotation -->
+        <text x="350" y="238" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.3)" letter-spacing="1">High PRC  →  Low PRC</text>
+        <text x="350" y="254" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="11" font-style="italic" fill="rgba(184,134,11,.45)">The arc always descends</text>
+      </svg>
+    </div>
+    <div class="series-band healing">
+      <div class="series-label">Series One</div>
+      <h2>Healing</h2>
+      <p>Healing protocols move the nervous system downward — from activation toward regulation. They are designed for states of overload, anxiety, acute distress, and sleep difficulty. The arc always descends: starting frequency is higher, ending frequency is lower, and the journey between them follows a mathematically precise curve.</p>
+      <p>There are twelve Healing protocols in total, organised across four entry points at three intensity levels each. The entry point identifies what you are dealing with right now. The level identifies how much time and depth you need.</p>
+      <div class="series-direction">↓ &nbsp; Descending · Regulation · Calm</div>
+    </div>
+  </div>
+
+  <!-- ══ THRIVING ══ -->
+  <div class="panel" id="panel-thriving">
+    <div class="panel-eyebrow">The Three Series · Series Two</div>
+    <div class="graphic-zone medium svg-pad" style="background:linear-gradient(135deg,rgba(15,58,92,.35) 0%,var(--dp-slate-dark) 100%);border-top:2px solid var(--dp-thriving-accent)">
+      <svg viewBox="0 0 700 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:700px">
+        <!-- Horizontal sustained arrows -->
+        <rect x="230" y="80" width="240" height="120" rx="10" fill="rgba(74,158,202,.06)" stroke="rgba(74,158,202,.2)" stroke-width="1"/>
+        <text x="350" y="113" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="3" fill="#4a9eca">THRIVING</text>
+        <!-- Bidirectional sustained arrows -->
+        <line x1="258" y1="148" x2="448" y2="148" stroke="#4a9eca" stroke-width="3" opacity=".7" stroke-linecap="round"/>
+        <polygon points="452,148 436,140 436,156" fill="#4a9eca" opacity=".85"/>
+        <line x1="442" y1="132" x2="260" y2="132" stroke="#4a9eca" stroke-width="1.5" opacity=".35"/>
+        <polygon points="256,132 272,124 272,140" fill="#4a9eca" opacity=".35"/>
+
+        <!-- State labels -->
+        <text x="140" y="135" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Focus</text>
+        <text x="140" y="153" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Flow</text>
+        <text x="140" y="171" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.55)">Balance</text>
+
+        <text x="560" y="145" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="22" font-style="italic" fill="rgba(255,255,255,.55)">Sustained</text>
+
+        <text x="350" y="238" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.3)" letter-spacing="1">Target PRC  ·  Held throughout</text>
+        <text x="350" y="254" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="11" font-style="italic" fill="rgba(184,134,11,.45)">Not descent. Not ascent. Sustained.</text>
+      </svg>
+    </div>
+    <div class="series-band thriving">
+      <div class="series-label">Series Two</div>
+      <h2>Thriving</h2>
+      <p>Thriving protocols hold the nervous system in a targeted functional state — focus, creative engagement, or emotional balance. The goal is not to recover from a difficult state but to sustain a productive one. The entrainment arc does not descend or ascend in the same way as the other series; it establishes and maintains.</p>
+      <p>There are nine Thriving protocols across three entry points. If you are already in a reasonable baseline state and want to optimise rather than recover, this is your series.</p>
+      <div class="series-direction">→ &nbsp; Sustained · Focus · Flow · Balance</div>
+    </div>
+  </div>
+
+  <!-- ══ TRANSFORMING ══ -->
+  <div class="panel" id="panel-transforming">
+    <div class="panel-eyebrow">The Three Series · Series Three</div>
+    <div class="graphic-zone medium svg-pad" style="background:linear-gradient(135deg,rgba(61,26,60,.35) 0%,var(--dp-slate-dark) 100%);border-top:2px solid var(--dp-transforming-accent)">
+      <svg viewBox="0 0 700 285" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-width:700px">
+        <defs>
+          <linearGradient id="xg2" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#b06ab0" stop-opacity=".9"/>
+            <stop offset="100%" stop-color="#3d1a3c"/>
+          </linearGradient>
+        </defs>
+        <rect x="280" y="30" width="140" height="200" rx="10" fill="rgba(176,106,176,.06)" stroke="rgba(176,106,176,.2)" stroke-width="1"/>
+        <text x="350" y="210" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="3" fill="#b06ab0">TRANSFORMING</text>
+        <!-- UP arrow (Activation) — left of centre -->
+        <line x1="320" y1="190" x2="320" y2="72" stroke="#b06ab0" stroke-width="2.5" opacity=".8" stroke-linecap="round"/>
+        <polygon points="320,50 308,74 332,74" fill="#b06ab0" opacity=".9"/>
+        <!-- DOWN arrow (Depth) — right of centre -->
+        <line x1="380" y1="72" x2="380" y2="190" stroke="#b06ab0" stroke-width="2.5" opacity=".5" stroke-linecap="round"/>
+        <polygon points="380,212 368,190 392,190" fill="#b06ab0" opacity=".65"/>
+        <!-- Centre divider -->
+        <line x1="350" y1="65" x2="350" y2="200" stroke="rgba(176,106,176,.15)" stroke-width=".8" stroke-dasharray="3,3"/>
+
+        <!-- State labels — left column (ascending) -->
+        <text x="155" y="170" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" fill="rgba(255,255,255,.55)">Low mood</text>
+        <text x="155" y="186" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" fill="rgba(255,255,255,.55)">Low energy</text>
+        <text x="155" y="202" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" fill="rgba(255,255,255,.55)">Low motivation</text>
+        <line x1="218" y1="186" x2="280" y2="180" stroke="rgba(176,106,176,.2)" stroke-width=".8"/>
+
+        <!-- Activation label -->
+        <text x="510" y="72" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" font-style="italic" fill="rgba(255,255,255,.55)">Activation</text>
+        <line x1="410" y1="70" x2="478" y2="72" stroke="rgba(176,106,176,.2)" stroke-width=".8"/>
+        <!-- Depth label -->
+        <text x="525" y="195" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="18" font-style="italic" fill="rgba(176,106,176,.5)">Depth</text>
+        <line x1="418" y1="193" x2="490" y2="195" stroke="rgba(176,106,176,.15)" stroke-width=".8"/>
+
+        <!-- Arrow labels inside box -->
+        <text x="320" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(176,106,176,.6)" letter-spacing="1">ASCEND</text>
+        <text x="380" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="8" fill="rgba(176,106,176,.4)" letter-spacing="1">DESCEND</text>
+
+        <text x="350" y="248" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.3)" letter-spacing="1">Activation ↑ &nbsp;·&nbsp; ↓ Depth &amp; Contemplation</text>
+        <text x="350" y="264" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="11" font-style="italic" fill="rgba(184,134,11,.45)">Transformation moves in both directions.</text>
+      </svg>
+    </div>
+    <div class="series-band transforming">
+      <div class="series-label">Series Three</div>
+      <h2>Transforming</h2>
+      <p>Transforming protocols are unique in the library: they move in both directions. Most Transforming protocols ascend — moving the nervous system upward from low-affect states toward activation, engagement, and drive. But Transforming also includes descending protocols designed for Meditation &amp; Contemplation — reaching inward to process grief and trauma, or to access states of deep stillness and solace.</p>
+      <p>Transformation, in other words, is not always upward. Sometimes it means consciously descending into deeper layers of the psyche. The series holds both directions because the need for transformation does too.</p>
+      <p>There are nine Transforming protocols across three entry points. If you are dealing with low mood or low drive, the ascending protocols address you directly. If you are seeking depth — in meditation, in grief, in contemplation — the descending protocols in this series are designed for that journey.</p>
+      <div class="series-direction">↑↓ &nbsp; Ascending · Activation · Drive · and Descending · Depth · Contemplation</div>
+    </div>
+  </div>
+
+  <!-- ══ TEN ENTRY POINTS ══ -->
+  <div class="panel" id="panel-entry">
+    <div class="panel-eyebrow">System Architecture · Entry Points</div>
+    <div class="graphic-zone" style="padding:32px 24px;min-height:520px;display:block">
+      <svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+
+        <!-- Root node — extra horizontal padding -->
+        <rect x="270" y="14" width="360" height="44" rx="10" fill="rgba(184,134,11,.14)" stroke="rgba(184,134,11,.45)" stroke-width="1.2"/>
+        <text x="450" y="42" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="14" letter-spacing="2.5" fill="#D4A017">  10 ENTRY POINTS · 30 PROTOCOLS  </text>
+
+        <!-- Trunk lines -->
+        <line x1="450" y1="58" x2="170" y2="108" stroke="rgba(255,255,255,.14)" stroke-width="1.2"/>
+        <line x1="450" y1="58" x2="450" y2="108" stroke="rgba(255,255,255,.14)" stroke-width="1.2"/>
+        <line x1="450" y1="58" x2="730" y2="108" stroke="rgba(255,255,255,.14)" stroke-width="1.2"/>
+
+        <!-- ── HEALING (4 boxes, stagger: low·high·low·high) ── -->
+        <rect x="52" y="108" width="236" height="30" rx="7" fill="rgba(26,74,53,.75)" stroke="#52B788" stroke-width="1"/>
+        <text x="170" y="128" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" letter-spacing="2.5" fill="#52B788">HEALING</text>
+
+        <!-- connector lines to staggered boxes -->
+        <line x1="87"  y1="138" x2="87"  y2="170" stroke="rgba(82,183,136,.25)" stroke-width="1"/>
+        <line x1="140" y1="138" x2="140" y2="150" stroke="rgba(82,183,136,.25)" stroke-width="1"/>
+        <line x1="198" y1="138" x2="198" y2="170" stroke="rgba(82,183,136,.25)" stroke-width="1"/>
+        <line x1="252" y1="138" x2="252" y2="150" stroke="rgba(82,183,136,.25)" stroke-width="1"/>
+
+        <!-- H box1 LOW y=170 -->
+        <rect x="52" y="170" width="72" height="84" rx="7" fill="rgba(82,183,136,.07)" stroke="rgba(82,183,136,.3)" stroke-width=".9"/>
+        <text x="88" y="200" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Over-</text>
+        <text x="88" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">stimulation</text>
+        <text x="88" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.75)">L1 · L2 · L3</text>
+
+        <!-- H box2 HIGH y=150 -->
+        <rect x="104" y="150" width="72" height="84" rx="7" fill="rgba(82,183,136,.07)" stroke="rgba(82,183,136,.3)" stroke-width=".9"/>
+        <text x="140" y="180" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Anxiety &amp;</text>
+        <text x="140" y="195" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Stress</text>
+        <text x="140" y="224" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.75)">L1 · L2 · L3</text>
+
+        <!-- H box3 LOW y=170 -->
+        <rect x="162" y="170" width="72" height="84" rx="7" fill="rgba(82,183,136,.07)" stroke="rgba(82,183,136,.3)" stroke-width=".9"/>
+        <text x="198" y="200" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Acute</text>
+        <text x="198" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Distress</text>
+        <text x="198" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.75)">L1 · L2 · L3</text>
+
+        <!-- H box4 HIGH y=150 -->
+        <rect x="216" y="150" width="72" height="84" rx="7" fill="rgba(82,183,136,.07)" stroke="rgba(82,183,136,.3)" stroke-width=".9"/>
+        <text x="252" y="180" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Sleep &amp;</text>
+        <text x="252" y="195" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Rest</text>
+        <text x="252" y="224" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.75)">L1 · L2 · L3</text>
+
+        <text x="170" y="284" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.45)" letter-spacing=".5">4 entry points · 12 protocols</text>
+
+        <!-- ── THRIVING (3 boxes, stagger: high·low·high) ── -->
+        <rect x="332" y="108" width="236" height="30" rx="7" fill="rgba(15,58,92,.75)" stroke="#4a9eca" stroke-width="1"/>
+        <text x="450" y="128" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" letter-spacing="2.5" fill="#4a9eca">THRIVING</text>
+
+        <line x1="385" y1="138" x2="385" y2="150" stroke="rgba(74,158,202,.25)" stroke-width="1"/>
+        <line x1="450" y1="138" x2="450" y2="170" stroke="rgba(74,158,202,.25)" stroke-width="1"/>
+        <line x1="515" y1="138" x2="515" y2="150" stroke="rgba(74,158,202,.25)" stroke-width="1"/>
+
+        <!-- T box1 HIGH y=150 -->
+        <rect x="346" y="150" width="78" height="84" rx="7" fill="rgba(74,158,202,.07)" stroke="rgba(74,158,202,.3)" stroke-width=".9"/>
+        <text x="385" y="180" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Focus &amp;</text>
+        <text x="385" y="195" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Clarity</text>
+        <text x="385" y="224" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.75)">L1 · L2 · L3</text>
+
+        <!-- T box2 LOW y=170 -->
+        <rect x="411" y="170" width="78" height="84" rx="7" fill="rgba(74,158,202,.07)" stroke="rgba(74,158,202,.3)" stroke-width=".9"/>
+        <text x="450" y="200" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Creative</text>
+        <text x="450" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Flow</text>
+        <text x="450" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.75)">L1 · L2 · L3</text>
+
+        <!-- T box3 HIGH y=150 -->
+        <rect x="476" y="150" width="78" height="84" rx="7" fill="rgba(74,158,202,.07)" stroke="rgba(74,158,202,.3)" stroke-width=".9"/>
+        <text x="515" y="178" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Maintenance</text>
+        <text x="515" y="193" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">&amp; Balance</text>
+        <text x="515" y="224" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.75)">L1 · L2 · L3</text>
+
+        <text x="450" y="284" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.45)" letter-spacing=".5">3 entry points · 9 protocols</text>
+
+        <!-- ── TRANSFORMING (3 boxes, stagger: low·high·low) ── -->
+        <rect x="612" y="108" width="236" height="30" rx="7" fill="rgba(61,26,60,.75)" stroke="#b06ab0" stroke-width="1"/>
+        <text x="730" y="128" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" letter-spacing="2" fill="#b06ab0">TRANSFORMING</text>
+
+        <line x1="668" y1="138" x2="668" y2="170" stroke="rgba(176,106,176,.25)" stroke-width="1"/>
+        <line x1="730" y1="138" x2="730" y2="150" stroke="rgba(176,106,176,.25)" stroke-width="1"/>
+        <line x1="792" y1="138" x2="792" y2="170" stroke="rgba(176,106,176,.25)" stroke-width="1"/>
+
+        <!-- X box1 LOW y=170 -->
+        <rect x="620" y="170" width="96" height="84" rx="7" fill="rgba(176,106,176,.07)" stroke="rgba(176,106,176,.3)" stroke-width=".9"/>
+        <text x="668" y="200" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Mood &amp;</text>
+        <text x="668" y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Energy</text>
+        <text x="668" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.75)">L1 · L2 · L3</text>
+
+        <!-- X box2 HIGH y=150 -->
+        <rect x="682" y="150" width="96" height="84" rx="7" fill="rgba(176,106,176,.07)" stroke="rgba(176,106,176,.3)" stroke-width=".9"/>
+        <text x="730" y="180" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Motivation</text>
+        <text x="730" y="195" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">&amp; Drive</text>
+        <text x="730" y="224" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.75)">L1 · L2 · L3</text>
+
+        <!-- X box3 LOW y=170 -->
+        <rect x="744" y="170" width="96" height="84" rx="7" fill="rgba(176,106,176,.07)" stroke="rgba(176,106,176,.3)" stroke-width=".9"/>
+        <text x="792" y="198" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">Meditation</text>
+        <text x="792" y="213" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11.5" fill="rgba(255,255,255,.85)">&amp; Contempl.</text>
+        <text x="792" y="244" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.75)">L1 · L2 · L3</text>
+
+        <text x="730" y="284" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.45)" letter-spacing=".5">3 entry points · 9 protocols</text>
+
+        <!-- Horizontal rule -->
+        <line x1="52" y1="304" x2="848" y2="304" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+
+        <!-- Bottom summary -->
+        <text x="450" y="330" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="rgba(255,255,255,.25)" letter-spacing="2">10 ENTRY POINTS · 3 INTENSITY LEVELS EACH · 30 PROTOCOLS TOTAL</text>
+        <text x="450" y="356" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="15" font-style="italic" fill="rgba(184,134,11,.45)">The entry point is the first decision. Everything else follows from it.</text>
+
+        <!-- Level legend -->
+        <rect x="284" y="376" width="332" height="58" rx="8" fill="rgba(184,134,11,.05)" stroke="rgba(184,134,11,.18)" stroke-width=".8"/>
+        <text x="450" y="398" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.7)" letter-spacing="1">INTENSITY LEVELS</text>
+        <text x="330" y="422" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.48)">L1 · Accessible</text>
+        <text x="450" y="422" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.48)">L2 · Moderate</text>
+        <text x="570" y="422" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.48)">L3 · Extended</text>
+
+        <!-- Direction indicators -->
+        <text x="170" y="468" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.52)">↓ Regulation</text>
+        <text x="450" y="468" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.52)">→ Sustained State</text>
+        <text x="730" y="468" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.52)">↑↓ Activation · Depth</text>
+
+        <text x="450" y="500" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(255,255,255,.2)">Choose your series by direction. Choose your entry point by what you are dealing with right now.</text>
+      </svg>
+    </div>
+    <div class="body-text">
+      <p>Within each series, protocols are organised by entry point — the specific state you are addressing right now. An entry point is not a diagnosis. It is a description. It asks only: <em>what are you dealing with?</em></p>
+      <h4>Healing — 4 entry points</h4>
+      <ul>
+        <li><strong>Over-stimulation</strong> — sensory overload, overwhelm, difficulty settling</li>
+        <li><strong>Anxiety &amp; Stress</strong> — anxious activation, tension, racing thoughts</li>
+        <li><strong>Acute Distress / Crisis</strong> — acute emotional pain, crisis states</li>
+        <li><strong>Sleep &amp; Rest</strong> — difficulty falling or staying asleep</li>
+      </ul>
+      <h4>Thriving — 3 entry points</h4>
+      <ul>
+        <li><strong>Focus &amp; Clarity</strong> — sustained concentration and cognitive sharpness</li>
+        <li><strong>Creative Flow</strong> — generative, associative, open thinking states</li>
+        <li><strong>Maintenance &amp; Balance</strong> — general wellbeing and emotional equilibrium</li>
+      </ul>
+      <h4>Transforming — 3 entry points</h4>
+      <ul>
+        <li><strong>Mood &amp; Energy</strong> — low mood, emotional flatness, fatigue</li>
+        <li><strong>Motivation &amp; Drive</strong> — inertia, difficulty initiating, low volition</li>
+        <li><strong>Meditation &amp; Contemplation</strong> — deepened inward states, structured stillness</li>
+      </ul>
+      <p style="margin-top:16px">Each entry point offers three intensity levels: L1 is the most accessible and shortest, L3 the most extended and immersive. L2 sits between them. You do not need to start at L1 and work up — choose the level that matches your current need.</p>
+    </div>
+  </div>
+
+  <!-- ══ PROTOCOL CODE ══ -->
+  <div class="panel" id="panel-code">
+    <div class="panel-eyebrow">System Architecture · Protocol Naming</div>
+
+    <!-- Flow diagram -->
+    <div class="graphic-zone svg-pad" style="flex-direction:column;gap:16px;padding:32px 40px">
+      <div class="code-display">H &ndash; OS &ndash; L2</div>
+
+      <!-- Flow boxes with arrows -->
+      <div class="code-flow">
+        <div class="code-flow-box code-flow-h">
+          <div class="code-flow-label">1 &middot; Series</div>
+          <div class="code-flow-val">H = Healing<br>T = Thriving<br>X = Transforming</div>
+        </div>
+        <div class="code-flow-arrow">&rarr;</div>
+        <div class="code-flow-box code-flow-e">
+          <div class="code-flow-label">2 &middot; Entry Point</div>
+          <div class="code-flow-val">2-letter code<br>for your current<br>presenting state</div>
+        </div>
+        <div class="code-flow-arrow">&rarr;</div>
+        <div class="code-flow-box code-flow-l">
+          <div class="code-flow-label">3 &middot; Intensity</div>
+          <div class="code-flow-val">L1 &middot; Accessible<br>L2 &middot; Moderate<br>L3 &middot; Extended</div>
+        </div>
+        <div class="code-flow-arrow">&rarr;</div>
+        <div class="code-flow-box code-flow-p">
+          <div class="code-flow-label">4 &middot; Your Protocol</div>
+          <div class="code-flow-val">Named protocol<br>e.g. &ldquo;Rainfall&rdquo;<br>H-OS-L2</div>
+        </div>
+      </div>
+      <p class="code-eg">H-OS-L2 = Healing &middot; Over-stimulation &middot; Level 2 &middot; &ldquo;Rainfall&rdquo; &middot; 45 min &middot; 13 Hz &rarr; 9 Hz</p>
+    </div>
+
+    <!-- Code reference table -->
+    <div class="code-ref-grid">
+
+      <div class="code-ref-col">
+        <div class="code-ref-head code-ref-head-h">H &middot; Healing</div>
+        <div class="code-ref-rows">
+          <div class="code-ref-row"><span class="code-ref-code cr-h">OS</span><span class="code-ref-desc">Over-stimulation</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-h">AN</span><span class="code-ref-desc">Anxiety &amp; Stress</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-h">CR</span><span class="code-ref-desc">Acute Distress / Crisis</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-h">SL</span><span class="code-ref-desc">Sleep &amp; Rest</span></div>
+        </div>
+      </div>
+
+      <div class="code-ref-col">
+        <div class="code-ref-head code-ref-head-t">T &middot; Thriving</div>
+        <div class="code-ref-rows">
+          <div class="code-ref-row"><span class="code-ref-code cr-t">FC</span><span class="code-ref-desc">Focus &amp; Clarity</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-t">CF</span><span class="code-ref-desc">Creative Flow</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-t">MB</span><span class="code-ref-desc">Maintenance &amp; Balance</span></div>
+        </div>
+      </div>
+
+      <div class="code-ref-col">
+        <div class="code-ref-head code-ref-head-x">X &middot; Transforming</div>
+        <div class="code-ref-rows">
+          <div class="code-ref-row"><span class="code-ref-code cr-x">ME</span><span class="code-ref-desc">Mood &amp; Energy</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-x">MD</span><span class="code-ref-desc">Motivation &amp; Drive</span></div>
+          <div class="code-ref-row"><span class="code-ref-code cr-x">MC</span><span class="code-ref-desc">Meditation &amp; Contemplation</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="body-text">
+      <p>Every protocol has a code that tells you exactly what it does before you listen to a single second. Three decisions &mdash; series, entry point, intensity &mdash; resolve into one protocol. The Adviser makes those decisions with you; the code records the result.</p>
+      <p>Each protocol also carries a proper name &mdash; Rainfall, Anchor, Lantern, Drift &mdash; but the code is the map. When the Adviser recommends a protocol, read the code first: it tells you the direction of movement, the presenting state it addresses, and how demanding the session will be, all in four characters.</p>
+    </div>
+  </div>
+
+  <!-- ══ DESCENDING PROTOCOLS ══ -->
+  <div class="panel" id="panel-descending">
+    <div class="panel-eyebrow">The Architecture · Descending Protocols</div>
+
+    <div class="graphic-zone" style="padding:36px 48px;min-height:420px;background:var(--dp-slate-deeper)">
+      <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="descGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#4a9eca"/>
+            <stop offset="55%" stop-color="#D4A017"/>
+            <stop offset="100%" stop-color="#52B788" stop-opacity=".5"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Axes -->
+        <line x1="72" y1="30" x2="72" y2="290" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <line x1="72" y1="290" x2="720" y2="290" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <text x="38" y="165" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="rgba(255,255,255,.35)" transform="rotate(-90,38,165)">PRC (Hz)</text>
+        <text x="396" y="316" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="rgba(255,255,255,.35)">Duration →</text>
+
+        <!-- Phase boundary markers on x-axis -->
+        <!-- Warm-up ends ~20%, curve starts -->
+        <line x1="200" y1="290" x2="200" y2="296" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+        <!-- φ inflection at 38.2% of curve = ~54% total -->
+        <line x1="424" y1="290" x2="424" y2="296" stroke="rgba(184,134,11,.7)" stroke-width="1.5"/>
+        <!-- Arc ends at 61.8% of curve+warmup = ~73% total -->
+        <line x1="556" y1="290" x2="556" y2="296" stroke="rgba(184,134,11,.7)" stroke-width="1.5"/>
+        <!-- End -->
+        <line x1="720" y1="290" x2="720" y2="296" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+
+        <!-- Phase labels on x-axis -->
+        <text x="136" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.4)">Warm-up</text>
+        <text x="378" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.65)">38.2%</text>
+        <text x="556" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.65)">61.8%</text>
+        <text x="638" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.5)">Hold</text>
+
+        <!-- Phase background shading -->
+        <rect x="73" y="31" width="127" height="258" fill="rgba(255,255,255,.02)" rx="0"/>
+        <rect x="556" y="31" width="163" height="258" fill="rgba(82,183,136,.04)" rx="0"/>
+
+        <!-- Phase labels top -->
+        <text x="136" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(255,255,255,.28)">PHASE 1</text>
+        <text x="136" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.22)">Flat entry · entrainment</text>
+        <text x="378" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(184,134,11,.5)">PHASE 2</text>
+        <text x="378" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(184,134,11,.38)">φ-governed S-curve descent</text>
+        <text x="638" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(82,183,136,.5)">PHASE 3</text>
+        <text x="638" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(82,183,136,.38)">Destination dwell</text>
+
+        <!-- THE CURVE: flat warmup → S-curve descent → hold -->
+        <!-- Warmup: x72→200, y=82 (flat high PRC) -->
+        <!-- S-curve: x200→556, descending sigmoid -->
+        <!-- Hold: x556→720, y=258 (flat low PRC) -->
+        <path d="M72,82 L200,82 C230,82 245,90 280,130 C330,190 370,240 424,252 C470,262 510,262 556,262 L720,262"
+              fill="none" stroke="url(#descGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Hold dashed continuation -->
+        <line x1="556" y1="262" x2="720" y2="262" stroke="#52B788" stroke-width="2.5" opacity=".45" stroke-dasharray="8,4"/>
+
+        <!-- Key points -->
+        <circle cx="72"  cy="82"  r="6" fill="#4a9eca"/>
+        <circle cx="424" cy="252" r="6" fill="#D4A017" stroke="rgba(212,160,23,.4)" stroke-width="3"/>
+        <circle cx="556" cy="262" r="6" fill="#52B788"/>
+
+        <!-- Point labels -->
+        <text x="88"  y="78" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.9)" letter-spacing=".5">START PRC</text>
+        <text x="436" y="245" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(212,160,23,.95)" letter-spacing=".5">φ Inflection</text>
+        <text x="568" y="258" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.9)" letter-spacing=".5">END PRC</text>
+
+        <!-- φ annotations -->
+        <text x="244" y="200" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(184,134,11,.55)">φ = 1.618</text>
+
+        <!-- Section A/B brackets -->
+        <line x1="200" y1="340" x2="556" y2="340" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <line x1="200" y1="335" x2="200" y2="345" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <line x1="556" y1="335" x2="556" y2="345" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <text x="378" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.55)">Active curve — 61.8% of total duration</text>
+
+        <line x1="556" y1="340" x2="720" y2="340" stroke="rgba(82,183,136,.35)" stroke-width="1"/>
+        <line x1="720" y1="335" x2="720" y2="345" stroke="rgba(82,183,136,.35)" stroke-width="1"/>
+        <text x="638" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(82,183,136,.5)">Hold — 38.2%</text>
+      </svg>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(184,134,11,.08),rgba(184,134,11,.04));border:.5px solid rgba(184,134,11,.3);border-radius:12px;padding:18px 24px;margin-bottom:24px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:8px">φ · Design Principle</div>
+      <p style="font-size:14px;line-height:1.75;color:rgba(255,255,255,.72)">Every one of the 30 protocols is built on a φ-derived mathematical constant. The Drum Protocols was designed this way to make protocols directly comparable, to eliminate confounding variables in the research design, and to ground every arc in a pathway derived from neurological and mathematical principles.</p>
+    </div>
+
+    <div class="curve-annotation">
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 1 · Warm-up</div>
+        <h4>Flat entry</h4>
+        <p>The protocol opens at the starting frequency and holds relatively flat. This is entrainment establishment — the nervous system locks onto the rhythmic signal before any movement begins.</p>
+      </div>
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 2 · Transition</div>
+        <h4>The S-curve</h4>
+        <p>The arc begins to move — gradually at first, then steeper through the inflection point, then easing as it approaches the target frequency. The shape is a precise sigmoid curve.</p>
+      </div>
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 3 · Hold</div>
+        <h4>Destination dwell</h4>
+        <p>The arc arrives at the target frequency and holds there. The listener dwells in the destination state rather than being released abruptly. The hold occupies 38.2% of total duration.</p>
+      </div>
+    </div>
+
+    <div class="phi-callout">
+      <strong>The golden ratio governs the arc.</strong> The inflection point falls at 38.2% of the protocol's duration and at 61.8% of the frequency range traversed — both derived from φ (1.618). The ratio of active curve to hold phase is φ itself. One constant simultaneously determines the timing, the frequency position, and the shape of every descending protocol.
+    </div>
+
+    <div class="body-text">
+      <p>A descending protocol guides the nervous system from a higher Perceived Rhythmic Cycle (PRC) toward a lower one — from activation toward regulation. The movement is never sudden. It follows a smooth S-shaped curve, mathematically defined by three points: the starting PRC, the ending PRC, and a single inflection point calculated from both.</p>
+      <p>The warm-up phase is not padding. Entrainment requires that the nervous system first establishes a stable relationship with the rhythmic signal before the arc begins to move. A protocol that transitions too quickly fails to entrain — the movement happens before the listener is truly locked in. The flat opening ensures that when the descent begins, it carries the listener with it.</p>
+    </div>
+  </div>
+
+  <!-- ══ ASCENDING PROTOCOLS ══ -->
+  <div class="panel" id="panel-ascending">
+    <div class="panel-eyebrow">The Architecture · Ascending Protocols</div>
+
+    <div class="graphic-zone" style="padding:36px 48px;min-height:420px;background:var(--dp-slate-deeper)">
+      <svg viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="ascGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#b06ab0"/>
+            <stop offset="55%" stop-color="#D4A017"/>
+            <stop offset="100%" stop-color="#4a9eca" stop-opacity=".5"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Axes -->
+        <line x1="72" y1="30" x2="72" y2="290" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <line x1="72" y1="290" x2="720" y2="290" stroke="rgba(255,255,255,.18)" stroke-width="1.2"/>
+        <text x="38" y="165" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="rgba(255,255,255,.35)" transform="rotate(-90,38,165)">PRC (Hz)</text>
+        <text x="396" y="316" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" fill="rgba(255,255,255,.35)">Duration →</text>
+
+        <!-- Phase boundary markers -->
+        <line x1="200" y1="290" x2="200" y2="296" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+        <line x1="424" y1="290" x2="424" y2="296" stroke="rgba(184,134,11,.7)" stroke-width="1.5"/>
+        <line x1="556" y1="290" x2="556" y2="296" stroke="rgba(184,134,11,.7)" stroke-width="1.5"/>
+        <line x1="720" y1="290" x2="720" y2="296" stroke="rgba(255,255,255,.3)" stroke-width="1.2"/>
+
+        <!-- Phase labels x-axis -->
+        <text x="136" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.4)">Warm-up</text>
+        <text x="378" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.65)">38.2%</text>
+        <text x="556" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.65)">61.8%</text>
+        <text x="638" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.5)">Hold</text>
+
+        <!-- Phase shading -->
+        <rect x="73" y="31" width="127" height="258" fill="rgba(255,255,255,.02)" rx="0"/>
+        <rect x="556" y="31" width="163" height="258" fill="rgba(74,158,202,.04)" rx="0"/>
+
+        <!-- Phase labels top -->
+        <text x="136" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(255,255,255,.28)">PHASE 1</text>
+        <text x="136" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(176,106,176,.4)">Flat entry · critical here</text>
+        <text x="378" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(184,134,11,.5)">PHASE 2</text>
+        <text x="378" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(184,134,11,.38)">φ-governed S-curve ascent</text>
+        <text x="638" y="52" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" letter-spacing="1" fill="rgba(74,158,202,.5)">PHASE 3</text>
+        <text x="638" y="66" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(74,158,202,.38)">Activated dwell</text>
+
+        <!-- Resistance annotation in warm-up zone -->
+        <rect x="82" y="130" width="108" height="40" rx="5" fill="rgba(176,106,176,.08)" stroke="rgba(176,106,176,.22)" stroke-width=".8"/>
+        <text x="136" y="148" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(176,106,176,.7)">Greater neural</text>
+        <text x="136" y="162" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(176,106,176,.7)">resistance here</text>
+
+        <!-- THE ASCENDING CURVE: flat warmup (low) → S-curve rise → hold (high) -->
+        <path d="M72,262 L200,262 C230,262 248,254 280,220 C330,168 368,108 424,88 C470,72 510,68 556,68 L720,68"
+              fill="none" stroke="url(#ascGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Hold dashed -->
+        <line x1="556" y1="68" x2="720" y2="68" stroke="#4a9eca" stroke-width="2.5" opacity=".45" stroke-dasharray="8,4"/>
+
+        <!-- Key points -->
+        <circle cx="72"  cy="262" r="6" fill="#b06ab0"/>
+        <circle cx="424" cy="88"  r="6" fill="#D4A017" stroke="rgba(212,160,23,.4)" stroke-width="3"/>
+        <circle cx="556" cy="68"  r="6" fill="#4a9eca"/>
+
+        <!-- Labels -->
+        <text x="88"  y="275" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(176,106,176,.9)" letter-spacing=".5">START PRC</text>
+        <text x="436" y="84"  font-family="DM Sans,sans-serif" font-size="11" fill="rgba(212,160,23,.95)" letter-spacing=".5">φ Inflection</text>
+        <text x="568" y="64"  font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.9)" letter-spacing=".5">END PRC</text>
+
+        <text x="244" y="158" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(184,134,11,.55)">Same φ. Opposite arc.</text>
+
+        <!-- Brackets -->
+        <line x1="200" y1="340" x2="556" y2="340" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <line x1="200" y1="335" x2="200" y2="345" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <line x1="556" y1="335" x2="556" y2="345" stroke="rgba(184,134,11,.35)" stroke-width="1"/>
+        <text x="378" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(184,134,11,.55)">Active curve — 61.8% of total duration</text>
+
+        <line x1="556" y1="340" x2="720" y2="340" stroke="rgba(74,158,202,.35)" stroke-width="1"/>
+        <line x1="720" y1="335" x2="720" y2="345" stroke="rgba(74,158,202,.35)" stroke-width="1"/>
+        <text x="638" y="358" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(74,158,202,.5)">Hold — 38.2%</text>
+      </svg>
+    </div>
+
+    <div style="background:linear-gradient(135deg,rgba(184,134,11,.08),rgba(184,134,11,.04));border:.5px solid rgba(184,134,11,.3);border-radius:12px;padding:18px 24px;margin-bottom:24px">
+      <div style="font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:8px">φ · Design Principle</div>
+      <p style="font-size:14px;line-height:1.75;color:rgba(255,255,255,.72)">Every one of the 30 protocols is built on a φ-derived mathematical constant. The Drum Protocols was designed this way to make protocols directly comparable, to eliminate confounding variables in the research design, and to ground every arc in a pathway derived from neurological and mathematical principles.</p>
+    </div>
+
+    <div class="curve-annotation">
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 1 · Warm-up</div>
+        <h4>Flat entry</h4>
+        <p>Same as descending — the protocol opens at the starting frequency and holds. Low-affect states offer greater neural resistance, making this entrainment phase especially important for ascending protocols.</p>
+      </div>
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 2 · Transition</div>
+        <h4>The ascending S-curve</h4>
+        <p>The identical geometry — gradual start, steeper through the inflection, easing toward the destination. The same φ-derived inflection point. The same proportions. The direction reverses; the mathematics does not.</p>
+      </div>
+      <div class="curve-seg">
+        <div class="curve-seg-label">Phase 3 · Hold</div>
+        <h4>Activated dwell</h4>
+        <p>The arc arrives at the elevated target frequency and holds. The nervous system dwells in the activated state — consolidating the movement rather than immediately releasing. Again: 38.2% of total duration.</p>
+      </div>
+    </div>
+
+    <div class="phi-callout">
+      <strong>Same constant. Same geometry. The direction reverses — and so does the neurological challenge.</strong> Ascending entrainment is harder. Low-affect states are characterised by reduced neural responsiveness. The nervous system in these states resists upward movement more than an activated system resists downward movement. The warm-up phase is consequently more critical here than anywhere else in the library.
+    </div>
+
+    <div class="body-text">
+      <p>An ascending protocol applies the identical S-curve geometry in the opposite direction — from a lower PRC toward a higher one. The three-point structure is the same: starting PRC, ending PRC, and a φ-derived inflection point at 38.2% of duration and 61.8% of the frequency range measured from the bottom up.</p>
+      <p>The hold phase anchors an elevated state rather than a settled one. After the arc has completed its upward movement, the remaining 38.2% of the protocol's duration holds the listener at the destination frequency — consolidating activation rather than releasing immediately into whatever state follows.</p>
+    </div>
+  </div>
+
+  <!-- ══ ENTRAINMENT SIGNAL ══ -->
+  <div class="panel" id="panel-signal">
+    <div class="panel-eyebrow">The Architecture · Signal Design</div>
+
+    <!-- Single SVG: PNG + diagram in one coordinate system for perfect alignment -->
+    <div class="graphic-zone" style="margin-bottom:36px;border-radius:var(--radius-lg);padding:24px 36px 20px;background:#111">
+      <svg viewBox="0 0 820 370" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="specGrad3" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#4a9eca" stop-opacity=".08"/>
+            <stop offset="12%"  stop-color="#D4A017" stop-opacity=".5"/>
+            <stop offset="22%"  stop-color="#D4A017" stop-opacity="1"/>
+            <stop offset="32%"  stop-color="#D4A017" stop-opacity=".6"/>
+            <stop offset="55%"  stop-color="#9aabb8" stop-opacity=".2"/>
+            <stop offset="100%" stop-color="#4a9eca" stop-opacity=".04"/>
+          </linearGradient>
+          <linearGradient id="specFill3" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#D4A017" stop-opacity=".45"/>
+            <stop offset="60%"  stop-color="#D4A017" stop-opacity=".1"/>
+            <stop offset="100%" stop-color="#D4A017" stop-opacity="0"/>
+          </linearGradient>
+          <!-- Clip to keep PNG inside its zone -->
+          
+        </defs>
+
+        <!-- ── UPPER: spectral PNG embedded directly ── -->
+        <!-- x=30 to x=790 matches the axis below exactly — same coordinate system -->
+        <image href="4096_FFT_Spectral_Extraction.png"
+               x="57" y="4" width="760" height="106"
+               preserveAspectRatio="none"/>
+
+        <!-- Thin divider between PNG and diagram -->
+        <line x1="30" y1="112" x2="790" y2="112" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
+
+        <!-- ── LOWER: frequency diagram (y offset +120 from top) ── -->
+        <!-- Axes: y-axis x=30, x-axis y=295 -->
+        <line x1="30"  y1="130" x2="30"  y2="295" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+        <line x1="30"  y1="295" x2="790" y2="295" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
+
+        <!-- Frequency labels — x positions match PNG exactly -->
+        <!-- Log scale: 500Hz=x30, 800Hz=x85, 1.95kHz=x175, 2.5kHz=x240, 5kHz=x380, 10kHz=x570, 20kHz=x790 -->
+        <text x="30"  y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.32)">500 Hz</text>
+        <text x="85"  y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(184,134,11,.8)">800 Hz</text>
+        <text x="175" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(212,160,23,1)">1.95 kHz</text>
+        <text x="240" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(184,134,11,.8)">2.5 kHz</text>
+        <text x="380" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)">5 kHz</text>
+        <text x="570" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)">10 kHz</text>
+        <text x="790" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)">20 kHz</text>
+
+        <!-- Vertical alignment guides — drop from PNG through to diagram -->
+        <!-- 800Hz at x=85 -->
+        <line x1="85"  y1="4" x2="85"  y2="295" stroke="rgba(184,134,11,.22)" stroke-width=".8" stroke-dasharray="4,3"/>
+        <!-- 1.95kHz at x=175 -->
+        <line x1="175" y1="4" x2="175" y2="295" stroke="rgba(212,160,23,.32)" stroke-width=".8" stroke-dasharray="3,2"/>
+        <!-- 2.5kHz at x=240 -->
+        <line x1="240" y1="4" x2="240" y2="295" stroke="rgba(184,134,11,.22)" stroke-width=".8" stroke-dasharray="4,3"/>
+
+        <!-- Entrainment band shading in diagram zone -->
+        <rect x="85" y="130" width="155" height="165" fill="rgba(184,134,11,.05)" rx="0"/>
+
+        <!-- Bell-curve EQ response — single mountain peak at x=175 -->
+        <path d="M30,293 C50,292 65,288 80,280 C95,270 115,248 135,212 C150,183 165,158 175,152 C185,158 200,179 218,212 C238,248 260,272 295,283 C335,290 395,293 470,294 C560,295 680,295 790,295"
+              fill="url(#specFill3)" opacity=".95"/>
+        <path d="M30,293 C50,292 65,288 80,280 C95,270 115,248 135,212 C150,183 165,158 175,152 C185,158 200,179 218,212 C238,248 260,272 295,283 C335,290 395,293 470,294 C560,295 680,295 790,295"
+              fill="none" stroke="url(#specGrad3)" stroke-width="2.5"/>
+
+        <!-- Peak dot -->
+        <circle cx="175" cy="152" r="6" fill="none" stroke="#D4A017" stroke-width="2"/>
+        <circle cx="175" cy="152" r="2.5" fill="#D4A017"/>
+
+        <!-- Peak label — above dot, dark background -->
+        <rect x="130" y="133" width="90" height="16" rx="3" fill="rgba(10,18,28,.92)"/>
+        <text x="175" y="144" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="rgba(212,160,23,.95)">Peak: 1.95 kHz</text>
+
+        <!-- Band label — in clear space inside the band, below peak shoulder -->
+        <rect x="82" y="222" width="166" height="16" rx="3" fill="rgba(10,18,28,.85)" stroke="rgba(184,134,11,.22)" stroke-width=".7"/>
+        <text x="165" y="233" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="rgba(212,160,23,.85)">Entrainment band &#xB7; 800 &#x2013; 2.5 kHz</text>
+
+        <!-- Subcortical note — right side, clear of curve -->
+        <rect x="460" y="158" width="310" height="44" rx="6" fill="rgba(74,158,202,.07)" stroke="rgba(74,158,202,.2)" stroke-width=".8"/>
+        <text x="615" y="178" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" fill="rgba(74,158,202,.85)">Subcortical pathway</text>
+        <text x="615" y="194" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.42)">No headphones required &#xB7; Brainstem reception</text>
+
+        <!-- Axis labels -->
+        <text x="410" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.28)">Frequency &#x2192;</text>
+        <text x="16"  y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.28)" transform="rotate(-90,16,215)">Amplitude</text>
+        <text x="410" y="355" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-style="italic" fill="rgba(184,134,11,.4)">Scale: 500 Hz &#x2013; 20 kHz &#xB7; Peak entrainment response at 1.95 kHz</text>
+      </svg>
+    </div>
+    <div class="body-text">
+      <p>The entrainment signal in The Drum Protocols is not a separate tone added to the drum recording. It is extracted from the entire length of the drum groove. A real drum performance is analysed using a 4096-point Fast Fourier Transform, and a shaped EQ curve isolates the spectral content between 800 Hz and 2.5 kHz — the band where entrainment response is strongest, with peak effectiveness at approximately 1.95 kHz.</p>
+      <p>This distinguishes the system from binaural beats and isochronic tones. Binaural beats require headphones and depend on cortical processing. The Drum Protocols entrainment signal is carried across the full harmonic content of every drum strike — the auditory brainstem receives timing information from multiple frequency channels simultaneously. The pathway is subcortical. Headphones are not required.</p>
+      <h4>What you hear</h4>
+      <p>The spectral clock is not heard as a separate signal. It is heard as the drum. The entrainment information is woven into the sound that carries it — which is precisely the point. The experience is listening to drums. What is actually happening is considerably more precise.</p>
+    </div>
+  </div>
+
+  <!-- ══ THE GROOVE ══ -->
+  <div class="panel" id="panel-groove">
+    <div class="panel-eyebrow">The Architecture · Groove &amp; Entrainment</div>
+
+    <!-- Animated nervous system entrainment SVG -->
+    <div class="graphic-zone" style="padding:0;min-height:320px;overflow:hidden;background:var(--dp-slate-deeper)">
+      <svg id="grooveSVG" viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+        <defs>
+          <linearGradient id="nsGradL" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e05a2b"/>
+            <stop offset="60%" stop-color="#d4a017"/>
+            <stop offset="100%" stop-color="#52B788"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Labels -->
+        <text x="24" y="32" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(220,100,60,.75)">NERVOUS SYSTEM — dysregulated · non-periodic</text>
+        <text x="24" y="178" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(212,160,23,.75)">ENTRAINMENT SIGNAL — steady · periodic · subcortical</text>
+
+        <!-- Time axis label -->
+        <text x="400" y="295" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.22)" letter-spacing="1">TIME →</text>
+        <text x="56"  y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,.18)">Begins</text>
+        <text x="744" y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(82,183,136,.4)">Entrained</text>
+
+        <!-- Divider -->
+        <line x1="24" y1="150" x2="776" y2="150" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
+
+        <!-- NERVOUS SYSTEM waveform (animated: chaotic → ordered) -->
+        <!-- Chaotic section left (static) -->
+        <path id="nsLeft"
+          d="M24,88 C32,66 38,108 46,78 C54,48 58,100 66,72 C74,44 80,96 90,60 C100,24 106,90 116,68 C126,46 130,94 140,64 C150,34 158,88 168,58 C178,28 184,86 196,62 C206,38 210,90 222,60"
+          fill="none" stroke="#e05a2b" stroke-width="2" opacity=".85"/>
+
+        <!-- Animated middle section — morphs chaos → order -->
+        <path id="nsMid"
+          d="M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68"
+          fill="none" stroke="url(#nsGradL)" stroke-width="2" opacity=".85">
+          <animate attributeName="d" dur="4s" repeatCount="indefinite"
+            values="
+              M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68;
+              M222,62 C234,44 242,80 256,66 C270,52 276,78 290,66 C304,54 312,76 328,68 C344,60 350,74 368,68 C384,62 390,72 408,68 C422,65 428,70 444,68 C456,66 462,70 476,68;
+              M222,65 C234,52 242,78 256,67 C270,56 276,76 290,67 C304,58 312,74 328,68 C344,62 350,73 368,68 C384,63 390,71 408,68 C422,65 428,70 444,68 C456,67 462,70 476,68;
+              M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68"
+            calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+        </path>
+
+        <!-- Ordered section right (near-perfect sine) -->
+        <path id="nsRight"
+          d="M476,68 C490,50 504,86 518,68 C532,50 546,86 560,68 C574,50 588,86 602,68 C616,50 630,86 644,68 C658,50 672,86 686,68 C700,50 714,86 728,68 C742,50 756,84 770,68"
+          fill="none" stroke="#52B788" stroke-width="2.2" opacity=".9"/>
+
+        <!-- "Synchronised" label at right -->
+        <text x="720" y="56" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(82,183,136,.7)">Synchronised</text>
+
+        <!-- ENTRAINMENT SIGNAL — steady gold sine throughout -->
+        <path d="M24,218 C42,196 60,240 78,218 C96,196 114,240 132,218 C150,196 168,240 186,218 C204,196 222,240 240,218 C258,196 276,240 294,218 C312,196 330,240 348,218 C366,196 384,240 402,218 C420,196 438,240 456,218 C474,196 492,240 510,218 C528,196 546,240 564,218 C582,196 600,240 618,218 C636,196 654,240 672,218 C690,196 708,240 726,218 C744,196 762,238 776,218"
+          fill="none" stroke="#D4A017" stroke-width="2.5" opacity=".8"/>
+
+        <!-- BPM tick marks on entrainment signal -->
+        <line x1="78"  y1="238" x2="78"  y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="186" y1="238" x2="186" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="294" y1="238" x2="294" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="402" y1="238" x2="402" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="510" y1="238" x2="510" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="618" y1="238" x2="618" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <line x1="726" y1="238" x2="726" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
+        <text x="400" y="258" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(212,160,23,.35)" letter-spacing="1">100 BPM · constant throughout</text>
+      </svg>
+    </div>
+
+    <div class="body-text">
+      <p>The groove is the carrier. Its job is to hold the entrainment signal — a spectrally extracted rhythmic pulse — in the listener's nervous system for the full duration of the protocol. Twenty minutes. Forty-five minutes. An hour. The groove keeps the listener listening, so the signal keeps doing its work.</p>
+
+      <h4>Why the brain stops entraining — and how the groove prevents it</h4>
+      <p>Entrainment is not passive. The auditory brainstem locks onto a periodic signal and begins to synchronise with it — but it only sustains that lock if the signal remains neurologically interesting. A simple, repetitive groove habituates quickly: the brain recognises the pattern, downgrades it as non-novel, and reduces its processing engagement. When engagement drops, the entrainment effect weakens. The groove must be complex enough to sustain attention across a long session without ever demanding it consciously.</p>
+
+      <h4>Complexity is built in layers</h4>
+      <p>Each volume uses three independent drum sequencers running simultaneously, drawing from a library of over 1,000 professionally designed grooves across all genres, using up to 12 instruments per layer. The result — up to 36 percussive voices creating shifting polyrhythmic texture — is complex enough that the brain continues processing it as meaningful across an extended session.</p>
+
+      <h4>The groove is identical within a volume — by design</h4>
+      <p>Every protocol within a volume uses the same groove. If each protocol used a different rhythmic texture, timbre and complexity would become confounding variables — any difference in listener outcome could be attributed to the groove as easily as to the entrainment arc. By holding the groove constant, the three φ-derived parameters (START PRC, END PRC, and duration) are the only variables that change. When the data speaks, we know precisely what it is talking about.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── FOOTER ── -->
+<footer class="page-footer">
+  <div class="footer-brand">The Drum Protocols</div>
+  <div class="footer-links">
+    <a class="footer-link" href="index.html">Home</a>
+    <a class="footer-link active" href="learn.html">Learn About</a>
+    <a class="footer-link" href="adviser.html">Adviser</a>
+    <a class="footer-link" href="insights.html">Insights</a>
+    <a class="footer-link" href="protocol.html">Protocols</a>
+    <a class="footer-link" href="sphere.html">Data Lab</a>
+    <a class="footer-link" href="research.html">Research</a>
+    <a class="footer-link" href="about.html">About Me</a>
+    <a class="footer-link" href="safety.html">Safety</a>
+  </div>
+</footer>
+
+<script>
+// ── Site nav ──
+function toggleNav(btn){
+  const links=document.querySelector('.nav-links');
+  const open=links.classList.toggle('open');
+  btn.setAttribute('aria-expanded',open);
+}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.site-nav')){
+    document.querySelector('.nav-links').classList.remove('open');
+    const btn=document.querySelector('.nav-hamburger');
+    if(btn) btn.setAttribute('aria-expanded','false');
+  }
+});
+
+// ── Tab system ──
+function showTab(id, btn){
+  // Hide all panels
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  // Deactivate all tab buttons
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  // Show target panel
+  const panel=document.getElementById('panel-'+id);
+  if(panel) panel.classList.add('active');
+  // Activate button
+  if(btn) btn.classList.add('active');
+  // Scroll tab into view on mobile
+  if(btn) btn.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+
+// ── Mobile accordion ──
+function toggleAccordion(btn, id){
+  const isActive=btn.classList.contains('active');
+
+  // Close all
+  document.querySelectorAll('.accordion-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.accordion-content').forEach(c=>c.classList.remove('open'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+
+  if(!isActive){
+    btn.classList.add('active');
+    const acc=document.getElementById('acc-'+id);
+    if(acc) acc.classList.add('open');
+    // Move panel content into accordion slot
+    const panel=document.getElementById('panel-'+id);
+    if(panel && acc){
+      acc.innerHTML='';
+      // Clone panel children into accordion content
+      Array.from(panel.children).forEach(child=>{
+        acc.appendChild(child.cloneNode(true));
+      });
+    }
+  }
+}
+</script>
+</body>
+</html>
