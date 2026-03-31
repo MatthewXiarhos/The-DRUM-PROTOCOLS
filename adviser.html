@@ -47,6 +47,73 @@ a { color: inherit; }
 .main { max-width: 1120px; margin: 0 auto; padding: 0 24px 80px; }
 .adviser-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 20px; align-items: start; }
 .adviser-panel { background: var(--color-surface); border: 0.5px solid var(--color-border-mid); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-soft); }
+/* Previous recommendation card — shown at top of adviser panel when session has a stored rec */
+.prev-rec-card{
+  display:none;
+  flex-direction:column;
+  border-bottom:1px solid rgba(184,134,11,0.25);
+  background:rgba(184,134,11,0.06);
+}
+.prev-rec-card.visible{ display:flex; }
+.prev-rec-top{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 18px 8px;
+  border-bottom:1px solid rgba(184,134,11,0.15);
+}
+.prev-rec-top::before{
+  content:'';display:block;width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--dp-gold-light);
+  box-shadow:0 0 6px rgba(212,160,23,0.9);
+}
+.prev-rec-top-label{
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--dp-gold-light);font-weight:500;flex:1;
+}
+.prev-rec-dismiss{
+  background:none;border:none;cursor:pointer;
+  font-size:16px;color:rgba(255,255,255,0.3);
+  padding:0 2px;line-height:1;font-family:inherit;
+  transition:color .15s;
+}
+.prev-rec-dismiss:hover{ color:rgba(255,255,255,0.7); }
+.prev-rec-body{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;
+  padding:12px 18px 14px;
+}
+.prev-rec-left{ display:flex;flex-direction:column;gap:3px; }
+.prev-rec-series{
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+}
+.prev-rec-series.healing{color:var(--dp-healing-accent)}
+.prev-rec-series.thriving{color:var(--dp-thriving-accent)}
+.prev-rec-series.transforming{color:var(--dp-transforming-accent)}
+.prev-rec-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;font-weight:600;color:#fff;line-height:1.05;
+}
+.prev-rec-meta{ font-size:11px;color:rgba(255,255,255,0.4); }
+.prev-rec-actions{ display:flex;gap:8px;flex-wrap:wrap; }
+.prev-rec-btn-go{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--dp-gold);color:#fff;
+  border:none;border-radius:var(--radius-md);
+  padding:0 16px;height:36px;
+  font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  font-family:inherit;font-weight:500;cursor:pointer;
+  transition:background .15s;white-space:nowrap;
+}
+.prev-rec-btn-go:hover{ background:var(--dp-gold-light); }
+.prev-rec-btn-new{
+  display:inline-flex;align-items:center;
+  background:none;color:rgba(255,255,255,0.45);
+  border:0.5px solid rgba(255,255,255,0.14);border-radius:var(--radius-md);
+  padding:0 14px;height:36px;
+  font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+  font-family:inherit;cursor:pointer;
+  transition:color .15s,border-color .15s;white-space:nowrap;
+}
+.prev-rec-btn-new:hover{ color:rgba(255,255,255,0.8);border-color:rgba(255,255,255,0.28); }
 .adviser-header { background: var(--dp-slate); padding: 22px 28px 18px; position: relative; overflow: hidden; border-bottom: 1px solid var(--color-border); }
 .adviser-header::before { content: ''; position: absolute; right: -40px; top: -40px; width: 180px; height: 180px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.18); }
 .adviser-brand { font-size: 10px; letter-spacing: 0.15em; color: var(--dp-gold-light); text-transform: uppercase; margin-bottom: 6px; }
@@ -245,6 +312,24 @@ a { color: inherit; }
   <div class="adviser-wrap" id="adviser-wrap">
     <div class="adviser-panel" id="adviser-panel">
       <div id="screen-adviser" class="screen active">
+        <!-- Previous recommendation card — visible only when sessionStorage has a stored rec -->
+        <div class="prev-rec-card" id="prev-rec-card">
+          <div class="prev-rec-top">
+            <div class="prev-rec-top-label">Your recommendation this session</div>
+            <button class="prev-rec-dismiss" id="prev-rec-dismiss" title="Dismiss">×</button>
+          </div>
+          <div class="prev-rec-body">
+            <div class="prev-rec-left">
+              <div class="prev-rec-series" id="prev-rec-series"></div>
+              <div class="prev-rec-name" id="prev-rec-name"></div>
+              <div class="prev-rec-meta" id="prev-rec-meta"></div>
+            </div>
+            <div class="prev-rec-actions">
+              <button class="prev-rec-btn-go" id="prev-rec-btn-go">Go to Protocol →</button>
+              <button class="prev-rec-btn-new" id="prev-rec-btn-new">Get new recommendation</button>
+            </div>
+          </div>
+        </div>
         <div class="adviser-header">
           <div class="adviser-brand">The Drum Protocols</div>
           <div class="adviser-title">Protocol Adviser</div>
@@ -451,6 +536,7 @@ Promise.all([
     document.getElementById('screen-result').classList.add('active');
     populateResult(ALL_PROTOCOLS[returnId], null);
   } else {
+    renderPrevRec();
     renderQuestion();
   }
 
@@ -689,6 +775,36 @@ function restart(){
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-adviser').classList.add('active');
   renderQuestion();scrollToPanel();
+}
+
+// ── PREVIOUS RECOMMENDATION CARD ─────────────────────────────────────────────
+function renderPrevRec(){
+  const card=document.getElementById('prev-rec-card');
+  if(!card) return;
+  let recCode='';
+  try{ recCode=sessionStorage.getItem('dp-adviser-rec')||''; }catch(e){}
+  if(!recCode){ card.classList.remove('visible'); return; }
+  const p=ALL_PROTOCOLS[recCode];
+  if(!p){ card.classList.remove('visible'); return; }
+  // Populate
+  const seriesEl=document.getElementById('prev-rec-series');
+  seriesEl.textContent=`${p.series.toUpperCase()} · ${p.entry}`;
+  seriesEl.className=`prev-rec-series ${p.series}`;
+  document.getElementById('prev-rec-name').textContent=p.name;
+  document.getElementById('prev-rec-meta').textContent=`${p.meta} · ${recCode}`;
+  // Go to protocol
+  document.getElementById('prev-rec-btn-go').onclick=()=>{
+    window.location.href=`protocol.html?id=${recCode}`;
+  };
+  // Get new recommendation — dismiss card and let user proceed through adviser
+  document.getElementById('prev-rec-btn-new').onclick=()=>{
+    card.classList.remove('visible');
+  };
+  // × dismiss button — same as "get new recommendation"
+  document.getElementById('prev-rec-dismiss').onclick=()=>{
+    card.classList.remove('visible');
+  };
+  card.classList.add('visible');
 }
 
 // renderQuestion() is called from the Promise.all bootstrap above, not here directly.

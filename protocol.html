@@ -50,6 +50,67 @@ a{color:inherit;text-decoration:none}
 .btn-find-protocol{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--dp-gold);border:1px solid var(--dp-gold);color:#fff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-family:inherit;min-height:44px;padding:0 24px;border-radius:var(--radius-md);cursor:pointer;transition:background .15s,border-color .15s;font-weight:500}
 .btn-find-protocol:hover{background:var(--dp-gold-light);border-color:var(--dp-gold-light)}
 .listing-sub{font-size:13px;color:var(--color-text-tertiary)}
+/* Adviser match section — shown between CTA row and listing table when session has a recommendation */
+.adviser-match-section{
+  display:none;
+  flex-direction:column;
+  gap:0;
+  margin-bottom:28px;
+  border:1.5px solid rgba(184,134,11,0.55);
+  border-radius:var(--radius-lg);
+  overflow:hidden;
+  box-shadow:0 0 24px rgba(184,134,11,0.12), 0 4px 16px rgba(0,0,0,0.3);
+}
+.adviser-match-section.visible{ display:flex; }
+.adviser-match-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 18px;
+  background:rgba(184,134,11,0.14);
+  border-bottom:1px solid rgba(184,134,11,0.25);
+}
+.adviser-match-header::before{
+  content:'';
+  display:block;width:8px;height:8px;border-radius:50%;flex-shrink:0;
+  background:var(--dp-gold-light);
+  box-shadow:0 0 6px rgba(212,160,23,0.9);
+}
+.adviser-match-label{
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--dp-gold-light);font-weight:500;
+}
+.adviser-match-body{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+  padding:16px 18px;
+  background:rgba(184,134,11,0.05);
+  cursor:pointer;
+  transition:background .15s;
+}
+.adviser-match-body:hover{ background:rgba(184,134,11,0.10); }
+.adviser-match-left{ display:flex;flex-direction:column;gap:4px; }
+.adviser-match-series{
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;
+}
+.adviser-match-series.healing{color:var(--dp-healing-accent)}
+.adviser-match-series.thriving{color:var(--dp-thriving-accent)}
+.adviser-match-series.transforming{color:var(--dp-transforming-accent)}
+.adviser-match-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:600;color:#fff;line-height:1.05;
+}
+.adviser-match-meta{
+  font-size:12px;color:rgba(255,255,255,0.45);
+}
+.adviser-match-cta{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--dp-gold);color:#fff;
+  border:none;border-radius:var(--radius-md);
+  padding:0 20px;height:40px;
+  font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  font-family:inherit;font-weight:500;cursor:pointer;
+  transition:background .15s;white-space:nowrap;
+}
+.adviser-match-cta:hover{ background:var(--dp-gold-light); }
 @media(max-width:720px){.header-banner-wrap img{height:180px}}
 
 /* ── PROTOCOL HEADER (per-protocol, shown when ?id= present) ── */
@@ -60,6 +121,31 @@ a{color:inherit;text-decoration:none}
 .protocol-header.thriving{background:linear-gradient(135deg,#0f3a5c 0%,#09243a 100%)}
 .protocol-header.transforming{background:linear-gradient(135deg,#3d1a3c 0%,#261027 100%)}
 .header-inner{position:relative;z-index:1;max-width:760px;margin:0 auto}
+/* Adviser recommendation banner — centred above protocol name */
+.proto-adviser-rec-bar{
+  display:none;
+  justify-content:center;
+  margin-bottom:16px;
+}
+.proto-adviser-rec-bar.visible{ display:flex; }
+.proto-adviser-rec-pill{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(184,134,11,0.18);
+  border:1.5px solid rgba(184,134,11,0.70);
+  border-radius:999px;
+  padding:7px 18px 7px 12px;
+  font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--dp-gold-light);
+  backdrop-filter:blur(4px);
+  box-shadow:0 0 16px rgba(184,134,11,0.25);
+  font-weight:500;
+}
+.proto-adviser-rec-pill::before{
+  content:'';
+  display:block;width:10px;height:10px;border-radius:50%;
+  background:var(--dp-gold-light);
+  box-shadow:0 0 8px rgba(212,160,23,0.9);
+}
 .header-series{font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px}
 .header-series.healing{color:var(--dp-healing-accent)}
 .header-series.thriving{color:var(--dp-thriving-accent)}
@@ -137,11 +223,8 @@ a{color:inherit;text-decoration:none}
 .desc-text{font-size:15px;line-height:1.78;color:var(--color-text-secondary)}
 
 /* ── SPHERE COMMENTARY ── */
-.commentary-wrap{background:rgba(184,134,11,.04);border-top:.5px solid rgba(184,134,11,.15);padding:20px 24px;position:relative}
-.commentary-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px;padding-right:62px}
-.sphere-badge{position:absolute;top:14px;right:14px;width:52px;height:52px;border-radius:50%;overflow:hidden;border:1px solid rgba(184,134,11,.22);box-shadow:0 0 18px rgba(184,134,11,.12),0 4px 12px rgba(0,0,0,.35);transition:border-color .2s,box-shadow .2s;flex-shrink:0}
-.sphere-badge:hover{border-color:rgba(184,134,11,.55);box-shadow:0 0 28px rgba(184,134,11,.22),0 4px 16px rgba(0,0,0,.4)}
-.sphere-badge img{width:100%;height:100%;object-fit:cover;display:block}
+.commentary-wrap{background:rgba(184,134,11,.04);border-top:.5px solid rgba(184,134,11,.15);padding:20px 24px}
+.commentary-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
 .commentary-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light)}
 .commentary-date{font-size:10px;color:var(--color-text-tertiary)}
 .commentary-text{font-size:13px;line-height:1.78;color:var(--color-text-secondary);border-left:2px solid rgba(184,134,11,.3);padding-left:12px}
@@ -282,6 +365,9 @@ a{color:inherit;text-decoration:none}
 <!-- ── PROTOCOL HEADER (per-protocol view) ── -->
 <div class="protocol-header" id="protocol-header" style="display:none">
   <div class="header-inner">
+    <div class="proto-adviser-rec-bar" id="proto-adviser-rec-bar">
+      <div class="proto-adviser-rec-pill">Adviser Recommendation</div>
+    </div>
     <div class="header-series" id="header-series"></div>
     <div class="header-name" id="header-name">Loading…</div>
     <div class="header-meta" id="header-meta"></div>
@@ -377,9 +463,8 @@ a{color:inherit;text-decoration:none}
   <!-- COMMENTARY -->
   <div class="section">
     <div class="commentary-wrap">
-      <div class="sphere-badge" title="Sphere analysis"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>
       <div class="commentary-header">
-        <div class="commentary-label">Sphere's Analysis</div>
+        <div class="commentary-label">Sphere · statistical commentary</div>
         <div class="commentary-date" id="commentary-date"></div>
       </div>
       <div class="commentary-tabs">
@@ -417,6 +502,20 @@ a{color:inherit;text-decoration:none}
     <div class="listing-cta-row">
       <a class="btn-find-protocol" href="adviser.html">Find your Protocol →</a>
       <span class="listing-sub">Not sure where to start? The Adviser matches you in under a minute.</span>
+    </div>
+    <!-- Adviser match card — only shown when sessionStorage has a recommendation -->
+    <div class="adviser-match-section" id="adviser-match-section">
+      <div class="adviser-match-header">
+        <div class="adviser-match-label">Your Adviser Recommendation this session</div>
+      </div>
+      <div class="adviser-match-body" id="adviser-match-body">
+        <div class="adviser-match-left">
+          <div class="adviser-match-series" id="adviser-match-series"></div>
+          <div class="adviser-match-name" id="adviser-match-name"></div>
+          <div class="adviser-match-meta" id="adviser-match-meta"></div>
+        </div>
+        <button class="adviser-match-cta" id="adviser-match-cta">Open Protocol →</button>
+      </div>
     </div>
     <div class="listing-table-wrap">
       <table class="listing-table" id="listing-table"><tbody id="listing-tbody"></tbody></table>
@@ -500,6 +599,7 @@ Promise.all([
 
   // Build listing table now that data is ready
   buildListingTable();
+  renderAdviserMatch();
 
   // Init the page view
   init();
@@ -524,6 +624,28 @@ function updateVolInURL(vol){
   const params=new URLSearchParams(window.location.search);
   params.set('vol','VOL'+vol);
   window.history.replaceState({},'','?'+params.toString());
+}
+
+// ── ADVISER MATCH CARD ────────────────────────────────────────────────────────
+function renderAdviserMatch(){
+  const section=document.getElementById('adviser-match-section');
+  if(!section) return;
+  let recCode='';
+  try{ recCode=sessionStorage.getItem('dp-adviser-rec')||''; }catch(e){}
+  if(!recCode){ section.classList.remove('visible'); return; }
+  const p=PROTOCOLS[recCode];
+  if(!p){ section.classList.remove('visible'); return; }
+  // Populate
+  const seriesEl=document.getElementById('adviser-match-series');
+  seriesEl.textContent=`${p.series.toUpperCase()} · ${p.entry}`;
+  seriesEl.className=`adviser-match-series ${p.series}`;
+  document.getElementById('adviser-match-name').textContent=p.name;
+  document.getElementById('adviser-match-meta').textContent=`${p.meta} · ${recCode}`;
+  // Click anywhere on the body row or the button → open the protocol
+  const url=`protocol.html?id=${recCode}`;
+  document.getElementById('adviser-match-body').onclick=()=>{ window.location.href=url; };
+  document.getElementById('adviser-match-cta').onclick=(e)=>{ e.stopPropagation(); window.location.href=url; };
+  section.classList.add('visible');
 }
 
 // ── LISTING TABLE ─────────────────────────────────────────────────────────────
@@ -795,6 +917,9 @@ function init(){
   document.getElementById('header-name').textContent=p.name;
   document.getElementById('header-meta').textContent=`${p.meta} · ${code}`;
   document.getElementById('protocol-header').className=`protocol-header ${p.series}`;
+  // Show adviser recommendation bar if this protocol was recommended this session
+  const recBar=document.getElementById('proto-adviser-rec-bar');
+  try{const rec=sessionStorage.getItem('dp-adviser-rec');recBar.classList.toggle('visible',rec===code);}catch(e){recBar.classList.remove('visible');}
 
   // Volume
   const volCode=getVolFromURL();
