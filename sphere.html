@@ -751,19 +751,23 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       <div class="pillar-list" style="margin-top:24px">
         <div class="pillar">
           <b>Data collection</b>
-          <span>Anonymous survey responses and protocol usage data are collected continuously from the community. This data is structured and stored in Cloudflare D1 databases — a persistent, queryable layer that accumulates signal over time.</span>
+          <span>Anonymous survey responses and protocol usage data are collected continuously from the community. This data is structured and stored in Supabase — a managed Postgres database that serves as the single data store for all structured data. Named columns and descriptive schema design ensure the data is queryable, self-documenting, and readable by both pipeline code and language models.</span>
         </div>
         <div class="pillar">
           <b>The analytical pipeline</b>
-          <span>Scheduled scripts retrieve the current dataset from D1 and combine it with extensively designed API prompts. This structured payload is passed to one or more leading large language models. The prompts specify Sphere's analytical goals, voice constraints, and required output format — ensuring that regardless of which model is running, the output adheres to Sphere's standards.</span>
+          <span>Scheduled jobs retrieve the current dataset from Supabase and combine it with extensively designed API prompts. This structured payload is passed to one or more leading large language models. The prompts specify Sphere's analytical goals, voice constraints, and required output format — ensuring that regardless of which model is running, the output adheres to Sphere's standards. Scheduling runs natively via pg_cron, Supabase's built-in job scheduler.</span>
         </div>
         <div class="pillar">
           <b>Output storage</b>
-          <span>The API output from each model run is stored in Cloudflare R2 — a durable object storage layer that retains historical outputs and makes them available to the Data Lab. This creates a versioned record of Sphere's analyses over time.</span>
+          <span>The API output from each model run is stored verbatim in Supabase — both as full text and as structured extracted fields. This creates a versioned, queryable record of Sphere's analyses over time, accessible to the Data Lab without requiring text parsing. Outputs are also vectorised using pgvector, enabling semantic search across historical analyses.</span>
         </div>
         <div class="pillar">
           <b>Cross-sectional and longitudinal analysis</b>
-          <span>Because outputs accumulate in R2, analysis can be carried out both cross-sectionally — comparing protocols and series at a given point in time — and longitudinally — tracking how signals evolve as the dataset grows, as protocols are refined, and as more community responses arrive. This is what allows Sphere to move from snapshot to story.</span>
+          <span>Because outputs accumulate in Supabase with typed timestamps and protocol references, analysis can be carried out both cross-sectionally — comparing protocols and series at a given point in time — and longitudinally — tracking how signals evolve as the dataset grows, as protocols are refined, and as more community responses arrive. This is what allows Sphere to move from snapshot to story.</span>
+        </div>
+        <div class="pillar">
+          <b>Conversational data science via MCP</b>
+          <span>Supabase exposes a Model Context Protocol (MCP) server, allowing Claude to connect directly to the live database and answer analytical questions in natural language — without dashboards or data exports. Sphere can be given read access to its own prior outputs, enabling continuity of analysis across runs. The schema itself functions as a prompt: descriptive table and column names tell the language model exactly what the data means.</span>
         </div>
         <div class="pillar">
           <b>An evolving intelligence</b>
