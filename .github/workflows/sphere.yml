@@ -1,10 +1,9 @@
 name: Sphere Pipeline
 
 on:
-  push:
-    paths:
-      - 'tally_export.csv'   # fires automatically when you push a new CSV
-  workflow_dispatch:         # allows manual trigger from Actions tab (for testing)
+  schedule:
+    - cron: '0 6 * * 1'     # every Monday at 06:00 UTC
+  workflow_dispatch:          # manual trigger from Actions tab
 
 jobs:
   run-sphere:
@@ -20,12 +19,15 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install pandas numpy anthropic scipy
+        run: pip install supabase anthropic scipy numpy python-dotenv openai
 
       - name: Run Sphere pipeline
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python sphere_pipeline.py --csv tally_export.csv --output data.json
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_VECTOR_KEY:    ${{ secrets.OPENAI_VECTOR_KEY }}
+        run: python sphere_pipeline.py --output data.json
 
       - name: Commit data.json
         run: |
