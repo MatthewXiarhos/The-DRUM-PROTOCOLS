@@ -19,7 +19,16 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install supabase anthropic scipy numpy python-dotenv openai
+        run: pip install supabase anthropic scipy numpy python-dotenv openai google-api-python-client google-auth
+
+      - name: Run YouTube ingestion
+        env:
+          SUPABASE_URL:            ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY:    ${{ secrets.SUPABASE_SERVICE_KEY }}
+          YOUTUBE_CLIENT_ID:       ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET:   ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN:   ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python youtube_ingestion.py --days 7
 
       - name: Run Sphere pipeline
         env:
