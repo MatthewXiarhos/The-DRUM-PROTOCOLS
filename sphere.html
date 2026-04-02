@@ -179,6 +179,24 @@ a{color:inherit;text-decoration:none}
   width:100px;margin-left:-10px;
 }
 
+/* Panel badge wrapper — icon + date, used in all non-intro panels */
+.sphere-badge-panel{
+  position:absolute;
+  top:20px;right:20px;
+  display:flex;flex-direction:column;align-items:flex-end;gap:6px;
+  width:auto;
+}
+.sphere-badge-panel .sphere-badge{
+  position:static;
+  width:68px;height:68px;
+  align-self:flex-end;
+}
+.sphere-badge-date{
+  font-size:9px;letter-spacing:.06em;
+  color:rgba(184,134,11,.55);text-align:right;line-height:1.4;
+  white-space:nowrap;
+}
+
 .panel-eyebrow{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .panel-eyebrow::before{content:'';width:16px;height:1px;background:rgba(212,160,23,.7);display:block}
 .panel-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:600;color:#fff;line-height:1.05;margin-bottom:14px}
@@ -1026,19 +1044,31 @@ function showPanel(panelId, subEl) {
   if (contentArea) contentArea.scrollTop = 0;
 }
 
-// Inject quiet Sphere badge into every non-intro panel on first load
-function injectSphereBadges() {
+// Inject Sphere badge (icon + date) into every non-intro panel.
+// Phase 1 — called on DOMContentLoaded: injects icon with empty date placeholder.
+// Phase 2 — called from hydrateAll() with real date: populates the date elements.
+function injectSphereBadges(analysisDate) {
   document.querySelectorAll('.content-panel').forEach(panel => {
     if (panel.id === 'panel-about-intro') return; // intro has its own badge
-    if (panel.querySelector('.sphere-badge')) return; // already injected
-    const badge = document.createElement('div');
-    badge.className = 'sphere-badge';
-    badge.title = 'Sphere analysis';
-    badge.innerHTML = '<img src="SPHERE_ICON.jpg" alt="Sphere">';
-    panel.appendChild(badge);
+    let wrapper = panel.querySelector('.sphere-badge-panel');
+    if (!wrapper) {
+      // First call — build the wrapper with a date placeholder span
+      wrapper = document.createElement('div');
+      wrapper.className = 'sphere-badge-panel';
+      wrapper.title = 'Sphere analysis';
+      wrapper.innerHTML =
+        '<div class="sphere-badge"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>' +
+        '<div class="sphere-badge-date"></div>';
+      panel.appendChild(wrapper);
+    }
+    // Second call (or first if date already known) — populate the date
+    if (analysisDate) {
+      const dateEl = wrapper.querySelector('.sphere-badge-date');
+      if (dateEl) dateEl.textContent = `Analysis ${analysisDate}`;
+    }
   });
 }
-document.addEventListener('DOMContentLoaded', injectSphereBadges);
+document.addEventListener('DOMContentLoaded', () => injectSphereBadges(null));
 
 // Cross-link helper — opens the correct menu group and selects the panel
 function showPanelById(panelId) {
@@ -1088,7 +1118,7 @@ fetch('data.json')
 
 function hydrateAll(data) {
   // Stat strip
-  if (data.protocols_with_data != null) document.getElementById('statProtocols').textContent = data.protocols_with_data;
+  const statEl = document.getElementById('statProtocols'); if (statEl && data.protocols_with_data != null) statEl.textContent = data.protocols_with_data;
 
   // Global signals
   const sc = data.sphere_commentary || {};
@@ -1123,6 +1153,10 @@ function hydrateAll(data) {
     return sd !== 0 ? sd : a.code.localeCompare(b.code);
   });
   if (protosArr.length) { window._ALL_PROTOCOLS = protosArr; }
+
+  // Inject Sphere badges with analysis date into all panels
+  const analysisDate = data.analysis_date || data.generated || '';
+  injectSphereBadges(analysisDate);
 }
 
 // ── renderProtocolCards — used by protocol.html + adviser.html ──
