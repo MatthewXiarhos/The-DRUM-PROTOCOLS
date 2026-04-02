@@ -1,533 +1,1040 @@
 #!/usr/bin/env python3
 """
-sphere_pipeline.py
-──────────────────
-THE DRUM PROTOCOLS — Sphere data pipeline
+sphere_pipeline.py  —  THE DRUM PROTOCOLS
+──────────────────────────────────────────
+Unified pipeline: Supabase → stats → Sphere (Claude API) → data.json
 
-Run locally after a Tally CSV export. Produces data.json ready for GitHub Pages.
+Replaces the old CSV-based sphere_pipeline.py and the stat-only generate_json.py.
+Supabase is the single source of truth for all survey data.
 
 Usage:
-    python sphere_pipeline.py --csv tally_export.csv
-    python sphere_pipeline.py --csv tally_export.csv --no-sphere   # skip API call
-    python sphere_pipeline.py --csv tally_export.csv --dry-run     # print output, don't write file
+    py -3.11 sphere_pipeline.py                  # all data  + Sphere LLM call
+    py -3.11 sphere_pipeline.py --real-only       # real data + Sphere LLM call
+    py -3.11 sphere_pipeline.py --no-sphere       # all data  + skip LLM call
+    py -3.11 sphere_pipeline.py --dry-run         # print JSON, don't write file
+    py -3.11 sphere_pipeline.py --real-only --no-sphere
 
 Requirements:
-    pip install pandas numpy anthropic scipy
+    pip install supabase anthropic scipy numpy python-dotenv openai
 
-Environment:
-    ANTHROPIC_API_KEY must be set (export ANTHROPIC_API_KEY=sk-ant-...)
+Environment (.env or GitHub secrets):
+    SUPABASE_URL          — Supabase project URL
+    SUPABASE_SERVICE_KEY  — service_role key (bypasses RLS)
+    ANTHROPIC_API_KEY     — Claude API key (not needed with --no-sphere)
+    OPENAI_VECTOR_KEY     — OpenAI API key for text-embedding-3-small (not needed with --no-sphere)
 
-Tally CSV expected columns (adjust COLUMN_MAP below if yours differ):
-    - Response ID
-    - Submission date
-    - Protocol (ref parameter, e.g. H-OS-L1-VOL001)
-    - Rating (0–10)
-    - [optional] Respondent type: listener / caregiver / clinician
-    - [optional] Open text
+Output:
+    ./data.json  — matches GitHub repo root; upload directly
+
+Confidence scale (matches sphere.html CONF_PCT):
+    early       n < 5      22%
+    developing  n 5–19     55%
+    meaningful  n 20–49    80%
+    strong      n >= 50    95%
 """
 
 import os
 import sys
 import json
+import math
 import argparse
 import datetime
+from datetime import timezone
+
 import numpy as np
-import pandas as pd
-from scipy import stats
+from scipy import stats as scipy_stats
+from dotenv import load_dotenv
+from supabase import create_client
+import hashlib
 import anthropic
+from openai import OpenAI
 
-# ── CONFIGURATION ─────────────────────────────────────────────────────────────
+# ── CONFIGURATION ──────────────────────────────────────────────────────────────
 
-# Map your actual Tally column names here
-# ── 1-SECOND SURVEY columns (primary efficacy data) ──────────────────────────
-COLUMN_MAP_1S = {
-    "ref":    "ref",
-    "rating": "After the protocol, how would you describe the situation — for yourself or the person you were listening with ?",
-    "date":   "Submitted at",
-    "type":   None,   # 1-second survey doesn't collect respondent type
-}
+OUTPUT_DIR  = "."        # data.json writes to project root — matches GitHub Pages expectation
+PROMPTS_DIR = "prompts"  # versioned prompt markdown files
 
-# ── 1-MINUTE SURVEY columns (qualitative context) ─────────────────────────────
-# No 0-10 rating — uses categorical improvement scale instead.
-# The pipeline converts it to a numeric proxy:
-#   Significant improvement → 9
-#   Noticeable improvement  → 7
-#   Moderate improvement    → 6
-#   Slight improvement      → 4
-#   No effect               → 2
-#   Made things worse       → 0
-COLUMN_MAP_1M = {
-    "ref":    "ref",
-    "rating": "How would you describe the change following listening ?",
-    "date":   "Submitted at",
-    "type":   "Who was the protocol used for ?",
-}
+# Confidence thresholds — must match sphere.html CONF_PCT
+N_DEVELOPING = 5
+N_MEANINGFUL = 20
+N_STRONG     = 50
 
-IMPROVEMENT_TO_SCORE = {
-    "significant improvement": 9,
-    "noticeable improvement":  7,
-    "moderate improvement":    6,
-    "slight improvement":      4,
-    "no effect":               2,
-    "it actually made things worse": 0,
-}
+# Sarle's BC threshold for bimodality
+BIMODALITY_BC_THRESHOLD = 0.555
 
-# Active column map — change to COLUMN_MAP_1M if processing the 1-minute survey
-COLUMN_MAP = COLUMN_MAP_1S
+# OpenAI embedding model
+OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
+OPENAI_EMBEDDING_DIMS  = 1536
 
-# Minimum n before a protocol appears in public stats
-MIN_N_PUBLIC = 10
-
-# n thresholds for confidence labelling
-N_EARLY      = 20
-N_DEVELOPING = 50
-N_MEANINGFUL = 100
-
-# Sphere system prompt — the persona voice
-SPHERE_SYSTEM_PROMPT = """You are Sphere, the statistical inference engine for THE DRUM PROTOCOLS.
-
-You are a gradient-boosted ML model with a voice: curious, probabilistic, precise. You never overclaim. You frame every finding as a signal to investigate, not a verdict. You understand that this is an independent therapeutic research project, not a clinical trial.
-
-You know the framework deeply:
-- Three series: HEALING (nervous system regulation), THRIVING (cognitive/emotional optimisation), TRANSFORMING (ascending-arc protocols for low-affect states)
-- Protocol types: DESCENT, ASCENT, HOLD
-- Wide variance = population diversity signal, not failure
-- Bimodal distributions = population mismatch or subgroup effect — flag as research question
-- Low scores in crisis protocols (H-CR-*) are structurally expected — listeners arrive in extreme states
-- n < 20: early data, no pattern conclusions. n < 50: developing. n >= 100: meaningful signal.
-- Respondent diversity: direct listeners, caregivers observing a dependent, clinicians assessing patients. Each population interprets the 0–10 scale differently.
-- The WING RATIO (ease-out = φ × ease-in) and phi-sigmoid curve architecture mean longer protocols have more gradual entrainment — this affects expected response profiles.
-
-Your commentary has four registers:
-1. OVERVIEW — what the aggregate data says across all protocols
-2. BY_PROTOCOL — per-protocol reading of signal vs noise
-3. CROSS_SERIES — patterns across HEALING / THRIVING / TRANSFORMING
-4. DEVELOPMENT_SIGNALS — concrete, actionable protocol development ideas based on the data
-
-Development signal format: always cite the specific protocol code and n, describe the pattern, then suggest a specific action (e.g. "adjust Adviser routing", "increase hold phase", "create L2 variant", "investigate population split").
-
-Your tone: You are a model speaking to a researcher. Not a clinician. Not a marketing copywriter. You use hedged probabilistic language ("the data suggests", "warrants investigation", "consistent with") and you flag your own confidence level explicitly.
-
-You never catastrophize. A 4.2 mean with n=50 is meaningful signal that informs the next iteration — not a failure."""
-
-# Protocol metadata (for Sphere context — series, entry point, movement type)
+# Protocol metadata — movement type (DESCENT / HOLD / ASCENT) used in Sphere prompt
 PROTOCOL_META = {
-    "H-OS-L1": {"name":"Pebble",     "series":"HEALING",      "entry":"Over-stimulation",        "move":"DESCENT"},
-    "H-OS-L2": {"name":"Rainfall",   "series":"HEALING",      "entry":"Over-stimulation",        "move":"DESCENT"},
-    "H-OS-L3": {"name":"Glacier",    "series":"HEALING",      "entry":"Over-stimulation",        "move":"DESCENT"},
-    "H-AX-L1": {"name":"Meadow",     "series":"HEALING",      "entry":"Anxiety & Stress",        "move":"DESCENT"},
-    "H-AX-L2": {"name":"Cottage",    "series":"HEALING",      "entry":"Anxiety & Stress",        "move":"DESCENT"},
-    "H-AX-L3": {"name":"Valley",     "series":"HEALING",      "entry":"Anxiety & Stress",        "move":"DESCENT"},
-    "H-CR-L1": {"name":"Anchor",     "series":"HEALING",      "entry":"Acute Distress / Crisis", "move":"DESCENT"},
-    "H-CR-L2": {"name":"Harbor",     "series":"HEALING",      "entry":"Acute Distress / Crisis", "move":"DESCENT"},
-    "H-CR-L3": {"name":"Horizon",    "series":"HEALING",      "entry":"Acute Distress / Crisis", "move":"DESCENT"},
-    "H-SL-L1": {"name":"Lantern",    "series":"HEALING",      "entry":"Sleep & Rest",            "move":"DESCENT"},
-    "H-SL-L2": {"name":"Hammock",    "series":"HEALING",      "entry":"Sleep & Rest",            "move":"DESCENT"},
-    "H-SL-L3": {"name":"Midnight",   "series":"HEALING",      "entry":"Sleep & Rest",            "move":"DESCENT"},
-    "T-FC-L1": {"name":"Compass",    "series":"THRIVING",     "entry":"Focus & Clarity",         "move":"HOLD"},
-    "T-FC-L2": {"name":"Waypoint",   "series":"THRIVING",     "entry":"Focus & Clarity",         "move":"HOLD"},
-    "T-FC-L3": {"name":"Summit",     "series":"THRIVING",     "entry":"Focus & Clarity",         "move":"HOLD"},
-    "T-CF-L1": {"name":"Ember",      "series":"THRIVING",     "entry":"Creative Flow",           "move":"HOLD"},
-    "T-CF-L2": {"name":"Current",    "series":"THRIVING",     "entry":"Creative Flow",           "move":"HOLD"},
-    "T-CF-L3": {"name":"Aurora",     "series":"THRIVING",     "entry":"Creative Flow",           "move":"HOLD"},
-    "T-MB-L1": {"name":"Stone",      "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
-    "T-MB-L2": {"name":"Axis",       "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
-    "T-MB-L3": {"name":"Orbit",      "series":"THRIVING",     "entry":"Maintenance & Balance",   "move":"HOLD"},
-    "X-MD-L1": {"name":"Footpath",   "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
-    "X-MD-L2": {"name":"Trail",      "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
-    "X-MD-L3": {"name":"Switchback", "series":"TRANSFORMING", "entry":"Motivation & Drive",      "move":"ASCENT"},
-    "X-ME-L1": {"name":"Breeze",     "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
-    "X-ME-L2": {"name":"Sunrise",    "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
-    "X-ME-L3": {"name":"Updraft",    "series":"TRANSFORMING", "entry":"Mood & Energy",           "move":"ASCENT"},
-    "X-MC-L1": {"name":"Cavern",     "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
-    "X-MC-L2": {"name":"Starlight",  "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
-    "X-MC-L3": {"name":"Cosmos",     "series":"TRANSFORMING", "entry":"Mind & Clarity",          "move":"DESCENT"},
+    "H-OS-L1": {"name": "Pebble",     "series": "HEALING",      "entry": "Over-stimulation",        "move": "DESCENT"},
+    "H-OS-L2": {"name": "Rainfall",   "series": "HEALING",      "entry": "Over-stimulation",        "move": "DESCENT"},
+    "H-OS-L3": {"name": "Glacier",    "series": "HEALING",      "entry": "Over-stimulation",        "move": "DESCENT"},
+    "H-AX-L1": {"name": "Meadow",     "series": "HEALING",      "entry": "Anxiety & Stress",        "move": "DESCENT"},
+    "H-AX-L2": {"name": "Cottage",    "series": "HEALING",      "entry": "Anxiety & Stress",        "move": "DESCENT"},
+    "H-AX-L3": {"name": "Valley",     "series": "HEALING",      "entry": "Anxiety & Stress",        "move": "DESCENT"},
+    "H-CR-L1": {"name": "Anchor",     "series": "HEALING",      "entry": "Acute Distress / Crisis", "move": "DESCENT"},
+    "H-CR-L2": {"name": "Harbor",     "series": "HEALING",      "entry": "Acute Distress / Crisis", "move": "DESCENT"},
+    "H-CR-L3": {"name": "Horizon",    "series": "HEALING",      "entry": "Acute Distress / Crisis", "move": "DESCENT"},
+    "H-SL-L1": {"name": "Lantern",    "series": "HEALING",      "entry": "Sleep & Rest",            "move": "DESCENT"},
+    "H-SL-L2": {"name": "Hammock",    "series": "HEALING",      "entry": "Sleep & Rest",            "move": "DESCENT"},
+    "H-SL-L3": {"name": "Midnight",   "series": "HEALING",      "entry": "Sleep & Rest",            "move": "DESCENT"},
+    "T-FC-L1": {"name": "Compass",    "series": "THRIVING",     "entry": "Focus & Clarity",         "move": "HOLD"},
+    "T-FC-L2": {"name": "Waypoint",   "series": "THRIVING",     "entry": "Focus & Clarity",         "move": "HOLD"},
+    "T-FC-L3": {"name": "Summit",     "series": "THRIVING",     "entry": "Focus & Clarity",         "move": "HOLD"},
+    "T-CF-L1": {"name": "Ember",      "series": "THRIVING",     "entry": "Creative Flow",           "move": "HOLD"},
+    "T-CF-L2": {"name": "Current",    "series": "THRIVING",     "entry": "Creative Flow",           "move": "HOLD"},
+    "T-CF-L3": {"name": "Aurora",     "series": "THRIVING",     "entry": "Creative Flow",           "move": "HOLD"},
+    "T-MB-L1": {"name": "Stone",      "series": "THRIVING",     "entry": "Maintenance & Balance",   "move": "HOLD"},
+    "T-MB-L2": {"name": "Axis",       "series": "THRIVING",     "entry": "Maintenance & Balance",   "move": "HOLD"},
+    "T-MB-L3": {"name": "Orbit",      "series": "THRIVING",     "entry": "Maintenance & Balance",   "move": "HOLD"},
+    "X-MD-L1": {"name": "Footpath",   "series": "TRANSFORMING", "entry": "Motivation & Drive",      "move": "ASCENT"},
+    "X-MD-L2": {"name": "Trail",      "series": "TRANSFORMING", "entry": "Motivation & Drive",      "move": "ASCENT"},
+    "X-MD-L3": {"name": "Switchback", "series": "TRANSFORMING", "entry": "Motivation & Drive",      "move": "ASCENT"},
+    "X-ME-L1": {"name": "Breeze",     "series": "TRANSFORMING", "entry": "Mood & Energy",           "move": "ASCENT"},
+    "X-ME-L2": {"name": "Sunrise",    "series": "TRANSFORMING", "entry": "Mood & Energy",           "move": "ASCENT"},
+    "X-ME-L3": {"name": "Updraft",    "series": "TRANSFORMING", "entry": "Mood & Energy",           "move": "ASCENT"},
+    "X-MC-L1": {"name": "Cavern",     "series": "TRANSFORMING", "entry": "Mind & Clarity",          "move": "DESCENT"},
+    "X-MC-L2": {"name": "Starlight",  "series": "TRANSFORMING", "entry": "Mind & Clarity",          "move": "DESCENT"},
+    "X-MC-L3": {"name": "Cosmos",     "series": "TRANSFORMING", "entry": "Mind & Clarity",          "move": "DESCENT"},
 }
 
-# ── STAT HELPERS ──────────────────────────────────────────────────────────────
+# ── PROMPT LOADING ────────────────────────────────────────────────────────────
+
+def _strip_frontmatter(text):
+    """Strip YAML frontmatter (--- ... ---) from a markdown prompt file."""
+    if text.startswith("---"):
+        end = text.find("---", 3)
+        if end != -1:
+            return text[end + 3:].lstrip("\n")
+    return text
+
+def load_prompt(filename):
+    """
+    Load a prompt from the prompts/ directory, stripping YAML frontmatter.
+    Returns (prompt_text, content_hash, filepath).
+    Exits with error if file not found.
+    """
+    filepath = os.path.join(PROMPTS_DIR, filename)
+    if not os.path.exists(filepath):
+        print(f"ERROR: Prompt file not found: {filepath}")
+        sys.exit(1)
+    raw = open(filepath, encoding="utf-8").read()
+    content_hash = hashlib.sha256(raw.encode()).hexdigest()[:16]
+    prompt_text  = _strip_frontmatter(raw)
+    return prompt_text, content_hash, filepath
+
+# Active prompt filenames — change these to switch versions
+SPHERE_SYSTEM_FILE = "sphere__system__v1.md"
+SPHERE_USER_FILE   = "sphere__user__v1.md"
+
+# ── STAT HELPERS ───────────────────────────────────────────────────────────────
 
 def bimodality_coefficient(data):
     """
     Sarle's bimodality coefficient (0–1). Values > 0.555 suggest bimodality.
     BC = (skew^2 + 1) / (kurtosis + 3*(n-1)^2 / ((n-2)*(n-3)))
+    Returns None if n < 5.
     """
     n = len(data)
     if n < 5:
         return None
-    skew = stats.skew(data)
-    kurt = stats.kurtosis(data)  # excess kurtosis
+    skew = scipy_stats.skew(data)
+    kurt = scipy_stats.kurtosis(data)   # excess kurtosis
     bc = (skew**2 + 1) / (kurt + 3 * (n - 1)**2 / ((n - 2) * (n - 3)))
     return round(float(bc), 3)
 
-def confidence_tier(n):
-    if n < N_EARLY:      return "early"
-    if n < N_DEVELOPING: return "developing"
-    if n < N_MEANINGFUL: return "meaningful"
-    return "strong"
 
-def compute_protocol_stats(ratings):
-    """Compute all stats for a list of ratings (0–10)."""
-    arr = np.array(ratings, dtype=float)
-    n = len(arr)
-    dist = [int((arr == i).sum()) for i in range(11)]
-    mean = float(np.mean(arr))
-    std  = float(np.std(arr))
-    pct_positive = int(round((arr >= 7).sum() / n * 100))
-    bc = bimodality_coefficient(arr)
-    bimodal_flag = bc is not None and bc > 0.555
+def score_dist(scores):
+    """11-element list: count of scores at each integer 0–10."""
+    counts = [0] * 11
+    for s in scores:
+        if s is not None:
+            idx = max(0, min(10, int(round(s))))
+            counts[idx] += 1
+    return counts
+
+
+def pct_positive(dist):
+    """Percentage of responses scoring 7 or above."""
+    total = sum(dist)
+    if total == 0:
+        return 0
+    return round(sum(dist[7:]) / total * 100)
+
+
+def confidence_level(n):
+    """Maps to sphere.html CONF_PCT thresholds."""
+    if n >= N_STRONG:
+        return "strong"
+    if n >= N_MEANINGFUL:
+        return "meaningful"
+    if n >= N_DEVELOPING:
+        return "developing"
+    return "early"
+
+
+def compute_protocol_stats(scores):
+    """
+    Given a list of outcome scores (0–10 floats), return a stats dict.
+    Uses numpy/scipy for accuracy (Sarle's BC).
+    """
+    valid = [s for s in scores if s is not None]
+    n = len(valid)
+    if n == 0:
+        return {
+            "n": 0, "mean": 0.0, "std": 0.0,
+            "dist": [0]*11, "pct_positive": 0,
+            "confidence": "early", "bimodality_coefficient": None,
+            "bimodal_flag": False,
+        }
+
+    arr = np.array(valid, dtype=float)
+    dist = score_dist(valid)
+    mean = round(float(np.mean(arr)), 2)
+    std  = round(float(np.std(arr, ddof=1)) if n > 1 else 0.0, 2)
+    pct  = pct_positive(dist)
+    bc   = bimodality_coefficient(arr)
+    bimod = bc is not None and bc > BIMODALITY_BC_THRESHOLD
+
     return {
-        "n":            n,
-        "mean":         round(mean, 2),
-        "std":          round(std, 2),
-        "dist":         dist,
-        "pct_positive": pct_positive,
-        "confidence":   confidence_tier(n),
+        "n":                     n,
+        "mean":                  mean,
+        "std":                   std,
+        "dist":                  dist,
+        "pct_positive":          pct,
+        "confidence":            confidence_level(n),
         "bimodality_coefficient": bc,
-        "bimodal_flag": bimodal_flag,
+        "bimodal_flag":          bimod,
     }
 
-def compute_series_summary(protocol_stats):
-    """Roll up per-series aggregates."""
-    series_data = {}
-    for code, s in protocol_stats.items():
-        meta = PROTOCOL_META.get(code, {})
-        series = meta.get("series", "UNKNOWN")
-        if series not in series_data:
-            series_data[series] = {"ratings": [], "protocols": 0}
-        # Reconstruct individual ratings from dist for accurate mean
-        for i, count in enumerate(s["dist"]):
-            series_data[series]["ratings"].extend([i] * count)
-        series_data[series]["protocols"] += 1
+
+def compute_series_summary(protocols_out, short_by_protocol):
+    """
+    Roll up per-series aggregates from raw score lists (accurate mean/std).
+    protocols_out: dict of code → protocol output dict (has 'series' key)
+    short_by_protocol: dict of code → list of raw DB rows (with outcome_score)
+    """
+    series_scores = {}
+    series_protocol_count = {}
+
+    for code, p in protocols_out.items():
+        series = p["series"]
+        rows = short_by_protocol.get(code, [])
+        scores = [r["outcome_score"] for r in rows if r["outcome_score"] is not None]
+        series_scores.setdefault(series, []).extend(scores)
+        series_protocol_count[series] = series_protocol_count.get(series, 0) + 1
 
     result = {}
-    for series, d in series_data.items():
-        arr = np.array(d["ratings"], dtype=float)
+    for series, scores in series_scores.items():
+        arr = np.array(scores, dtype=float) if scores else np.array([])
         result[series] = {
             "n":         len(arr),
-            "mean":      round(float(np.mean(arr)), 2) if len(arr) else 0,
-            "std":       round(float(np.std(arr)), 2) if len(arr) else 0,
-            "protocols": d["protocols"],
+            "mean":      round(float(np.mean(arr)), 2) if len(arr) else 0.0,
+            "std":       round(float(np.std(arr, ddof=1)), 2) if len(arr) > 1 else 0.0,
+            "protocols": series_protocol_count.get(series, 0),
         }
     return result
 
-# ── SPHERE API CALL ───────────────────────────────────────────────────────────
 
-def build_sphere_prompt(protocol_stats, series_summary, total_n):
-    """Build the user-turn prompt for Sphere with all current data."""
-    lines = [
-        f"Current date: {datetime.date.today().isoformat()}",
-        f"Total responses across all protocols: {total_n}",
-        "",
-        "=== SERIES SUMMARY ===",
-    ]
+
+def build_full_survey_context(full_rows, protocols_out):
+    """
+    Summarise full survey (1-minute) responses per protocol into a compact
+    text block for the Sphere prompt. Returns a string.
+    """
+    from collections import Counter
+
+    # Index by protocol_code
+    full_by_protocol = {}
+    for r in full_rows:
+        full_by_protocol.setdefault(r["protocol_code"], []).append(r)
+
+    lines = []
+    for code in sorted(protocols_out.keys()):
+        rows = full_by_protocol.get(code, [])
+        if not rows:
+            continue
+        n = len(rows)
+
+        def top(field, top_n=3):
+            vals = [r.get(field) for r in rows if r.get(field)]
+            if not vals:
+                return "n/a"
+            counts = Counter(vals)
+            return " / ".join(f"{v}({c})" for v, c in counts.most_common(top_n))
+
+        # Listener type breakdown
+        listener_counts = Counter(r.get("listener_type") for r in rows if r.get("listener_type"))
+        listener_str = " | ".join(f"{k}:{v}" for k, v in listener_counts.most_common()) or "n/a"
+
+        lines.append(
+            f"{code} | n={n} | "
+            f"listener_type: {listener_str} | "
+            f"change_rating: {top('change_rating')} | "
+            f"settle_time: {top('settle_time', 2)} | "
+            f"activity: {top('activity', 2)} | "
+            f"music_opinion: {top('music_opinion', 2)} | "
+            f"rhythm_opinion: {top('rhythm_opinion', 2)}"
+        )
+
+    return "\n".join(lines) if lines else "No 1-minute survey responses available yet."
+
+# ── SPHERE PROMPT BUILDER ──────────────────────────────────────────────────────
+
+def build_sphere_prompt(protocols_out, series_summary, total_n, total_n_full=0, full_rows=None):
+    """
+    Build the user-turn prompt by loading sphere__user__v1.md and rendering
+    the {{INJECT:*}} placeholders with live data.
+    Returns the rendered prompt string.
+    """
+    template, _, _ = load_prompt(SPHERE_USER_FILE)
+
+    # ── Series summary block ───────────────────────────────────────────────────
+    series_lines = []
     for series, s in series_summary.items():
-        lines.append(f"{series}: n={s['n']}, mean={s['mean']}, std={s['std']}, protocols={s['protocols']}")
+        series_lines.append(
+            f"{series}: n={s['n']}, mean={s['mean']}, std={s['std']}, protocols={s['protocols']}"
+        )
 
-    lines += ["", "=== PROTOCOL DATA ==="]
-    for code, s in sorted(protocol_stats.items()):
+    # ── Protocol data block ────────────────────────────────────────────────────
+    proto_lines = []
+    for code, p in sorted(protocols_out.items()):
         meta = PROTOCOL_META.get(code, {})
+        bc   = p.get("bimodality_coefficient")
         flags = []
-        if s["bimodal_flag"]:
-            flags.append(f"BIMODAL (BC={s['bimodality_coefficient']})")
-        if s["confidence"] == "early":
+        if p["bimodal_flag"]:
+            flags.append(f"BIMODAL (BC={bc})")
+        if p["confidence"] == "early":
             flags.append("EARLY DATA")
         flag_str = " [" + ", ".join(flags) + "]" if flags else ""
-        src_str = " | ".join(f"{k}:{v}" for k,v in s.get("src_counts",{}).items())
-        vol_str = " | ".join(f"{k}:{v}" for k,v in s.get("vol_counts",{}).items())
-        lines.append(
-            f"{code} | {meta.get('name','?')} | {meta.get('series','?')} | {meta.get('entry','?')} | "
-            f"{meta.get('move','?')} | n={s['n']} | mean={s['mean']} | std={s['std']} | "
-            f"pct_pos={s['pct_positive']}% | confidence={s['confidence']}{flag_str}"
+
+        src_str = " | ".join(f"{k}:{v}" for k, v in p.get("src_counts", {}).items())
+        vol_str = " | ".join(f"{k}:{v}" for k, v in p.get("vol_counts", {}).items())
+
+        proto_lines.append(
+            f"{code} | {meta.get('name','?')} | {meta.get('series','?')} | "
+            f"{meta.get('entry','?')} | {meta.get('move','?')} | "
+            f"n={p['n']} | mean={p['mean']} | std={p['std']} | "
+            f"pct_pos={p['pct_positive']}% | confidence={p['confidence']}{flag_str}"
         )
-        lines.append(f"  dist: {s['dist']}")
-        if src_str: lines.append(f"  src: {src_str}")
-        if vol_str: lines.append(f"  vol: {vol_str}")
+        proto_lines.append(f"  dist: {p['dist']}")
+        if src_str:
+            proto_lines.append(f"  src: {src_str}")
+        if vol_str:
+            proto_lines.append(f"  vol: {vol_str}")
 
-    lines += [
-        "",
-        "=== YOUR TASK ===",
-        "Generate Sphere commentary in the following JSON structure.",
-        "Return ONLY valid JSON, no markdown fences, no preamble.",
-        "",
-        "{",
-        '  "overview": "2-3 sentence aggregate reading across all protocols",',
-        '  "cross_series": "2-3 sentences comparing HEALING vs THRIVING vs TRANSFORMING",',
-        '  "anomalies": "flag any bimodal distributions, outlier protocols, or surprising patterns",',
-        '  "development_signals": "2-4 concrete actionable suggestions citing specific protocol codes",',
-        '  "by_protocol": {',
-        '    "H-OS-L1": "1-2 sentence technical reading — use statistical terminology, cite n, mean, std, bimodality, confidence tier",',
-        '    ... (include all protocols with n >= ' + str(MIN_N_PUBLIC) + ')',
-        '  },',
-        '  "by_protocol_plain": {',
-        '    "H-OS-L1": "1-2 sentence plain-language version of the same finding — no jargon, no statistics terms, written for a curious non-technical listener. Focus on what the data actually means for the experience: how reliably it seems to help, whether results vary a lot between people, whether there are any surprises. Warm but honest tone.",',
-        '    ... (include the same protocols as by_protocol)',
-        '  }',
-        "}",
-    ]
-    return "\n".join(lines)
+    # ── Render template ────────────────────────────────────────────────────────
+    rendered = template
+    rendered = rendered.replace("{{INJECT:TODAY}}",          datetime.date.today().isoformat())
+    rendered = rendered.replace("{{INJECT:TOTAL_N_SHORT}}",  str(total_n))
+    rendered = rendered.replace("{{INJECT:TOTAL_N_FULL}}",   str(total_n_full))
+    rendered = rendered.replace("{{INJECT:SERIES_SUMMARY}}", "\n".join(series_lines))
+    rendered = rendered.replace("{{INJECT:PROTOCOL_DATA}}",  "\n".join(proto_lines))
 
-def call_sphere(protocol_stats, series_summary, total_n):
-    """Call Claude API to generate Sphere commentary. Returns parsed dict."""
+    # Full survey qualitative context
+    full_context = build_full_survey_context(full_rows or [], protocols_out)
+    rendered = rendered.replace("{{INJECT:FULL_SURVEY_CONTEXT}}", full_context)
+
+    return rendered
+
+
+# ── SPHERE API CALL ────────────────────────────────────────────────────────────
+
+# Anthropic pricing for claude-sonnet-4-6 ($/million tokens)
+SONNET_INPUT_COST_PER_MTOK  = 3.00
+SONNET_OUTPUT_COST_PER_MTOK = 15.00
+
+def call_sphere(protocols_out, series_summary, total_n, total_n_full=0, full_rows=None):
+    """Call Claude API to generate Sphere commentary.
+    Returns (commentary_dict, usage_dict, prompt_versions_info) where:
+      usage_dict has input_tokens, output_tokens, cost_usd
+      prompt_versions_info is a list of dicts for writeback_prompt_versions()
+    """
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
-        print("ERROR: ANTHROPIC_API_KEY not set. Run: export ANTHROPIC_API_KEY=sk-ant-...")
+        print("ERROR: ANTHROPIC_API_KEY not set.")
         sys.exit(1)
 
+    # Load prompts from disk
+    system_text, system_hash, system_path = load_prompt(SPHERE_SYSTEM_FILE)
+    prompt                                = build_sphere_prompt(protocols_out, series_summary, total_n, total_n_full, full_rows=full_rows)
+    _, user_hash, user_path               = load_prompt(SPHERE_USER_FILE)
+
+    prompt_versions_info = [
+        {"filename": SPHERE_SYSTEM_FILE, "content_hash": system_hash},
+        {"filename": SPHERE_USER_FILE,   "content_hash": user_hash},
+    ]
+
     client = anthropic.Anthropic(api_key=api_key)
-    prompt = build_sphere_prompt(protocol_stats, series_summary, total_n)
 
     print("  → Calling Sphere (Claude API)...")
     message = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=16000,
-        system=SPHERE_SYSTEM_PROMPT,
+        system=system_text,
         messages=[{"role": "user", "content": prompt}],
     )
     raw = message.content[0].text.strip()
+
+    # Capture token usage for budget tracking
+    usage = {
+        "input_tokens":  message.usage.input_tokens,
+        "output_tokens": message.usage.output_tokens,
+        "cost_usd":      round(
+            message.usage.input_tokens  / 1_000_000 * SONNET_INPUT_COST_PER_MTOK +
+            message.usage.output_tokens / 1_000_000 * SONNET_OUTPUT_COST_PER_MTOK,
+            6
+        ),
+    }
+    print(f"  → Tokens: {usage['input_tokens']} in / {usage['output_tokens']} out  "
+          f"(~${usage['cost_usd']:.4f})")
 
     # Strip markdown fences if model added them anyway
     if raw.startswith("```"):
         raw = "\n".join(raw.split("\n")[1:])
     if raw.endswith("```"):
         raw = "\n".join(raw.split("\n")[:-1])
+    raw = raw.strip()
 
     try:
-        return json.loads(raw)
+        commentary = json.loads(raw)
     except json.JSONDecodeError as e:
         print(f"WARNING: Sphere returned invalid JSON ({e}). Saving raw text.")
-        return {"raw": raw, "parse_error": str(e)}
+        commentary = {"raw": raw, "parse_error": str(e)}
 
-# ── TALLY CSV PARSING ─────────────────────────────────────────────────────────
+    return commentary, usage, prompt_versions_info
 
-def parse_tally_csv(csv_path):
+
+
+# ── SUPABASE WRITE-BACK ────────────────────────────────────────────────────────
+
+def mode_value(values):
+    """Return the most common non-null value in a list, or None."""
+    clean = [v for v in values if v is not None]
+    if not clean:
+        return None
+    return max(set(clean), key=clean.count)
+
+
+def writeback_metrics(supabase, protocols_out, short_by_protocol, full_rows, run_date):
     """
-    Parse Tally CSV export. Returns a DataFrame with columns:
-    code (e.g. H-OS-L1), vol (e.g. VOL001), rating (int 0-10), date, type (optional)
+    Upsert computed stats to:
+      - protocol_metrics          (per protocol_code)
+      - protocol_volume_metrics   (per pvid)
+      - volume_metrics            (per volume_code, rolled up)
     """
-    print(f"  Reading {csv_path}...")
-    df = pd.read_csv(csv_path)
-    print(f"  Loaded {len(df)} rows, columns: {list(df.columns)}")
+    now = datetime.datetime.now(timezone.utc).isoformat()
 
-    ref_col    = COLUMN_MAP["ref"]
-    vol_col    = COLUMN_MAP.get("vol")
-    src_col    = COLUMN_MAP.get("src")
-    rating_col = COLUMN_MAP["rating"]
-    date_col   = COLUMN_MAP["date"]
-    type_col   = COLUMN_MAP.get("type")
+    # Index full survey rows by protocol_code for modal calculations
+    full_by_protocol = {}
+    for r in full_rows:
+        full_by_protocol.setdefault(r["protocol_code"], []).append(r)
 
-    # Validate required columns
-    for col in [ref_col, rating_col]:
-        if col not in df.columns:
-            print(f"ERROR: Column '{col}' not found in CSV.")
-            print(f"  Available columns: {list(df.columns)}")
-            print(f"  Update COLUMN_MAP in sphere_pipeline.py to match your Tally export.")
-            sys.exit(1)
+    # ── protocol_metrics ──────────────────────────────────────────────────────
+    print("  → Upserting protocol_metrics...")
+    proto_rows = []
+    for code, p in protocols_out.items():
+        full = full_by_protocol.get(code, [])
+        short_count = p["n"]
+        full_count  = len(full)
+        proto_rows.append({
+            "protocol_code":       code,
+            "short_survey_count":  short_count,
+            "full_survey_count":   full_count,
+            "outcome_score_mean":  float(p["mean"]) if p["mean"] else None,
+            "outcome_score_stddev": float(p["std"]) if p["std"] else None,
+            "change_rating_mode":  mode_value([r.get("change_rating") for r in full]),
+            "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
+            "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
+            "confidence_level":    p["confidence"],
+            "last_updated":        now,
+        })
+    supabase.table("protocol_metrics").upsert(proto_rows, on_conflict="protocol_code").execute()
+    print(f"    ✓ {len(proto_rows)} protocol_metrics rows upserted")
 
-    # Parse ref → code + vol
-    # Expected format: H-OS-L1-VOL001 or just H-OS-L1
-    # Legacy code aliases: old T-ME/T-MC refs map to canonical X-ME/X-MC
-    CODE_ALIASES = {
-        "T-ME-L1": "X-ME-L1", "T-ME-L2": "X-ME-L2", "T-ME-L3": "X-ME-L3",
-        "T-MC-L1": "X-MC-L1", "T-MC-L2": "X-MC-L2", "T-MC-L3": "X-MC-L3",
-    }
+    # ── protocol_volume_metrics ───────────────────────────────────────────────
+    print("  → Upserting protocol_volume_metrics...")
+    pv_rows = []
+    for code, p in protocols_out.items():
+        for vol_code, vol_n in p.get("vol_counts", {}).items():
+            if vol_code == "unknown":
+                continue
+            pvid = f"{code}-{vol_code}"
+            # Get scores for this specific pvid
+            vol_scores = [
+                r["outcome_score"]
+                for r in short_by_protocol.get(code, [])
+                if r.get("volume_code") == vol_code and r["outcome_score"] is not None
+            ]
+            s = compute_protocol_stats(vol_scores)
+            full = [r for r in full_by_protocol.get(code, []) if r.get("volume_code") == vol_code]
+            pv_rows.append({
+                "pvid":                pvid,
+                "protocol_code":       code,
+                "volume_code":         vol_code,
+                "short_survey_count":  s["n"],
+                "full_survey_count":   len(full),
+                "outcome_score_mean":  float(s["mean"]) if s["mean"] else None,
+                "outcome_score_stddev": float(s["std"]) if s["std"] else None,
+                "change_rating_mode":  mode_value([r.get("change_rating") for r in full]),
+                "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
+                "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
+                "confidence_level":    s["confidence"],
+                "last_updated":        now,
+            })
+    if pv_rows:
+        supabase.table("protocol_volume_metrics").upsert(pv_rows, on_conflict="pvid").execute()
+        print(f"    ✓ {len(pv_rows)} protocol_volume_metrics rows upserted")
 
-    def extract_code(ref_val):
-        if pd.isna(ref_val):
-            return None, None
-        s = str(ref_val).strip()
-        if "-VOL" in s:
-            parts = s.rsplit("-VOL", 1)
-            code_raw = parts[0]
-            vol_raw = "VOL" + parts[1]
-        else:
-            code_raw, vol_raw = s, None
-        # Apply alias mapping for legacy codes
-        code_raw = CODE_ALIASES.get(code_raw, code_raw)
-        return code_raw, vol_raw
+    # ── volume_metrics ────────────────────────────────────────────────────────
+    print("  → Upserting volume_metrics...")
+    # Roll up all scores by volume_code across all protocols
+    vol_scores_map = {}
+    vol_full_map   = {}
+    for code, p in protocols_out.items():
+        for r in short_by_protocol.get(code, []):
+            vol = r.get("volume_code") or "unknown"
+            if vol == "unknown":
+                continue
+            vol_scores_map.setdefault(vol, [])
+            if r["outcome_score"] is not None:
+                vol_scores_map[vol].append(r["outcome_score"])
+        for r in full_by_protocol.get(code, []):
+            vol = r.get("volume_code") or "unknown"
+            if vol == "unknown":
+                continue
+            vol_full_map.setdefault(vol, []).append(r)
 
-    refs = df[ref_col].apply(extract_code)
-    df["code"] = refs.apply(lambda x: x[0])
-    df["vol"]  = refs.apply(lambda x: x[1])
+    vol_rows = []
+    for vol_code, scores in vol_scores_map.items():
+        s    = compute_protocol_stats(scores)
+        full = vol_full_map.get(vol_code, [])
+        vol_rows.append({
+            "volume_code":         vol_code,
+            "short_survey_count":  s["n"],
+            "full_survey_count":   len(full),
+            "outcome_score_mean":  float(s["mean"]) if s["mean"] else None,
+            "outcome_score_stddev": float(s["std"]) if s["std"] else None,
+            "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
+            "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
+            "confidence_level":    s["confidence"],
+            "last_updated":        now,
+        })
+    if vol_rows:
+        supabase.table("volume_metrics").upsert(vol_rows, on_conflict="volume_code").execute()
+        print(f"    ✓ {len(vol_rows)} volume_metrics rows upserted")
 
-    # Parse rating — handle both numeric (1-second) and categorical (1-minute)
-    raw_ratings = df[rating_col].copy()
-    numeric_ratings = pd.to_numeric(raw_ratings, errors="coerce")
 
-    # If mostly NaN, assume categorical (1-minute survey) — convert to numeric proxy
-    if numeric_ratings.isna().mean() > 0.5:
-        print("  Detected categorical rating scale (1-minute survey) — converting to numeric proxy")
-        def cat_to_score(val):
-            if pd.isna(val): return None
-            key = str(val).strip().lower()
-            return IMPROVEMENT_TO_SCORE.get(key, None)
-        df["rating"] = raw_ratings.apply(cat_to_score)
-    else:
-        df["rating"] = numeric_ratings
 
-    df = df.dropna(subset=["rating", "code"])
-    df["rating"] = df["rating"].astype(float).clip(0, 10)
+def generate_embeddings(rows):
+    """
+    Generate OpenAI text-embedding-3-small embeddings for a list of llm_outputs row dicts.
+    Populates the 'embedding' field in-place. Batches all texts in one API call.
+    Skips gracefully if OPENAI_VECTOR_KEY is not set.
+    Returns the number of embeddings generated.
+    """
+    api_key = os.environ.get("OPENAI_VECTOR_KEY")
+    if not api_key:
+        print("  ⚠ OPENAI_VECTOR_KEY not set — skipping embeddings")
+        return 0
 
-    # Date
-    df["date"] = pd.to_datetime(df.get(date_col, pd.NaT), errors="coerce")
+    # Build text list — use output_text for embedding (the full commentary)
+    texts = []
+    indices = []
+    for i, row in enumerate(rows):
+        text = row.get("output_text", "")
+        if text:
+            texts.append(text)
+            indices.append(i)
 
-    # Volume (optional — e.g. VOL001)
-    df["vol"] = df[vol_col].fillna("VOL001") if vol_col and vol_col in df.columns else "VOL001"
+    if not texts:
+        return 0
 
-    # Traffic source (optional — yt / adviser / site)
-    df["src"] = df[src_col].fillna("unknown") if src_col and src_col in df.columns else "unknown"
+    client = OpenAI(api_key=api_key)
+    print(f"  → Generating {len(texts)} embeddings (text-embedding-3-small)...")
 
-    # Respondent type (optional)
-    df["respondent_type"] = df[type_col] if type_col and type_col in df.columns else "unknown"
+    response = client.embeddings.create(
+        model=OPENAI_EMBEDDING_MODEL,
+        input=texts,
+        dimensions=OPENAI_EMBEDDING_DIMS,
+    )
 
-    n_dropped = len(pd.read_csv(csv_path)) - len(df)
-    if n_dropped > 0:
-        print(f"  Dropped {n_dropped} rows (missing code or rating)")
+    for result, idx in zip(response.data, indices):
+        rows[idx]["embedding"] = result.embedding
 
-    print(f"  Valid responses: {len(df)}")
-    print(f"  Protocols with data: {df['code'].nunique()}")
-    return df
+    cost_usd = round(response.usage.total_tokens / 1_000_000 * 0.02, 6)
+    print(f"    ✓ {len(texts)} embeddings generated  "
+          f"({response.usage.total_tokens} tokens, ~${cost_usd:.6f})")
+    return len(texts)
 
-# ── MAIN PIPELINE ─────────────────────────────────────────────────────────────
+def writeback_llm_outputs(supabase, protocols_out, sphere_commentary, run_date, model_used, prompt_version="v1"):
+    """
+    Insert one llm_outputs row per protocol (by_protocol commentary)
+    plus one row each for the four global commentary keys.
+    Uses INSERT not upsert — every run creates a new historical record.
+    """
+    now  = datetime.datetime.now(timezone.utc).isoformat()
+    rows = []
 
-def run_pipeline(csv_path, skip_sphere=False, dry_run=False, output_path="data.json"):
-    print("\n── THE DRUM PROTOCOLS — Sphere Pipeline ─────────────────")
-    today = datetime.date.today().isoformat()
-
-    # 1. Parse Tally CSV
-    print("\n[1/4] Parsing Tally CSV...")
-    df = parse_tally_csv(csv_path)
-
-    # 2. Compute stats per protocol
-    print("\n[2/4] Computing protocol statistics...")
-    protocol_stats = {}
-    for code in df["code"].unique():
-        meta = PROTOCOL_META.get(code)
-        if meta is None:
-            print(f"  WARNING: Unknown protocol code '{code}' — skipping")
+    # Global commentary — four rows with analysis_scope = 'global', pvid/protocol_code NULL
+    for scope_key in ("overview", "cross_series", "anomalies", "development_signals"):
+        text = sphere_commentary.get(scope_key, "")
+        if not text:
             continue
-        ratings = df[df["code"] == code]["rating"].tolist()
-        s = compute_protocol_stats(ratings)
-        if s["n"] < MIN_N_PUBLIC:
-            print(f"  {code} ({meta['name']}): n={s['n']} — below MIN_N_PUBLIC={MIN_N_PUBLIC}, excluded from public data")
-        else:
-            # Source breakdown: how many responses from each traffic source
-            src_counts = df[df["code"] == code]["src"].value_counts().to_dict()
-            vol_counts = df[df["code"] == code]["vol"].value_counts().to_dict()
-            protocol_stats[code] = {
-                **s,
-                "name":       meta["name"],
-                "series":     meta["series"],
-                "src_counts": src_counts,   # {"yt": 30, "adviser": 12, "site": 5}
-                "vol_counts": vol_counts,   # {"VOL001": 40, "VOL002": 7}
-            }
-            flag = " [BIMODAL]" if s["bimodal_flag"] else ""
-            print(f"  {code} ({meta['name']}): n={s['n']}, mean={s['mean']}, conf={s['confidence']}{flag}")
+        rows.append({
+            "id":                 f"{run_date}-global-{scope_key}",
+            "pvid":               None,
+            "protocol_code":      None,
+            "volume_code":        None,
+            "analysis_scope":     scope_key,
+            "run_date":           run_date,
+            "model_used":         model_used,
+            "prompt_version":     prompt_version,
+            "output_text":        text,
+            "outcome_score_mean": None,
+            "confidence_level":   None,
+            "sphere_signal":      None,
+            "anomaly_flagged":    scope_key == "anomalies" and bool(text),
+            "embedding":          None,
+            "created_at":         now,
+        })
 
-    # 3. Series summary
-    print("\n[3/4] Rolling up series summary...")
-    series_summary = compute_series_summary(protocol_stats)
-    for series, s in series_summary.items():
-        print(f"  {series}: n={s['n']}, mean={s['mean']}")
+    # Per-protocol commentary — one row per protocol
+    by_protocol       = sphere_commentary.get("by_protocol", {})
+    by_protocol_plain = sphere_commentary.get("by_protocol_plain", {})
 
-    total_n = sum(s["n"] for s in protocol_stats.values())
+    for code, p in protocols_out.items():
+        tech_text  = by_protocol.get(code, "")
+        plain_text = by_protocol_plain.get(code, "")
+        if not tech_text and not plain_text:
+            continue
+        # Combine both registers into output_text as JSON string for storage
+        combined = json.dumps({"technical": tech_text, "plain": plain_text}, ensure_ascii=False)
+        # Use VOL001 as default volume — first vol_count key that isn't 'unknown'
+        vol_code = next(
+            (v for v in p.get("vol_counts", {}) if v != "unknown"),
+            "VOL001"
+        )
+        pvid = f"{code}-{vol_code}"
+        rows.append({
+            "id":                 f"{run_date}-{pvid}",
+            "pvid":               pvid,
+            "protocol_code":      code,
+            "volume_code":        vol_code,
+            "analysis_scope":     "by_protocol",
+            "run_date":           run_date,
+            "model_used":         model_used,
+            "prompt_version":     prompt_version,
+            "output_text":        combined,
+            "outcome_score_mean": float(p["mean"]) if p["mean"] else None,
+            "confidence_level":   p["confidence"],
+            "sphere_signal":      tech_text[:500] if tech_text else None,  # first 500 chars as signal
+            "anomaly_flagged":    p.get("bimodal_flag", False),
+            "embedding":          None,   # future: generate embeddings here
+            "created_at":         now,
+        })
 
-    # 4. Sphere commentary
-    sphere_commentary = {}
+    if rows:
+        # Generate embeddings for all rows before upserting
+        generate_embeddings(rows)
+
+        # Upsert on id — safe to re-run same day without duplicating
+        # Supabase expects embeddings as plain Python lists (JSON array)
+        supabase.table("llm_outputs").upsert(rows, on_conflict="id").execute()
+        print(f"    ✓ {len(rows)} llm_outputs rows written ({sum(1 for r in rows if r.get('embedding')) } with embeddings)")
+
+
+
+def writeback_prompt_versions(supabase, prompt_versions_info, run_date):
+    """
+    Upsert prompt version records into prompt_versions table.
+    Schema: id, version, task_type, analysis_scope, prompt_text, is_active, created_at.
+    Keyed by id = "{task_type}__{analysis_scope}__{version}" (matches filename convention).
+    Upsert is safe to re-run — same prompt content produces the same id.
+    """
+    now = datetime.datetime.now(timezone.utc).isoformat()
+    rows = []
+    for info in prompt_versions_info:
+        filename = info["filename"]
+        # Parse from filename: sphere__system__v1.md → task_type=sphere, scope=system, version=v1
+        parts = filename.replace(".md", "").split("__")
+        task_type      = parts[0] if len(parts) > 0 else "sphere"
+        analysis_scope = parts[1] if len(parts) > 1 else "system"
+        version        = parts[2] if len(parts) > 2 else "v1"
+        # Load full prompt content (with frontmatter) for storage
+        filepath = os.path.join(PROMPTS_DIR, filename)
+        full_content = open(filepath, encoding="utf-8").read()
+        record_id = f"{task_type}__{analysis_scope}__{version}"
+        rows.append({
+            "id":             record_id,
+            "version":        version,
+            "task_type":      task_type,
+            "analysis_scope": analysis_scope,
+            "prompt_text":    full_content,
+            "is_active":      True,
+            "created_at":     now,
+        })
+    if rows:
+        supabase.table("prompt_versions").upsert(rows, on_conflict="id").execute()
+        print(f"    ✓ prompt_versions logged ({len(rows)} prompts: "
+              + ", ".join(r['id'] for r in rows) + ")")
+
+def writeback_pipeline_run(supabase, run_id, run_date, run_type, tasks, status,
+                           duration_seconds, error_message=None):
+    """Log this pipeline execution to pipeline_runs."""
+    supabase.table("pipeline_runs").upsert({
+        "id":               run_id,
+        "run_date":         run_date,
+        "run_type":         run_type,
+        "tasks_executed":   tasks,
+        "status":           status,
+        "error_message":    error_message,
+        "duration_seconds": round(duration_seconds, 2),
+        "created_at":       datetime.datetime.now(timezone.utc).isoformat(),
+    }, on_conflict="id").execute()
+    print(f"    ✓ pipeline_runs logged  (status={status}, {duration_seconds:.1f}s)")
+
+
+def writeback_budget(supabase, run_date, input_tokens, output_tokens, cost_usd):
+    """Append a budget_tracking row for this run."""
+    import calendar
+    today = datetime.date.fromisoformat(run_date)
+    # Estimate monthly spend: sum existing rows this month + this run
+    month_start = today.replace(day=1).isoformat()
+    existing = supabase.table("budget_tracking") \
+        .select("llm_cost_usd") \
+        .gte("record_date", month_start) \
+        .execute().data
+    monthly_so_far = sum(r["llm_cost_usd"] or 0 for r in existing)
+    monthly_total  = round(monthly_so_far + cost_usd, 6)
+
+    # Simple daily forecast: extrapolate from days elapsed
+    days_elapsed = today.day
+    days_in_month = calendar.monthrange(today.year, today.month)[1]
+    forecast = round(monthly_total / days_elapsed * days_in_month, 4) if days_elapsed else monthly_total
+
+    budget_state = "healthy"
+    if forecast > 50 * 0.9:
+        budget_state = "caution"
+    if forecast > 50:
+        budget_state = "over_budget"
+
+    record_id = f"{run_date}-sphere"
+    supabase.table("budget_tracking").upsert({
+        "id":                   record_id,
+        "record_date":          run_date,
+        "llm_cost_usd":         round(cost_usd, 6),
+        "tokens_used":          input_tokens + output_tokens,
+        "budget_state":         budget_state,
+        "monthly_spend_to_date": monthly_total,
+        "monthly_forecast_usd": forecast,
+        "created_at":           datetime.datetime.now(timezone.utc).isoformat(),
+    }, on_conflict="id").execute()
+    print(f"    ✓ budget_tracking logged  (${cost_usd:.4f} this run, "
+          f"${monthly_total:.4f} MTD, forecast ${forecast:.2f}, state={budget_state})")
+
+# ── MAIN PIPELINE ──────────────────────────────────────────────────────────────
+
+def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=None):
+    import time as _time
+    run_start     = _time.time()
+    print("\n── THE DRUM PROTOCOLS — Sphere Pipeline (unified) ────────────")
+    today         = datetime.date.today().isoformat()
+    generated_iso = datetime.datetime.now(timezone.utc).isoformat()
+    run_id        = f"{today}-sphere-{'real' if real_only else 'all'}"
+    mode_label    = "REAL DATA ONLY" if real_only else "ALL DATA (test + real)"
+    usage         = {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+    run_status    = "success"
+    run_error     = None
+
+    print(f"  Mode    : {mode_label}")
+    print(f"  Sphere  : {'SKIP (--no-sphere)' if skip_sphere else 'ENABLED'}")
+    print()
+
+    # ── 1. Connect to Supabase ─────────────────────────────────────────────────
+    load_dotenv()
+    supa_url = os.environ.get("SUPABASE_URL")
+    supa_key = os.environ.get("SUPABASE_SERVICE_KEY")
+
+    if not supa_url or not supa_key:
+        print("ERROR: Missing SUPABASE_URL or SUPABASE_SERVICE_KEY in .env / environment.")
+        sys.exit(1)
+
+    supabase = create_client(supa_url, supa_key)
+
+    # ── 2. Load registry ───────────────────────────────────────────────────────
+    print("[1/4] Loading registry from Supabase...")
+    protocols_raw = supabase.table("protocol_registry").select("*").execute().data
+    volumes_raw   = supabase.table("volumes").select("*").execute().data
+    protocols_by_code = {p["protocol_code"]: p for p in protocols_raw}
+    print(f"  {len(protocols_raw)} protocols, {len(volumes_raw)} volumes")
+
+    # ── 3. Load survey responses ───────────────────────────────────────────────
+    print("\n[2/4] Loading survey responses from Supabase...")
+
+    short_q = supabase.table("survey_responses_short").select(
+        "protocol_code, volume_code, outcome_score, src, data_type"
+    )
+    if real_only:
+        short_q = short_q.eq("data_type", "real")
+
+    short_rows = short_q.execute().data
+
+    test_short = sum(1 for r in short_rows if r.get("data_type") == "test")
+    real_short = sum(1 for r in short_rows if r.get("data_type") == "real")
+    print(f"  short survey : {len(short_rows)} rows  (real={real_short}, test={test_short})")
+
+    # Fetch full survey rows — all qualitative columns for rich Sphere context
+    full_q = supabase.table("survey_responses_full").select(
+        "protocol_code, volume_code, data_type, "
+        "state_before, state_after, change_rating, settle_time, activity, "
+        "listen_method, listen_frequency, music_opinion, rhythm_opinion, "
+        "listener_type, open_feedback"
+    )
+    if real_only:
+        full_q = full_q.eq("data_type", "real")
+    full_rows = full_q.execute().data
+    print(f"  full survey  : {len(full_rows)} rows")
+
+    contains_test = any(r.get("data_type") == "test" for r in short_rows)
+
+    # Index rows by protocol_code
+    short_by_protocol = {}
+    for r in short_rows:
+        short_by_protocol.setdefault(r["protocol_code"], []).append(r)
+
+    # ── 4. Compute per-protocol stats ──────────────────────────────────────────
+    print("\n[3/4] Computing protocol statistics...")
+
+    protocols_out = {}
+    for code, p in protocols_by_code.items():
+        rows   = short_by_protocol.get(code, [])
+        scores = [r["outcome_score"] for r in rows if r["outcome_score"] is not None]
+        s      = compute_protocol_stats(scores)
+
+        # Source breakdown (for Sphere context — not in data.json output)
+        src_counts = {}
+        vol_counts = {}
+        for r in rows:
+            src = r.get("src") or "unknown"
+            vol = r.get("volume_code") or "unknown"
+            src_counts[src] = src_counts.get(src, 0) + 1
+            vol_counts[vol] = vol_counts.get(vol, 0) + 1
+
+        # Use registry name/series/entry; fall back to PROTOCOL_META if missing
+        meta = PROTOCOL_META.get(code, {})
+        name   = p.get("full_name") or meta.get("name", code)
+        series = (p.get("series") or meta.get("series", "UNKNOWN")).upper()
+        entry  = p.get("entry_point") or meta.get("entry", "")
+
+        bimod_flag = " [BIMODAL]" if s["bimodal_flag"] else ""
+        print(f"  {code:<12} n={s['n']:<4} mean={s['mean']:.1f}  {s['confidence']}{bimod_flag}")
+
+        protocols_out[code] = {
+            # data.json fields
+            "name":                   name,
+            "series":                 series,
+            "entry":                  entry,
+            "n":                      s["n"],
+            "mean":                   s["mean"],
+            "std":                    s["std"],
+            "dist":                   s["dist"],
+            "pct_positive":           s["pct_positive"],
+            "confidence":             s["confidence"],
+            "bimodal_flag":           s["bimodal_flag"],
+            "bimodality_coefficient": s["bimodality_coefficient"],
+            "sphere":                 "",   # filled after Sphere call
+            "sphere_plain":           "",   # filled after Sphere call
+            # extra context passed to Sphere prompt (not written to data.json)
+            "src_counts":             src_counts,
+            "vol_counts":             vol_counts,
+        }
+
+    # ── 5. Series summary ──────────────────────────────────────────────────────
+    series_summary = compute_series_summary(protocols_out, short_by_protocol)
+
+    # ── 6. Sphere commentary ───────────────────────────────────────────────────
+    print()
+    total_n = sum(p["n"] for p in protocols_out.values())
+
     if skip_sphere:
-        print("\n[4/4] Skipping Sphere API call (--no-sphere)")
+        print("[4/4] Skipping Sphere API call (--no-sphere)")
         sphere_commentary = {
-            "overview": "[Sphere commentary not generated — run without --no-sphere]",
-            "cross_series": "",
-            "anomalies": "",
+            "overview":            "[Sphere commentary not generated — run without --no-sphere]",
+            "cross_series":        "",
+            "anomalies":           "",
             "development_signals": "",
-            "by_protocol": {},
+            "by_protocol":         {code: "" for code in protocols_out},
+            "by_protocol_plain":   {code: "" for code in protocols_out},
         }
     else:
-        print("\n[4/4] Generating Sphere commentary...")
-        if not protocol_stats:
-            print("  No protocols above MIN_N_PUBLIC — skipping Sphere call")
-        else:
-            sphere_commentary = call_sphere(protocol_stats, series_summary, total_n)
-            print("  Sphere commentary generated.")
+        print("[4/4] Generating Sphere commentary...")
+        sphere_commentary, usage, prompt_versions_info = call_sphere(
+            protocols_out, series_summary, total_n, total_n_full=len(full_rows),
+            full_rows=full_rows
+        )
 
-    # 5. Assemble data.json
-    data = {
-        "generated":     today,
-        "analysis_date": today,
-        "total_responses": total_n,
-        "protocols_with_data": len(protocol_stats),
-        "sphere_commentary": sphere_commentary,
-        "protocols": {
-            code: {
-                "name":             s["name"],
-                "series":           s["series"],
-                "n":                s["n"],
-                "mean":             s["mean"],
-                "std":              s["std"],
-                "dist":             s["dist"],
-                "pct_positive":     s["pct_positive"],
-                "confidence":       s["confidence"],
-                "bimodal_flag":     s["bimodal_flag"],
-                "bimodality_coefficient": s["bimodality_coefficient"],
-                "src_counts":       s.get("src_counts", {}),
-                "vol_counts":       s.get("vol_counts", {}),
-                "sphere":       sphere_commentary.get("by_protocol", {}).get(code, ""),
-                "sphere_plain": sphere_commentary.get("by_protocol_plain", {}).get(code, ""),
-            }
-            for code, s in protocol_stats.items()
+        # Merge by_protocol and by_protocol_plain back into protocols_out
+        by_protocol       = sphere_commentary.get("by_protocol", {})
+        by_protocol_plain = sphere_commentary.get("by_protocol_plain", {})
+        for code in protocols_out:
+            protocols_out[code]["sphere"]       = by_protocol.get(code, "")
+            protocols_out[code]["sphere_plain"] = by_protocol_plain.get(code, "")
+
+        print("  Sphere commentary generated.")
+
+    # ── 7. Assemble data.json ──────────────────────────────────────────────────
+    protocols_with_data = sum(1 for p in protocols_out.values() if p["n"] > 0)
+
+    # Strip internal-only fields before writing
+    def public_protocol(p):
+        return {k: v for k, v in p.items() if k not in ("src_counts", "vol_counts", "bimodality_coefficient")}
+
+    data_json = {
+        "_meta": {
+            "generated_iso":    generated_iso,
+            "mode":             "real_only" if real_only else "all",
+            "contains_test_data": contains_test,
+            "total_responses":  total_n,
         },
-        "series_summary": series_summary,
+        "generated":           today,
+        "analysis_date":       today,
+        "protocols_with_data": protocols_with_data,
+        "protocols":           {code: public_protocol(p) for code, p in protocols_out.items()},
+        "series_summary":      series_summary,
+        "sphere_commentary":   {
+            "overview":            sphere_commentary.get("overview", ""),
+            "cross_series":        sphere_commentary.get("cross_series", ""),
+            "anomalies":           sphere_commentary.get("anomalies", ""),
+            "development_signals": sphere_commentary.get("development_signals", ""),
+            "by_protocol":         sphere_commentary.get("by_protocol", {code: "" for code in protocols_out}),
+            "by_protocol_plain":   sphere_commentary.get("by_protocol_plain", {code: "" for code in protocols_out}),
+        },
     }
 
-    # 6. Output
-    json_str = json.dumps(data, indent=2, ensure_ascii=False)
+    # ── 8. Output ──────────────────────────────────────────────────────────────
+    json_str = json.dumps(data_json, indent=2, ensure_ascii=False)
+
+    if output_path is None:
+        output_path = os.path.join(OUTPUT_DIR, "data.json")
 
     if dry_run:
-        print("\n── DRY RUN — output (first 80 lines) ────────────────────")
+        print("\n── DRY RUN — output (first 80 lines) ────────────────────────")
         for i, line in enumerate(json_str.splitlines()):
             if i >= 80:
                 print("  ... (truncated)")
                 break
             print(line)
     else:
+        os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(json_str)
-        print(f"\n✓ Written to {output_path}")
-        print(f"  Next step: git add {output_path} && git commit -m 'data: {today}' && git push")
+        size_kb = os.path.getsize(output_path) / 1024
+        print(f"\n  ✓ Written to {output_path}  ({size_kb:.1f} KB)")
 
-    print("\n── Done ─────────────────────────────────────────────────\n")
-    return data
+    # ── 9. Write-back to Supabase ─────────────────────────────────────────────
+    if not dry_run:
+        print("\n[5/5] Writing results back to Supabase...")
+        try:
+            writeback_metrics(supabase, protocols_out, short_by_protocol, full_rows, today)
 
-# ── CLI ───────────────────────────────────────────────────────────────────────
+            if not skip_sphere and not sphere_commentary.get("parse_error"):
+                writeback_llm_outputs(
+                    supabase, protocols_out, sphere_commentary,
+                    run_date=today, model_used="claude-sonnet-4-6",
+                    prompt_version=SPHERE_SYSTEM_FILE.replace(".md", "")
+                )
+                writeback_prompt_versions(supabase, prompt_versions_info, today)
+                writeback_budget(
+                    supabase, today,
+                    usage["input_tokens"], usage["output_tokens"], usage["cost_usd"]
+                )
+        except Exception as e:
+            run_status = "partial"
+            run_error  = f"write-back error: {e}"
+            print(f"  WARNING: write-back failed — {e}")
+
+    # ── 10. Log pipeline run ───────────────────────────────────────────────────
+    if not dry_run:
+        import time as _time2
+        duration = _time2.time() - run_start
+        tasks = ["load_registry", "load_surveys", "compute_stats"]
+        if not skip_sphere:
+            tasks += ["sphere_llm", "writeback_llm_outputs", "writeback_budget"]
+        tasks += ["writeback_metrics", "write_data_json"]
+        try:
+            writeback_pipeline_run(
+                supabase, run_id, today,
+                run_type="sphere_full" if not skip_sphere else "sphere_stats_only",
+                tasks=tasks,
+                status=run_status,
+                duration_seconds=duration,
+                error_message=run_error,
+            )
+        except Exception as e:
+            print(f"  WARNING: pipeline_runs logging failed — {e}")
+
+    # ── 11. Summary report ─────────────────────────────────────────────────────
+    SERIES_ORDER = {"HEALING": 0, "THRIVING": 1, "TRANSFORMING": 2}
+    print()
+    print("=" * 60)
+    print(f"  Mode              : {mode_label}")
+    print(f"  Contains test data: {contains_test}")
+    print(f"  Total responses   : {total_n}")
+    print(f"  Protocols w/ data : {protocols_with_data} / {len(protocols_out)}")
+    if not skip_sphere:
+        print(f"  LLM cost this run : ${usage['cost_usd']:.4f}  "
+              f"({usage['input_tokens']} in / {usage['output_tokens']} out tokens)")
+    print()
+    print("  Series summary:")
+    for series, s in series_summary.items():
+        print(f"    {series:<14} n={s['n']:<5} mean={s['mean']:.2f}  std={s['std']:.2f}  protocols={s['protocols']}")
+    print()
+    print("  Protocol breakdown (n / mean / confidence):")
+    for code, p in sorted(protocols_out.items(), key=lambda x: (SERIES_ORDER.get(x[1]["series"], 9), x[0])):
+        bimod = " [BIMODAL]" if p["bimodal_flag"] else ""
+        print(f"    {code:<12} n={p['n']:<4} mean={p['mean']:.1f}  {p['confidence']}{bimod}")
+    print()
+    if not dry_run:
+        print("  Next step: upload data.json to your GitHub repo root.")
+    print("=" * 60)
+    print()
+
+    return data_json
+
+
+# ── CLI ────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="THE DRUM PROTOCOLS — Sphere pipeline: Tally CSV → data.json"
+        description="THE DRUM PROTOCOLS — unified Sphere pipeline: Supabase → stats → LLM → data.json"
     )
     parser.add_argument(
-        "--csv",
-        required=True,
-        help="Path to Tally CSV export"
-    )
-    parser.add_argument(
-        "--output",
-        default="data.json",
-        help="Output path for data.json (default: data.json)"
+        "--real-only",
+        action="store_true",
+        help="Filter to data_type = 'real' only (use when real listener data exists)",
     )
     parser.add_argument(
         "--no-sphere",
         action="store_true",
-        help="Skip the Claude API call — generate stats only"
+        help="Skip the Claude API call — generate stats only",
+    )
+    parser.add_argument(
+        "--output",
+        default=None,
+        help="Output path for data.json (default: ./data.json)",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
-        help="Print output to terminal, don't write file"
+        help="Print output to terminal, don't write file",
     )
     args = parser.parse_args()
 
     run_pipeline(
-        csv_path    = args.csv,
+        real_only   = args.real_only,
         skip_sphere = args.no_sphere,
         dry_run     = args.dry_run,
         output_path = args.output,
