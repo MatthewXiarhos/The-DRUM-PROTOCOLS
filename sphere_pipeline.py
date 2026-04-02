@@ -1,36 +1,37 @@
 #!/usr/bin/env python3
 """
-sphere_pipeline.py  —  THE DRUM PROTOCOLS
+sphere_pipeline.py — THE DRUM PROTOCOLS
 ──────────────────────────────────────────
 Unified pipeline: Supabase → stats → Sphere (Claude API) → data.json
 
-Replaces the old CSV-based sphere_pipeline.py and the stat-only generate_json.py.
-Supabase is the single source of truth for all survey data.
+Replaces the old CSV-based sphere_pipeline.py and the stat-only
+generate_json.py. Supabase is the single source of truth for all survey
+data.
 
 Usage:
-    py -3.11 sphere_pipeline.py                  # all data  + Sphere LLM call
-    py -3.11 sphere_pipeline.py --real-only       # real data + Sphere LLM call
-    py -3.11 sphere_pipeline.py --no-sphere       # all data  + skip LLM call
-    py -3.11 sphere_pipeline.py --dry-run         # print JSON, don't write file
-    py -3.11 sphere_pipeline.py --real-only --no-sphere
+  py -3.11 sphere_pipeline.py                          # all data + Sphere LLM call
+  py -3.11 sphere_pipeline.py --real-only              # real data + Sphere LLM call
+  py -3.11 sphere_pipeline.py --no-sphere              # all data + skip LLM call
+  py -3.11 sphere_pipeline.py --dry-run                # print JSON, don't write file
+  py -3.11 sphere_pipeline.py --real-only --no-sphere
 
 Requirements:
-    pip install supabase anthropic scipy numpy python-dotenv openai
+  pip install supabase anthropic scipy numpy python-dotenv openai
 
 Environment (.env or GitHub secrets):
-    SUPABASE_URL          — Supabase project URL
-    SUPABASE_SERVICE_KEY  — service_role key (bypasses RLS)
-    ANTHROPIC_API_KEY     — Claude API key (not needed with --no-sphere)
-    OPENAI_VECTOR_KEY     — OpenAI API key for text-embedding-3-small (not needed with --no-sphere)
+  SUPABASE_URL          — Supabase project URL
+  SUPABASE_SERVICE_KEY  — service_role key (bypasses RLS)
+  ANTHROPIC_API_KEY     — Claude API key (not needed with --no-sphere)
+  OPENAI_VECTOR_KEY     — OpenAI API key for text-embedding-3-small (not needed with --no-sphere)
 
 Output:
-    ./data.json  — matches GitHub repo root; upload directly
+  ./data.json — matches GitHub repo root; upload directly
 
 Confidence scale (matches sphere.html CONF_PCT):
-    early       n < 5      22%
-    developing  n 5–19     55%
-    meaningful  n 20–49    80%
-    strong      n >= 50    95%
+  early       n < 5    22%
+  developing  n 5–19   55%
+  meaningful  n 20–49  80%
+  strong      n >= 50  95%
 """
 
 import os
@@ -49,7 +50,7 @@ import hashlib
 import anthropic
 from openai import OpenAI
 
-# ── CONFIGURATION ──────────────────────────────────────────────────────────────
+# ── CONFIGURATION ──────────────────────────────────────────────────────────────────────
 
 OUTPUT_DIR  = "."        # data.json writes to project root — matches GitHub Pages expectation
 PROMPTS_DIR = "prompts"  # versioned prompt markdown files
@@ -100,10 +101,10 @@ PROTOCOL_META = {
     "X-MC-L3": {"name": "Cosmos",     "series": "TRANSFORMING", "entry": "Mind & Clarity",          "move": "DESCENT"},
 }
 
-# ── PROMPT LOADING ────────────────────────────────────────────────────────────
+# ── PROMPT LOADING ────────────────────────────────────────────────────────────────────
 
 def _strip_frontmatter(text):
-    """Strip YAML frontmatter (--- ... ---) from a markdown prompt file."""
+    """Strip YAML frontmatter (--- … ---) from a markdown prompt file."""
     if text.startswith("---"):
         end = text.find("---", 3)
         if end != -1:
@@ -120,7 +121,7 @@ def load_prompt(filename):
     if not os.path.exists(filepath):
         print(f"ERROR: Prompt file not found: {filepath}")
         sys.exit(1)
-    raw = open(filepath, encoding="utf-8").read()
+    raw          = open(filepath, encoding="utf-8").read()
     content_hash = hashlib.sha256(raw.encode()).hexdigest()[:16]
     prompt_text  = _strip_frontmatter(raw)
     return prompt_text, content_hash, filepath
@@ -129,7 +130,7 @@ def load_prompt(filename):
 SPHERE_SYSTEM_FILE = "sphere__system__v1.md"
 SPHERE_USER_FILE   = "sphere__user__v1.md"
 
-# ── STAT HELPERS ───────────────────────────────────────────────────────────────
+# ── STAT HELPERS ──────────────────────────────────────────────────────────────────────
 
 def bimodality_coefficient(data):
     """
@@ -141,10 +142,9 @@ def bimodality_coefficient(data):
     if n < 5:
         return None
     skew = scipy_stats.skew(data)
-    kurt = scipy_stats.kurtosis(data)   # excess kurtosis
-    bc = (skew**2 + 1) / (kurt + 3 * (n - 1)**2 / ((n - 2) * (n - 3)))
+    kurt = scipy_stats.kurtosis(data)  # excess kurtosis
+    bc   = (skew**2 + 1) / (kurt + 3 * (n - 1)**2 / ((n - 2) * (n - 3)))
     return round(float(bc), 3)
-
 
 def score_dist(scores):
     """11-element list: count of scores at each integer 0–10."""
@@ -155,7 +155,6 @@ def score_dist(scores):
             counts[idx] += 1
     return counts
 
-
 def pct_positive(dist):
     """Percentage of responses scoring 7 or above."""
     total = sum(dist)
@@ -163,17 +162,12 @@ def pct_positive(dist):
         return 0
     return round(sum(dist[7:]) / total * 100)
 
-
 def confidence_level(n):
     """Maps to sphere.html CONF_PCT thresholds."""
-    if n >= N_STRONG:
-        return "strong"
-    if n >= N_MEANINGFUL:
-        return "meaningful"
-    if n >= N_DEVELOPING:
-        return "developing"
+    if n >= N_STRONG:     return "strong"
+    if n >= N_MEANINGFUL: return "meaningful"
+    if n >= N_DEVELOPING: return "developing"
     return "early"
-
 
 def compute_protocol_stats(scores):
     """
@@ -181,21 +175,20 @@ def compute_protocol_stats(scores):
     Uses numpy/scipy for accuracy (Sarle's BC).
     """
     valid = [s for s in scores if s is not None]
-    n = len(valid)
+    n     = len(valid)
     if n == 0:
         return {
-            "n": 0, "mean": 0.0, "std": 0.0,
-            "dist": [0]*11, "pct_positive": 0,
-            "confidence": "early", "bimodality_coefficient": None,
-            "bimodal_flag": False,
+            "n": 0, "mean": 0.0, "std": 0.0, "dist": [0]*11,
+            "pct_positive": 0, "confidence": "early",
+            "bimodality_coefficient": None, "bimodal_flag": False,
         }
 
-    arr = np.array(valid, dtype=float)
-    dist = score_dist(valid)
-    mean = round(float(np.mean(arr)), 2)
-    std  = round(float(np.std(arr, ddof=1)) if n > 1 else 0.0, 2)
-    pct  = pct_positive(dist)
-    bc   = bimodality_coefficient(arr)
+    arr   = np.array(valid, dtype=float)
+    dist  = score_dist(valid)
+    mean  = round(float(np.mean(arr)), 2)
+    std   = round(float(np.std(arr, ddof=1)) if n > 1 else 0.0, 2)
+    pct   = pct_positive(dist)
+    bc    = bimodality_coefficient(arr)
     bimod = bc is not None and bc > BIMODALITY_BC_THRESHOLD
 
     return {
@@ -209,19 +202,16 @@ def compute_protocol_stats(scores):
         "bimodal_flag":          bimod,
     }
 
-
 def compute_series_summary(protocols_out, short_by_protocol):
     """
     Roll up per-series aggregates from raw score lists (accurate mean/std).
-    protocols_out: dict of code → protocol output dict (has 'series' key)
-    short_by_protocol: dict of code → list of raw DB rows (with outcome_score)
     """
-    series_scores = {}
+    series_scores         = {}
     series_protocol_count = {}
 
     for code, p in protocols_out.items():
         series = p["series"]
-        rows = short_by_protocol.get(code, [])
+        rows   = short_by_protocol.get(code, [])
         scores = [r["outcome_score"] for r in rows if r["outcome_score"] is not None]
         series_scores.setdefault(series, []).extend(scores)
         series_protocol_count[series] = series_protocol_count.get(series, 0) + 1
@@ -237,16 +227,13 @@ def compute_series_summary(protocols_out, short_by_protocol):
         }
     return result
 
-
-
 def build_full_survey_context(full_rows, protocols_out):
     """
     Summarise full survey (1-minute) responses per protocol into a compact
-    text block for the Sphere prompt. Returns a string.
+    text block for the Sphere prompt.
     """
     from collections import Counter
 
-    # Index by protocol_code
     full_by_protocol = {}
     for r in full_rows:
         full_by_protocol.setdefault(r["protocol_code"], []).append(r)
@@ -265,9 +252,8 @@ def build_full_survey_context(full_rows, protocols_out):
             counts = Counter(vals)
             return " / ".join(f"{v}({c})" for v, c in counts.most_common(top_n))
 
-        # Listener type breakdown
         listener_counts = Counter(r.get("listener_type") for r in rows if r.get("listener_type"))
-        listener_str = " | ".join(f"{k}:{v}" for k, v in listener_counts.most_common()) or "n/a"
+        listener_str    = " | ".join(f"{k}:{v}" for k, v in listener_counts.most_common()) or "n/a"
 
         lines.append(
             f"{code} | n={n} | "
@@ -281,29 +267,93 @@ def build_full_survey_context(full_rows, protocols_out):
 
     return "\n".join(lines) if lines else "No 1-minute survey responses available yet."
 
-# ── SPHERE PROMPT BUILDER ──────────────────────────────────────────────────────
 
-def build_sphere_prompt(protocols_out, series_summary, total_n, total_n_full=0, full_rows=None):
+# ── YOUTUBE CONTEXT ───────────────────────────────────────────────────────────────────
+
+def fetch_youtube_context(supabase, protocols_out) -> dict:
+    """
+    Fetch the most recent youtube_daily row per protocol_code.
+    Returns {protocol_code: {views, avg_view_duration, avg_view_percentage}}.
+    Only includes protocols that have at least one youtube_daily row.
+    """
+    try:
+        rows = supabase.table("youtube_daily").select(
+            "protocol_code, report_date, views, avg_view_duration, avg_view_percentage"
+        ).execute().data
+
+        if not rows:
+            return {}
+
+        # Keep only the most recent row per protocol_code
+        latest = {}
+        for r in rows:
+            code = r["protocol_code"]
+            if code not in latest or r["report_date"] > latest[code]["report_date"]:
+                latest[code] = r
+
+        return {
+            code: {
+                "views":               row.get("views"),
+                "avg_view_duration":   row.get("avg_view_duration"),
+                "avg_view_percentage": row.get("avg_view_percentage"),
+                "report_date":         row.get("report_date"),
+            }
+            for code, row in latest.items()
+        }
+    except Exception as e:
+        print(f"  ⚠ YouTube context fetch failed: {e}")
+        return {}
+
+
+def build_youtube_context_block(youtube_data: dict, protocols_out: dict) -> str:
+    """
+    Build the {{INJECT:YOUTUBE_CONTEXT}} block for the Sphere prompt.
+    """
+    if not youtube_data:
+        return "No YouTube data available yet."
+
+    lines = []
+    for code in sorted(protocols_out.keys()):
+        yt = youtube_data.get(code)
+        if not yt:
+            continue
+
+        views    = yt["views"] if yt["views"] is not None else "NULL"
+        duration = f"{yt['avg_view_duration']:.0f}s" if yt["avg_view_duration"] is not None else "NULL"
+        pct      = f"{yt['avg_view_percentage']:.1f}%" if yt["avg_view_percentage"] is not None else "NULL"
+        date     = yt.get("report_date", "")
+
+        lines.append(
+            f"{code} | views={views} | avg_view_duration={duration} | "
+            f"avg_view_percentage={pct} | as_of={date}"
+        )
+
+    return "\n".join(lines) if lines else "No YouTube data available yet."
+
+
+# ── SPHERE PROMPT BUILDER ─────────────────────────────────────────────────────────────
+
+def build_sphere_prompt(protocols_out, series_summary, total_n,
+                        total_n_full=0, full_rows=None, youtube_data=None):
     """
     Build the user-turn prompt by loading sphere__user__v1.md and rendering
     the {{INJECT:*}} placeholders with live data.
-    Returns the rendered prompt string.
     """
     template, _, _ = load_prompt(SPHERE_USER_FILE)
 
-    # ── Series summary block ───────────────────────────────────────────────────
+    # ── Series summary block ───────────────────────────────────────────────
     series_lines = []
     for series, s in series_summary.items():
         series_lines.append(
             f"{series}: n={s['n']}, mean={s['mean']}, std={s['std']}, protocols={s['protocols']}"
         )
 
-    # ── Protocol data block ────────────────────────────────────────────────────
+    # ── Protocol data block ────────────────────────────────────────────────
     proto_lines = []
     for code, p in sorted(protocols_out.items()):
-        meta = PROTOCOL_META.get(code, {})
-        bc   = p.get("bimodality_coefficient")
-        flags = []
+        meta    = PROTOCOL_META.get(code, {})
+        bc      = p.get("bimodality_coefficient")
+        flags   = []
         if p["bimodal_flag"]:
             flags.append(f"BIMODAL (BC={bc})")
         if p["confidence"] == "early":
@@ -325,42 +375,47 @@ def build_sphere_prompt(protocols_out, series_summary, total_n, total_n_full=0, 
         if vol_str:
             proto_lines.append(f"  vol: {vol_str}")
 
-    # ── Render template ────────────────────────────────────────────────────────
-    rendered = template
-    rendered = rendered.replace("{{INJECT:TODAY}}",          datetime.date.today().isoformat())
-    rendered = rendered.replace("{{INJECT:TOTAL_N_SHORT}}",  str(total_n))
-    rendered = rendered.replace("{{INJECT:TOTAL_N_FULL}}",   str(total_n_full))
-    rendered = rendered.replace("{{INJECT:SERIES_SUMMARY}}", "\n".join(series_lines))
-    rendered = rendered.replace("{{INJECT:PROTOCOL_DATA}}",  "\n".join(proto_lines))
+    # ── YouTube context block ──────────────────────────────────────────────
+    youtube_block = build_youtube_context_block(youtube_data or {}, protocols_out)
 
-    # Full survey qualitative context
+    # ── Render template ────────────────────────────────────────────────────
+    rendered = template
+    rendered = rendered.replace("{{INJECT:TODAY}}",              datetime.date.today().isoformat())
+    rendered = rendered.replace("{{INJECT:TOTAL_N_SHORT}}",      str(total_n))
+    rendered = rendered.replace("{{INJECT:TOTAL_N_FULL}}",       str(total_n_full))
+    rendered = rendered.replace("{{INJECT:SERIES_SUMMARY}}",     "\n".join(series_lines))
+    rendered = rendered.replace("{{INJECT:PROTOCOL_DATA}}",      "\n".join(proto_lines))
+    rendered = rendered.replace("{{INJECT:YOUTUBE_CONTEXT}}",    youtube_block)
+
     full_context = build_full_survey_context(full_rows or [], protocols_out)
     rendered = rendered.replace("{{INJECT:FULL_SURVEY_CONTEXT}}", full_context)
 
     return rendered
 
 
-# ── SPHERE API CALL ────────────────────────────────────────────────────────────
+# ── SPHERE API CALL ───────────────────────────────────────────────────────────────────
 
 # Anthropic pricing for claude-sonnet-4-6 ($/million tokens)
 SONNET_INPUT_COST_PER_MTOK  = 3.00
 SONNET_OUTPUT_COST_PER_MTOK = 15.00
 
-def call_sphere(protocols_out, series_summary, total_n, total_n_full=0, full_rows=None):
-    """Call Claude API to generate Sphere commentary.
-    Returns (commentary_dict, usage_dict, prompt_versions_info) where:
-      usage_dict has input_tokens, output_tokens, cost_usd
-      prompt_versions_info is a list of dicts for writeback_prompt_versions()
+def call_sphere(protocols_out, series_summary, total_n,
+                total_n_full=0, full_rows=None, youtube_data=None):
+    """
+    Call Claude API to generate Sphere commentary.
+    Returns (commentary_dict, usage_dict, prompt_versions_info).
     """
     api_key = os.environ.get("ANTHROPIC_API_KEY")
     if not api_key:
         print("ERROR: ANTHROPIC_API_KEY not set.")
         sys.exit(1)
 
-    # Load prompts from disk
     system_text, system_hash, system_path = load_prompt(SPHERE_SYSTEM_FILE)
-    prompt                                = build_sphere_prompt(protocols_out, series_summary, total_n, total_n_full, full_rows=full_rows)
-    _, user_hash, user_path               = load_prompt(SPHERE_USER_FILE)
+    prompt                                = build_sphere_prompt(
+        protocols_out, series_summary, total_n, total_n_full,
+        full_rows=full_rows, youtube_data=youtube_data
+    )
+    _, user_hash, user_path = load_prompt(SPHERE_USER_FILE)
 
     prompt_versions_info = [
         {"filename": SPHERE_SYSTEM_FILE, "content_hash": system_hash},
@@ -378,7 +433,6 @@ def call_sphere(protocols_out, series_summary, total_n, total_n_full=0, full_row
     )
     raw = message.content[0].text.strip()
 
-    # Capture token usage for budget tracking
     usage = {
         "input_tokens":  message.usage.input_tokens,
         "output_tokens": message.usage.output_tokens,
@@ -391,7 +445,6 @@ def call_sphere(protocols_out, series_summary, total_n, total_n_full=0, full_row
     print(f"  → Tokens: {usage['input_tokens']} in / {usage['output_tokens']} out  "
           f"(~${usage['cost_usd']:.4f})")
 
-    # Strip markdown fences if model added them anyway
     if raw.startswith("```"):
         raw = "\n".join(raw.split("\n")[1:])
     if raw.endswith("```"):
@@ -407,8 +460,7 @@ def call_sphere(protocols_out, series_summary, total_n, total_n_full=0, full_row
     return commentary, usage, prompt_versions_info
 
 
-
-# ── SUPABASE WRITE-BACK ────────────────────────────────────────────────────────
+# ── SUPABASE WRITE-BACK ───────────────────────────────────────────────────────────────
 
 def mode_value(values):
     """Return the most common non-null value in a list, or None."""
@@ -417,80 +469,65 @@ def mode_value(values):
         return None
     return max(set(clean), key=clean.count)
 
-
 def writeback_metrics(supabase, protocols_out, short_by_protocol, full_rows, run_date):
-    """
-    Upsert computed stats to:
-      - protocol_metrics          (per protocol_code)
-      - protocol_volume_metrics   (per pvid)
-      - volume_metrics            (per volume_code, rolled up)
-    """
     now = datetime.datetime.now(timezone.utc).isoformat()
 
-    # Index full survey rows by protocol_code for modal calculations
     full_by_protocol = {}
     for r in full_rows:
         full_by_protocol.setdefault(r["protocol_code"], []).append(r)
 
-    # ── protocol_metrics ──────────────────────────────────────────────────────
     print("  → Upserting protocol_metrics...")
     proto_rows = []
     for code, p in protocols_out.items():
-        full = full_by_protocol.get(code, [])
-        short_count = p["n"]
-        full_count  = len(full)
+        full       = full_by_protocol.get(code, [])
         proto_rows.append({
-            "protocol_code":       code,
-            "short_survey_count":  short_count,
-            "full_survey_count":   full_count,
-            "outcome_score_mean":  float(p["mean"]) if p["mean"] else None,
-            "outcome_score_stddev": float(p["std"]) if p["std"] else None,
-            "change_rating_mode":  mode_value([r.get("change_rating") for r in full]),
-            "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
-            "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
-            "confidence_level":    p["confidence"],
-            "last_updated":        now,
+            "protocol_code":        code,
+            "short_survey_count":   p["n"],
+            "full_survey_count":    len(full),
+            "outcome_score_mean":   float(p["mean"]) if p["mean"] else None,
+            "outcome_score_stddev": float(p["std"])  if p["std"]  else None,
+            "change_rating_mode":   mode_value([r.get("change_rating") for r in full]),
+            "music_opinion_mode":   mode_value([r.get("music_opinion") for r in full]),
+            "rhythm_opinion_mode":  mode_value([r.get("rhythm_opinion") for r in full]),
+            "confidence_level":     p["confidence"],
+            "last_updated":         now,
         })
     supabase.table("protocol_metrics").upsert(proto_rows, on_conflict="protocol_code").execute()
     print(f"    ✓ {len(proto_rows)} protocol_metrics rows upserted")
 
-    # ── protocol_volume_metrics ───────────────────────────────────────────────
     print("  → Upserting protocol_volume_metrics...")
     pv_rows = []
     for code, p in protocols_out.items():
         for vol_code, vol_n in p.get("vol_counts", {}).items():
             if vol_code == "unknown":
                 continue
-            pvid = f"{code}-{vol_code}"
-            # Get scores for this specific pvid
+            pvid       = f"{code}-{vol_code}"
             vol_scores = [
                 r["outcome_score"]
                 for r in short_by_protocol.get(code, [])
                 if r.get("volume_code") == vol_code and r["outcome_score"] is not None
             ]
-            s = compute_protocol_stats(vol_scores)
+            s    = compute_protocol_stats(vol_scores)
             full = [r for r in full_by_protocol.get(code, []) if r.get("volume_code") == vol_code]
             pv_rows.append({
-                "pvid":                pvid,
-                "protocol_code":       code,
-                "volume_code":         vol_code,
-                "short_survey_count":  s["n"],
-                "full_survey_count":   len(full),
-                "outcome_score_mean":  float(s["mean"]) if s["mean"] else None,
-                "outcome_score_stddev": float(s["std"]) if s["std"] else None,
-                "change_rating_mode":  mode_value([r.get("change_rating") for r in full]),
-                "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
-                "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
-                "confidence_level":    s["confidence"],
-                "last_updated":        now,
+                "pvid":                 pvid,
+                "protocol_code":        code,
+                "volume_code":          vol_code,
+                "short_survey_count":   s["n"],
+                "full_survey_count":    len(full),
+                "outcome_score_mean":   float(s["mean"]) if s["mean"] else None,
+                "outcome_score_stddev": float(s["std"])  if s["std"]  else None,
+                "change_rating_mode":   mode_value([r.get("change_rating") for r in full]),
+                "music_opinion_mode":   mode_value([r.get("music_opinion") for r in full]),
+                "rhythm_opinion_mode":  mode_value([r.get("rhythm_opinion") for r in full]),
+                "confidence_level":     s["confidence"],
+                "last_updated":         now,
             })
     if pv_rows:
         supabase.table("protocol_volume_metrics").upsert(pv_rows, on_conflict="pvid").execute()
         print(f"    ✓ {len(pv_rows)} protocol_volume_metrics rows upserted")
 
-    # ── volume_metrics ────────────────────────────────────────────────────────
     print("  → Upserting volume_metrics...")
-    # Roll up all scores by volume_code across all protocols
     vol_scores_map = {}
     vol_full_map   = {}
     for code, p in protocols_out.items():
@@ -512,36 +549,27 @@ def writeback_metrics(supabase, protocols_out, short_by_protocol, full_rows, run
         s    = compute_protocol_stats(scores)
         full = vol_full_map.get(vol_code, [])
         vol_rows.append({
-            "volume_code":         vol_code,
-            "short_survey_count":  s["n"],
-            "full_survey_count":   len(full),
-            "outcome_score_mean":  float(s["mean"]) if s["mean"] else None,
-            "outcome_score_stddev": float(s["std"]) if s["std"] else None,
-            "music_opinion_mode":  mode_value([r.get("music_opinion") for r in full]),
-            "rhythm_opinion_mode": mode_value([r.get("rhythm_opinion") for r in full]),
-            "confidence_level":    s["confidence"],
-            "last_updated":        now,
+            "volume_code":          vol_code,
+            "short_survey_count":   s["n"],
+            "full_survey_count":    len(full),
+            "outcome_score_mean":   float(s["mean"]) if s["mean"] else None,
+            "outcome_score_stddev": float(s["std"])  if s["std"]  else None,
+            "music_opinion_mode":   mode_value([r.get("music_opinion") for r in full]),
+            "rhythm_opinion_mode":  mode_value([r.get("rhythm_opinion") for r in full]),
+            "confidence_level":     s["confidence"],
+            "last_updated":         now,
         })
     if vol_rows:
         supabase.table("volume_metrics").upsert(vol_rows, on_conflict="volume_code").execute()
         print(f"    ✓ {len(vol_rows)} volume_metrics rows upserted")
 
-
-
 def generate_embeddings(rows):
-    """
-    Generate OpenAI text-embedding-3-small embeddings for a list of llm_outputs row dicts.
-    Populates the 'embedding' field in-place. Batches all texts in one API call.
-    Skips gracefully if OPENAI_VECTOR_KEY is not set.
-    Returns the number of embeddings generated.
-    """
     api_key = os.environ.get("OPENAI_VECTOR_KEY")
     if not api_key:
         print("  ⚠ OPENAI_VECTOR_KEY not set — skipping embeddings")
         return 0
 
-    # Build text list — use output_text for embedding (the full commentary)
-    texts = []
+    texts   = []
     indices = []
     for i, row in enumerate(rows):
         text = row.get("output_text", "")
@@ -569,16 +597,11 @@ def generate_embeddings(rows):
           f"({response.usage.total_tokens} tokens, ~${cost_usd:.6f})")
     return len(texts)
 
-def writeback_llm_outputs(supabase, protocols_out, sphere_commentary, run_date, model_used, prompt_version="v1"):
-    """
-    Insert one llm_outputs row per protocol (by_protocol commentary)
-    plus one row each for the four global commentary keys.
-    Uses INSERT not upsert — every run creates a new historical record.
-    """
+def writeback_llm_outputs(supabase, protocols_out, sphere_commentary,
+                          run_date, model_used, prompt_version="v1"):
     now  = datetime.datetime.now(timezone.utc).isoformat()
     rows = []
 
-    # Global commentary — four rows with analysis_scope = 'global', pvid/protocol_code NULL
     for scope_key in ("overview", "cross_series", "anomalies", "development_signals"):
         text = sphere_commentary.get(scope_key, "")
         if not text:
@@ -601,7 +624,6 @@ def writeback_llm_outputs(supabase, protocols_out, sphere_commentary, run_date, 
             "created_at":         now,
         })
 
-    # Per-protocol commentary — one row per protocol
     by_protocol       = sphere_commentary.get("by_protocol", {})
     by_protocol_plain = sphere_commentary.get("by_protocol_plain", {})
 
@@ -610,14 +632,9 @@ def writeback_llm_outputs(supabase, protocols_out, sphere_commentary, run_date, 
         plain_text = by_protocol_plain.get(code, "")
         if not tech_text and not plain_text:
             continue
-        # Combine both registers into output_text as JSON string for storage
         combined = json.dumps({"technical": tech_text, "plain": plain_text}, ensure_ascii=False)
-        # Use VOL001 as default volume — first vol_count key that isn't 'unknown'
-        vol_code = next(
-            (v for v in p.get("vol_counts", {}) if v != "unknown"),
-            "VOL001"
-        )
-        pvid = f"{code}-{vol_code}"
+        vol_code  = next((v for v in p.get("vol_counts", {}) if v != "unknown"), "VOL001")
+        pvid      = f"{code}-{vol_code}"
         rows.append({
             "id":                 f"{run_date}-{pvid}",
             "pvid":               pvid,
@@ -630,43 +647,30 @@ def writeback_llm_outputs(supabase, protocols_out, sphere_commentary, run_date, 
             "output_text":        combined,
             "outcome_score_mean": float(p["mean"]) if p["mean"] else None,
             "confidence_level":   p["confidence"],
-            "sphere_signal":      tech_text[:500] if tech_text else None,  # first 500 chars as signal
+            "sphere_signal":      tech_text[:500] if tech_text else None,
             "anomaly_flagged":    p.get("bimodal_flag", False),
-            "embedding":          None,   # future: generate embeddings here
+            "embedding":          None,
             "created_at":         now,
         })
 
     if rows:
-        # Generate embeddings for all rows before upserting
         generate_embeddings(rows)
-
-        # Upsert on id — safe to re-run same day without duplicating
-        # Supabase expects embeddings as plain Python lists (JSON array)
         supabase.table("llm_outputs").upsert(rows, on_conflict="id").execute()
-        print(f"    ✓ {len(rows)} llm_outputs rows written ({sum(1 for r in rows if r.get('embedding')) } with embeddings)")
-
-
+        print(f"    ✓ {len(rows)} llm_outputs rows written "
+              f"({sum(1 for r in rows if r.get('embedding'))} with embeddings)")
 
 def writeback_prompt_versions(supabase, prompt_versions_info, run_date):
-    """
-    Upsert prompt version records into prompt_versions table.
-    Schema: id, version, task_type, analysis_scope, prompt_text, is_active, created_at.
-    Keyed by id = "{task_type}__{analysis_scope}__{version}" (matches filename convention).
-    Upsert is safe to re-run — same prompt content produces the same id.
-    """
-    now = datetime.datetime.now(timezone.utc).isoformat()
+    now  = datetime.datetime.now(timezone.utc).isoformat()
     rows = []
     for info in prompt_versions_info:
         filename = info["filename"]
-        # Parse from filename: sphere__system__v1.md → task_type=sphere, scope=system, version=v1
-        parts = filename.replace(".md", "").split("__")
+        parts    = filename.replace(".md", "").split("__")
         task_type      = parts[0] if len(parts) > 0 else "sphere"
         analysis_scope = parts[1] if len(parts) > 1 else "system"
         version        = parts[2] if len(parts) > 2 else "v1"
-        # Load full prompt content (with frontmatter) for storage
-        filepath = os.path.join(PROMPTS_DIR, filename)
-        full_content = open(filepath, encoding="utf-8").read()
-        record_id = f"{task_type}__{analysis_scope}__{version}"
+        filepath       = os.path.join(PROMPTS_DIR, filename)
+        full_content   = open(filepath, encoding="utf-8").read()
+        record_id      = f"{task_type}__{analysis_scope}__{version}"
         rows.append({
             "id":             record_id,
             "version":        version,
@@ -679,11 +683,10 @@ def writeback_prompt_versions(supabase, prompt_versions_info, run_date):
     if rows:
         supabase.table("prompt_versions").upsert(rows, on_conflict="id").execute()
         print(f"    ✓ prompt_versions logged ({len(rows)} prompts: "
-              + ", ".join(r['id'] for r in rows) + ")")
+              + ",".join(r['id'] for r in rows) + ")")
 
-def writeback_pipeline_run(supabase, run_id, run_date, run_type, tasks, status,
-                           duration_seconds, error_message=None):
-    """Log this pipeline execution to pipeline_runs."""
+def writeback_pipeline_run(supabase, run_id, run_date, run_type,
+                           tasks, status, duration_seconds, error_message=None):
     supabase.table("pipeline_runs").upsert({
         "id":               run_id,
         "run_date":         run_date,
@@ -694,66 +697,60 @@ def writeback_pipeline_run(supabase, run_id, run_date, run_type, tasks, status,
         "duration_seconds": round(duration_seconds, 2),
         "created_at":       datetime.datetime.now(timezone.utc).isoformat(),
     }, on_conflict="id").execute()
-    print(f"    ✓ pipeline_runs logged  (status={status}, {duration_seconds:.1f}s)")
-
+    print(f"    ✓ pipeline_runs logged (status={status}, {duration_seconds:.1f}s)")
 
 def writeback_budget(supabase, run_date, input_tokens, output_tokens, cost_usd):
-    """Append a budget_tracking row for this run."""
     import calendar
-    today = datetime.date.fromisoformat(run_date)
-    # Estimate monthly spend: sum existing rows this month + this run
+    today       = datetime.date.fromisoformat(run_date)
     month_start = today.replace(day=1).isoformat()
-    existing = supabase.table("budget_tracking") \
+    existing    = supabase.table("budget_tracking") \
         .select("llm_cost_usd") \
         .gte("record_date", month_start) \
         .execute().data
     monthly_so_far = sum(r["llm_cost_usd"] or 0 for r in existing)
     monthly_total  = round(monthly_so_far + cost_usd, 6)
 
-    # Simple daily forecast: extrapolate from days elapsed
-    days_elapsed = today.day
+    days_elapsed  = today.day
     days_in_month = calendar.monthrange(today.year, today.month)[1]
-    forecast = round(monthly_total / days_elapsed * days_in_month, 4) if days_elapsed else monthly_total
+    forecast      = round(monthly_total / days_elapsed * days_in_month, 4) if days_elapsed else monthly_total
 
     budget_state = "healthy"
-    if forecast > 50 * 0.9:
-        budget_state = "caution"
-    if forecast > 50:
-        budget_state = "over_budget"
+    if forecast > 50 * 0.9: budget_state = "caution"
+    if forecast > 50:        budget_state = "over_budget"
 
-    record_id = f"{run_date}-sphere"
     supabase.table("budget_tracking").upsert({
-        "id":                   record_id,
-        "record_date":          run_date,
-        "llm_cost_usd":         round(cost_usd, 6),
-        "tokens_used":          input_tokens + output_tokens,
-        "budget_state":         budget_state,
+        "id":                    f"{run_date}-sphere",
+        "record_date":           run_date,
+        "llm_cost_usd":          round(cost_usd, 6),
+        "tokens_used":           input_tokens + output_tokens,
+        "budget_state":          budget_state,
         "monthly_spend_to_date": monthly_total,
-        "monthly_forecast_usd": forecast,
-        "created_at":           datetime.datetime.now(timezone.utc).isoformat(),
+        "monthly_forecast_usd":  forecast,
+        "created_at":            datetime.datetime.now(timezone.utc).isoformat(),
     }, on_conflict="id").execute()
     print(f"    ✓ budget_tracking logged  (${cost_usd:.4f} this run, "
           f"${monthly_total:.4f} MTD, forecast ${forecast:.2f}, state={budget_state})")
 
-# ── MAIN PIPELINE ──────────────────────────────────────────────────────────────
+
+# ── MAIN PIPELINE ─────────────────────────────────────────────────────────────────────
 
 def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=None):
     import time as _time
-    run_start     = _time.time()
-    print("\n── THE DRUM PROTOCOLS — Sphere Pipeline (unified) ────────────")
-    today         = datetime.date.today().isoformat()
-    generated_iso = datetime.datetime.now(timezone.utc).isoformat()
-    run_id        = f"{today}-sphere-{'real' if real_only else 'all'}"
-    mode_label    = "REAL DATA ONLY" if real_only else "ALL DATA (test + real)"
-    usage         = {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
-    run_status    = "success"
-    run_error     = None
+    run_start      = _time.time()
+    print("── THE DRUM PROTOCOLS — Sphere Pipeline (unified) ────────────")
+    today          = datetime.date.today().isoformat()
+    generated_iso  = datetime.datetime.now(timezone.utc).isoformat()
+    run_id         = f"{today}-sphere-{'real' if real_only else 'all'}"
+    mode_label     = "REAL DATA ONLY" if real_only else "ALL DATA (test + real)"
+    usage          = {"input_tokens": 0, "output_tokens": 0, "cost_usd": 0.0}
+    run_status     = "success"
+    run_error      = None
 
     print(f"  Mode    : {mode_label}")
     print(f"  Sphere  : {'SKIP (--no-sphere)' if skip_sphere else 'ENABLED'}")
     print()
 
-    # ── 1. Connect to Supabase ─────────────────────────────────────────────────
+    # ── 1. Connect to Supabase ─────────────────────────────────────────────
     load_dotenv()
     supa_url = os.environ.get("SUPABASE_URL")
     supa_key = os.environ.get("SUPABASE_SERVICE_KEY")
@@ -764,29 +761,27 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
 
     supabase = create_client(supa_url, supa_key)
 
-    # ── 2. Load registry ───────────────────────────────────────────────────────
-    print("[1/4] Loading registry from Supabase...")
-    protocols_raw = supabase.table("protocol_registry").select("*").execute().data
-    volumes_raw   = supabase.table("volumes").select("*").execute().data
+    # ── 2. Load registry ───────────────────────────────────────────────────
+    print("[1/5] Loading registry from Supabase...")
+    protocols_raw     = supabase.table("protocol_registry").select("*").execute().data
+    volumes_raw       = supabase.table("volumes").select("*").execute().data
     protocols_by_code = {p["protocol_code"]: p for p in protocols_raw}
     print(f"  {len(protocols_raw)} protocols, {len(volumes_raw)} volumes")
 
-    # ── 3. Load survey responses ───────────────────────────────────────────────
-    print("\n[2/4] Loading survey responses from Supabase...")
+    # ── 3. Load survey responses ───────────────────────────────────────────
+    print("\n[2/5] Loading survey responses from Supabase...")
 
     short_q = supabase.table("survey_responses_short").select(
         "protocol_code, volume_code, outcome_score, src, data_type"
     )
     if real_only:
         short_q = short_q.eq("data_type", "real")
-
     short_rows = short_q.execute().data
 
     test_short = sum(1 for r in short_rows if r.get("data_type") == "test")
     real_short = sum(1 for r in short_rows if r.get("data_type") == "real")
     print(f"  short survey : {len(short_rows)} rows  (real={real_short}, test={test_short})")
 
-    # Fetch full survey rows — all qualitative columns for rich Sphere context
     full_q = supabase.table("survey_responses_full").select(
         "protocol_code, volume_code, data_type, "
         "state_before, state_after, change_rating, settle_time, activity, "
@@ -800,13 +795,18 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
 
     contains_test = any(r.get("data_type") == "test" for r in short_rows)
 
-    # Index rows by protocol_code
     short_by_protocol = {}
     for r in short_rows:
         short_by_protocol.setdefault(r["protocol_code"], []).append(r)
 
-    # ── 4. Compute per-protocol stats ──────────────────────────────────────────
-    print("\n[3/4] Computing protocol statistics...")
+    # ── 4. Load YouTube context ────────────────────────────────────────────
+    print("\n[3/5] Loading YouTube data from Supabase...")
+    youtube_data = fetch_youtube_context(supabase, {})
+    yt_count     = sum(1 for v in youtube_data.values() if v.get("views") is not None)
+    print(f"  {len(youtube_data)} protocols with YouTube data ({yt_count} with view counts)")
+
+    # ── 5. Compute per-protocol stats ──────────────────────────────────────
+    print("\n[4/5] Computing protocol statistics...")
 
     protocols_out = {}
     for code, p in protocols_by_code.items():
@@ -814,7 +814,6 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         scores = [r["outcome_score"] for r in rows if r["outcome_score"] is not None]
         s      = compute_protocol_stats(scores)
 
-        # Source breakdown (for Sphere context — not in data.json output)
         src_counts = {}
         vol_counts = {}
         for r in rows:
@@ -823,17 +822,15 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             src_counts[src] = src_counts.get(src, 0) + 1
             vol_counts[vol] = vol_counts.get(vol, 0) + 1
 
-        # Use registry name/series/entry; fall back to PROTOCOL_META if missing
-        meta = PROTOCOL_META.get(code, {})
-        name   = p.get("full_name") or meta.get("name", code)
-        series = (p.get("series") or meta.get("series", "UNKNOWN")).upper()
-        entry  = p.get("entry_point") or meta.get("entry", "")
+        meta   = PROTOCOL_META.get(code, {})
+        name   = p.get("full_name")   or meta.get("name",   code)
+        series = (p.get("series")     or meta.get("series", "UNKNOWN")).upper()
+        entry  = p.get("entry_point") or meta.get("entry",  "")
 
         bimod_flag = " [BIMODAL]" if s["bimodal_flag"] else ""
         print(f"  {code:<12} n={s['n']:<4} mean={s['mean']:.1f}  {s['confidence']}{bimod_flag}")
 
         protocols_out[code] = {
-            # data.json fields
             "name":                   name,
             "series":                 series,
             "entry":                  entry,
@@ -845,22 +842,20 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             "confidence":             s["confidence"],
             "bimodal_flag":           s["bimodal_flag"],
             "bimodality_coefficient": s["bimodality_coefficient"],
-            "sphere":                 "",   # filled after Sphere call
-            "sphere_plain":           "",   # filled after Sphere call
-            # extra context passed to Sphere prompt (not written to data.json)
+            "sphere":                 "",
+            "sphere_plain":           "",
             "src_counts":             src_counts,
             "vol_counts":             vol_counts,
         }
 
-    # ── 5. Series summary ──────────────────────────────────────────────────────
     series_summary = compute_series_summary(protocols_out, short_by_protocol)
 
-    # ── 6. Sphere commentary ───────────────────────────────────────────────────
+    # ── 6. Sphere commentary ───────────────────────────────────────────────
     print()
     total_n = sum(p["n"] for p in protocols_out.values())
 
     if skip_sphere:
-        print("[4/4] Skipping Sphere API call (--no-sphere)")
+        print("[5/5] Skipping Sphere API call (--no-sphere)")
         sphere_commentary = {
             "overview":            "[Sphere commentary not generated — run without --no-sphere]",
             "cross_series":        "",
@@ -870,13 +865,12 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             "by_protocol_plain":   {code: "" for code in protocols_out},
         }
     else:
-        print("[4/4] Generating Sphere commentary...")
+        print("[5/5] Generating Sphere commentary...")
         sphere_commentary, usage, prompt_versions_info = call_sphere(
             protocols_out, series_summary, total_n, total_n_full=len(full_rows),
-            full_rows=full_rows
+            full_rows=full_rows, youtube_data=youtube_data
         )
 
-        # Merge by_protocol and by_protocol_plain back into protocols_out
         by_protocol       = sphere_commentary.get("by_protocol", {})
         by_protocol_plain = sphere_commentary.get("by_protocol_plain", {})
         for code in protocols_out:
@@ -885,19 +879,19 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
 
         print("  Sphere commentary generated.")
 
-    # ── 7. Assemble data.json ──────────────────────────────────────────────────
+    # ── 7. Assemble data.json ──────────────────────────────────────────────
     protocols_with_data = sum(1 for p in protocols_out.values() if p["n"] > 0)
 
-    # Strip internal-only fields before writing
     def public_protocol(p):
-        return {k: v for k, v in p.items() if k not in ("src_counts", "vol_counts", "bimodality_coefficient")}
+        return {k: v for k, v in p.items()
+                if k not in ("src_counts", "vol_counts", "bimodality_coefficient")}
 
     data_json = {
         "_meta": {
-            "generated_iso":    generated_iso,
-            "mode":             "real_only" if real_only else "all",
+            "generated_iso":     generated_iso,
+            "mode":              "real_only" if real_only else "all",
             "contains_test_data": contains_test,
-            "total_responses":  total_n,
+            "total_responses":   total_n,
         },
         "generated":           today,
         "analysis_date":       today,
@@ -909,12 +903,12 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             "cross_series":        sphere_commentary.get("cross_series", ""),
             "anomalies":           sphere_commentary.get("anomalies", ""),
             "development_signals": sphere_commentary.get("development_signals", ""),
-            "by_protocol":         sphere_commentary.get("by_protocol", {code: "" for code in protocols_out}),
+            "by_protocol":         sphere_commentary.get("by_protocol",       {code: "" for code in protocols_out}),
             "by_protocol_plain":   sphere_commentary.get("by_protocol_plain", {code: "" for code in protocols_out}),
         },
     }
 
-    # ── 8. Output ──────────────────────────────────────────────────────────────
+    # ── 8. Output ──────────────────────────────────────────────────────────
     json_str = json.dumps(data_json, indent=2, ensure_ascii=False)
 
     if output_path is None:
@@ -934,7 +928,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         size_kb = os.path.getsize(output_path) / 1024
         print(f"\n  ✓ Written to {output_path}  ({size_kb:.1f} KB)")
 
-    # ── 9. Write-back to Supabase ─────────────────────────────────────────────
+    # ── 9. Write-back to Supabase ──────────────────────────────────────────
     if not dry_run:
         print("\n[5/5] Writing results back to Supabase...")
         try:
@@ -956,11 +950,11 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             run_error  = f"write-back error: {e}"
             print(f"  WARNING: write-back failed — {e}")
 
-    # ── 10. Log pipeline run ───────────────────────────────────────────────────
+    # ── 10. Log pipeline run ───────────────────────────────────────────────
     if not dry_run:
         import time as _time2
         duration = _time2.time() - run_start
-        tasks = ["load_registry", "load_surveys", "compute_stats"]
+        tasks    = ["load_registry", "load_surveys", "load_youtube", "compute_stats"]
         if not skip_sphere:
             tasks += ["sphere_llm", "writeback_llm_outputs", "writeback_budget"]
         tasks += ["writeback_metrics", "write_data_json"]
@@ -968,15 +962,13 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             writeback_pipeline_run(
                 supabase, run_id, today,
                 run_type="sphere_full" if not skip_sphere else "sphere_stats_only",
-                tasks=tasks,
-                status=run_status,
-                duration_seconds=duration,
+                tasks=tasks, status=run_status, duration_seconds=duration,
                 error_message=run_error,
             )
         except Exception as e:
             print(f"  WARNING: pipeline_runs logging failed — {e}")
 
-    # ── 11. Summary report ─────────────────────────────────────────────────────
+    # ── 11. Summary report ─────────────────────────────────────────────────
     SERIES_ORDER = {"HEALING": 0, "THRIVING": 1, "TRANSFORMING": 2}
     print()
     print("=" * 60)
@@ -993,7 +985,8 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         print(f"    {series:<14} n={s['n']:<5} mean={s['mean']:.2f}  std={s['std']:.2f}  protocols={s['protocols']}")
     print()
     print("  Protocol breakdown (n / mean / confidence):")
-    for code, p in sorted(protocols_out.items(), key=lambda x: (SERIES_ORDER.get(x[1]["series"], 9), x[0])):
+    for code, p in sorted(protocols_out.items(),
+                          key=lambda x: (SERIES_ORDER.get(x[1]["series"], 9), x[0])):
         bimod = " [BIMODAL]" if p["bimodal_flag"] else ""
         print(f"    {code:<12} n={p['n']:<4} mean={p['mean']:.1f}  {p['confidence']}{bimod}")
     print()
@@ -1005,32 +998,20 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
     return data_json
 
 
-# ── CLI ────────────────────────────────────────────────────────────────────────
+# ── CLI ────────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="THE DRUM PROTOCOLS — unified Sphere pipeline: Supabase → stats → LLM → data.json"
     )
-    parser.add_argument(
-        "--real-only",
-        action="store_true",
-        help="Filter to data_type = 'real' only (use when real listener data exists)",
-    )
-    parser.add_argument(
-        "--no-sphere",
-        action="store_true",
-        help="Skip the Claude API call — generate stats only",
-    )
-    parser.add_argument(
-        "--output",
-        default=None,
-        help="Output path for data.json (default: ./data.json)",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Print output to terminal, don't write file",
-    )
+    parser.add_argument("--real-only", action="store_true",
+                        help="Filter to data_type = 'real' only")
+    parser.add_argument("--no-sphere", action="store_true",
+                        help="Skip the Claude API call — generate stats only")
+    parser.add_argument("--output",    default=None,
+                        help="Output path for data.json (default: ./data.json)")
+    parser.add_argument("--dry-run",   action="store_true",
+                        help="Print output to terminal, don't write file")
     args = parser.parse_args()
 
     run_pipeline(
