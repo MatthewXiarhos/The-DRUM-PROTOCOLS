@@ -223,6 +223,15 @@ a{color:inherit;text-decoration:none}
   white-space:nowrap;
 }
 
+/* Date/time stamp at the foot of each sphere-module card */
+.sphere-run-date{
+  font-size:9px;letter-spacing:.06em;
+  color:rgba(184,134,11,.45);line-height:1.4;
+  margin-top:8px;padding-top:8px;
+  border-top:.5px solid rgba(184,134,11,.12);
+  white-space:nowrap;
+}
+
 .panel-eyebrow{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px;display:flex;align-items:center;gap:8px}
 .panel-eyebrow::before{content:'';width:16px;height:1px;background:rgba(212,160,23,.7);display:block}
 .panel-title{font-family:'Cormorant Garamond',serif;font-size:clamp(26px,3vw,38px);font-weight:600;color:#fff;line-height:1.05;margin-bottom:14px}
@@ -1252,15 +1261,35 @@ function hydrateAll(data) {
   });
   if (protosArr.length) { window._ALL_PROTOCOLS = protosArr; }
 
-  // Inject Sphere badges with analysis date into all panels
-  const analysisDate = data.analysis_date || data.generated || '';
+  // Inject Sphere badges with analysis date+time into all panels
+  let analysisDate = data.analysis_date || data.generated || '';
+  const isoTs = (data._meta || {}).generated_iso;
+  if (isoTs) {
+    try {
+      const dt = new Date(isoTs);
+      const dateStr = dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', timeZone:'America/New_York' });
+      const timeStr = dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZoneName:'short', timeZone:'America/New_York' });
+      analysisDate = `${dateStr} · ${timeStr}`;
+    } catch(e) { /* fallback to date-only */ }
+  }
   injectSphereBadges(analysisDate);
+  window._ANALYSIS_DATE = analysisDate; // available to renderProtocolCards on any page
 }
 
 // ── renderProtocolCards — used by protocol.html + adviser.html ──
-function renderProtocolCards(protocols, containerId) {
+function renderProtocolCards(protocols, containerId, analysisDate) {
   const container = document.getElementById(containerId || 'protocolGrid');
   if (!container) return;
+  // Format date+time label for sphere-module footer
+  let dateLabel = '';
+  if (analysisDate) {
+    dateLabel = analysisDate; // already formatted if passed from hydrateAll
+  } else if (window._ANALYSIS_DATE) {
+    dateLabel = window._ANALYSIS_DATE;
+  }
+  const dateLine = dateLabel
+    ? `<div class="sphere-run-date">Analysis ${dateLabel}</div>`
+    : '';
   container.innerHTML = protocols.map(item => {
     const cls     = (item.series || '').toLowerCase();
     const conf    = item.confidence || 'early';
@@ -1300,6 +1329,7 @@ function renderProtocolCards(protocols, containerId) {
               <div class="sphere-confidence-tag">${confLbl}</div>
             </div>
           </div>
+          ${dateLine}
         </div>
       </div>
     </article>`;

@@ -250,9 +250,13 @@ a{color:inherit;text-decoration:none}
 
 /* ── SPHERE COMMENTARY ── */
 .commentary-wrap{background:rgba(184,134,11,.04);border-top:.5px solid rgba(184,134,11,.15);padding:20px 24px}
-.commentary-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.commentary-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+.commentary-header-left{display:flex;flex-direction:column;gap:3px;align-items:flex-end}
 .commentary-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light)}
 .commentary-date{font-size:10px;color:var(--color-text-tertiary)}
+.commentary-sphere-icon{width:44px;height:44px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid rgba(184,134,11,0.22);box-shadow:0 0 14px rgba(184,134,11,0.12),0 4px 10px rgba(0,0,0,0.3);transition:border-color .2s,box-shadow .2s}
+.commentary-sphere-icon:hover{border-color:rgba(184,134,11,0.5);box-shadow:0 0 22px rgba(184,134,11,0.2),0 4px 12px rgba(0,0,0,0.35)}
+.commentary-sphere-icon img{width:100%;height:100%;object-fit:cover;display:block}
 .commentary-text{font-size:13px;line-height:1.78;color:var(--color-text-secondary);border-left:2px solid rgba(184,134,11,.3);padding-left:12px}
 .commentary-text.empty{font-style:italic;color:var(--color-text-tertiary)}
 .commentary-tabs{display:flex;gap:0;margin-bottom:14px;border-bottom:.5px solid rgba(255,255,255,0.08)}
@@ -533,8 +537,13 @@ a{color:inherit;text-decoration:none}
   <div class="section">
     <div class="commentary-wrap">
       <div class="commentary-header">
-        <div class="commentary-label">Sphere · statistical commentary</div>
-        <div class="commentary-date" id="commentary-date"></div>
+        <div class="commentary-sphere-icon" title="Sphere · Statistical Intelligence">
+          <img src="SPHERE_ICON.jpg" alt="Sphere">
+        </div>
+        <div class="commentary-header-left">
+          <div class="commentary-label">Sphere · statistical commentary</div>
+          <div class="commentary-date" id="commentary-date"></div>
+        </div>
       </div>
       <div class="commentary-tabs">
         <button class="commentary-tab active" id="tab-plain" onclick="switchCommentaryTab('plain')">What this means for you</button>
@@ -666,7 +675,19 @@ Promise.all([
 
   // Build STATS from data.json
   if(dj){
-    DATA_DATE = dj.analysis_date || dj.generated || '';
+    const isoTs = (dj._meta || {}).generated_iso;
+    if (isoTs) {
+      try {
+        const dt = new Date(isoTs);
+        const dateStr = dt.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', timeZone:'America/New_York' });
+        const timeStr = dt.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZoneName:'short', timeZone:'America/New_York' });
+        DATA_DATE = `${dateStr} · ${timeStr}`;
+      } catch(e) {
+        DATA_DATE = dj.analysis_date || dj.generated || '';
+      }
+    } else {
+      DATA_DATE = dj.analysis_date || dj.generated || '';
+    }
     if(dj.protocols){
       Object.entries(dj.protocols).forEach(([code,p])=>{
         STATS[code]={n:p.n,mean:p.mean,dist:p.dist,pct:p.pct_positive,sphere:p.sphere||'',spherePlain:p.sphere_plain||''};
@@ -719,7 +740,7 @@ function renderAdviserMatch(){
   document.getElementById('adviser-match-name').textContent=p.name;
   document.getElementById('adviser-match-meta').textContent=`${p.meta} · ${recCode}`;
   // Click anywhere on the body row or the button → open the protocol
-  const url=`protocol.html?id=${recCode}`;
+  const url=`protocol.html?id=${recCode}&vol=VOL${DEFAULT_VOL}`;
   document.getElementById('adviser-match-body').onclick=()=>{ window.location.href=url; };
   document.getElementById('adviser-match-cta').onclick=(e)=>{ e.stopPropagation(); window.location.href=url; };
   section.classList.add('visible');
@@ -748,7 +769,7 @@ function buildListingTable(){
       html += `<tr class="cat-header-row"><td colspan="5">${entry}</td></tr>`;
       protos.forEach(({code,p})=>{
         const moveLabel = p.move.charAt(0)+p.move.slice(1).toLowerCase();
-        const url = `protocol.html?id=${code}&vol=VOL${vol}&src=site`;
+        const url = `protocol.html?id=${code}&vol=VOL${vol}`;
         html += `<tr class="proto-row-tr">
           <td><a class="proto-link" href="${url}">${p.name}</a></td>
           <td class="proto-code-cell">${code}</td>
@@ -951,7 +972,7 @@ function renderRelated(currentCode){
   grid.innerHTML=siblings.map(code=>{
     const r=PROTOCOLS[code];
     if(!r) return '';
-    return `<a class="related-card" href="protocol.html?id=${code}&vol=VOL${DEFAULT_VOL}&src=site">
+    return `<a class="related-card" href="protocol.html?id=${code}&vol=VOL${DEFAULT_VOL}">
       <div class="related-dot ${r.series}"></div>
       <div class="related-info">
         <div class="related-name">${r.name}</div>

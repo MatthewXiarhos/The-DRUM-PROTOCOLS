@@ -490,7 +490,7 @@ function toggleDrilldown(seriesName){
       <div class="proto-bar-wrap"><div class="proto-bar-bg"><div class="proto-bar-fill" style="width:${bar}%;background:${colors[cls]};height:4px;border-radius:2px"></div></div></div>
       <span class="proto-score">${p.mean.toFixed(1)}</span>
       <span class="proto-n">n=${p.n}</span>
-      <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001&src=site">View description →</a>
+      <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001">View description →</a>
     </div>`;
   }).join('');
   panel.classList.add('open');
@@ -563,7 +563,7 @@ function renderRankings(data,sort){
               <div class="rank-stat"><span class="rank-stat-val">${p.pct_positive}%</span><span class="rank-stat-label">rated ≥7</span></div>
               <div class="rank-stat"><span class="rank-stat-val">${p.n}</span><span class="rank-stat-label">responses</span></div>
             </div>
-            <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001&src=site">View full description →</a>
+            <a class="view-btn" href="protocol.html?id=${code}&vol=VOL001">View full description →</a>
           </div>
         </div>
       </div>
@@ -595,7 +595,7 @@ function renderSeriesDetail(data){
         <div class="proto-bar-wrap"><div class="proto-bar-bg"><div class="proto-bar-fill" style="width:${bar}%;background:${col};height:4px;border-radius:2px"></div></div></div>
         <span class="proto-score">${p.mean.toFixed(1)}</span>
         <span class="proto-n">n=${p.n}</span>
-        <a class="view-btn" href="protocol.html?id=${p.code}&vol=VOL001&src=site">View description →</a>
+        <a class="view-btn" href="protocol.html?id=${p.code}&vol=VOL001">View description →</a>
       </div>`;
     }).join('');
     return `<div class="series-section">
@@ -627,7 +627,7 @@ function renderEntryGrid(data){
     const levels=codes.map((code,i)=>{
       const p=data.protocols[code];
       if(!p)return`<div class="entry-level"><div class="entry-level-name">L${i+1}</div><div class="entry-level-score no-data">—</div></div>`;
-      return`<a class="entry-level" data-code="${code}" href="protocol.html?id=${code}&vol=VOL001&src=site">
+      return`<a class="entry-level" data-code="${code}" href="protocol.html?id=${code}&vol=VOL001">
         <div class="entry-level-name">${p.name}</div>
         <div class="entry-level-score">${p.mean.toFixed(1)}</div>
         <div class="entry-level-n">n=${p.n}</div>
