@@ -3,6 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Live research data from The Drum Protocols — outcome scores, series comparisons, and protocol rankings updated by the Sphere pipeline weekly.">
+<meta name="keywords" content="drum protocols research data, rhythmic entrainment outcomes, nervous system research, protocol efficacy, open data mental health audio">
+<meta name="author" content="The Drum Protocols">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://thedrumprotocols.org/insights.html">
+
+<!-- Open Graph -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="The Drum Protocols">
+<meta property="og:title"       content="Research Insights · The Drum Protocols">
+<meta property="og:description" content="Explore anonymised listener outcome data across 30 rhythmic audio protocols. Real-time statistics powered by the Sphere ML pipeline.">
+<meta property="og:url"         content="https://thedrumprotocols.org/insights.html">
+<meta property="og:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Research Insights · The Drum Protocols">
+<meta name="twitter:description" content="Explore anonymised listener outcome data across 30 rhythmic audio protocols. Real-time statistics powered by the Sphere ML pipeline.">
+<meta name="twitter:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+
+<!-- Favicons -->
+<link rel="apple-touch-icon"       sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" type="image/png"  sizes="32x32"   href="favicon-32x32.png">
+<link rel="icon" type="image/png"  sizes="16x16"   href="favicon-16x16.png">
+<link rel="manifest"               href="site.webmanifest">
+<meta name="theme-color"           content="#0d1720">
 <title>Data Insights · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -196,6 +222,40 @@ a{color:inherit;text-decoration:none}
 .footer-links{display:flex;gap:20px;flex-wrap:wrap}
 .footer-link{font-size:12px;color:rgba(255,255,255,.42);transition:color .15s}
 .footer-link:hover{color:rgba(255,255,255,.80)}
+
+/* ── DATA TRANSPARENCY BADGE ── */
+.data-badge-wrap{display:inline-flex;align-items:center;gap:6px;cursor:default}
+.data-badge{
+  display:inline-flex;flex-direction:column;align-items:center;
+  font-size:9px;letter-spacing:.08em;text-transform:uppercase;
+  background:rgba(184,134,11,.08);border:.5px solid rgba(184,134,11,.3);
+  border-radius:6px;padding:4px 8px;line-height:1.35;
+  color:rgba(184,134,11,.75);white-space:nowrap;position:relative;
+}
+.data-badge strong{font-size:11px;letter-spacing:.04em;color:var(--dp-gold-light);font-weight:600}
+.data-badge-help{
+  font-size:9px;color:rgba(184,134,11,.5);border-bottom:.5px dashed rgba(184,134,11,.35);
+  cursor:help;margin-left:2px;
+}
+/* Tooltip */
+.data-badge-tooltip-wrap{position:relative;display:inline-flex;align-items:center}
+.data-badge-tooltip{
+  display:none;position:absolute;bottom:calc(100% + 8px);right:0;
+  background:var(--dp-slate-dark);border:.5px solid rgba(184,134,11,.35);
+  border-radius:8px;padding:10px 12px;width:220px;
+  font-size:11px;line-height:1.6;color:var(--color-text-secondary);
+  box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:300;pointer-events:none;
+}
+.data-badge-tooltip::after{
+  content:'';position:absolute;top:100%;right:16px;
+  border:5px solid transparent;border-top-color:rgba(184,134,11,.35);
+}
+.data-badge-tooltip-wrap:hover .data-badge-tooltip{display:block}
+@media(max-width:640px){.data-badge-tooltip{right:auto;left:0;width:200px}}
+/* Nav tooltip opens downward (footer tooltip opens upward — default) */
+.site-nav .data-badge-tooltip{bottom:auto;top:calc(100% + 8px)}
+.site-nav .data-badge-tooltip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(184,134,11,.35)}
+
 </style>
 </head>
 <body>
@@ -216,6 +276,14 @@ a{color:inherit;text-decoration:none}
     <a class="nav-link" href="research.html">Research</a>
     <a class="nav-link" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
+  </div>
+  <div class="data-badge-tooltip-wrap" style="margin-left:16px">
+    <div class="data-badge">
+      <span>Testing Data</span>
+      <strong id="nav-test-pct">—%</strong>
+      <span class="data-badge-help">what's this?</span>
+    </div>
+    <div class="data-badge-tooltip">We are making sure all of the complex statistics and ML models are working while our user base grows. Help us get real!</div>
   </div>
 </nav>
 
@@ -338,6 +406,14 @@ a{color:inherit;text-decoration:none}
     <a class="footer-link" href="research.html">Research</a>
     <a class="footer-link" href="about.html">About Me</a>
     <a class="footer-link" href="safety.html">Safety</a>
+  </div>
+  <div class="data-badge-tooltip-wrap" style="margin-top:12px">
+    <div class="data-badge" style="flex-direction:row;gap:8px;align-items:center">
+      <span>Testing Data</span>
+      <strong id="footer-test-pct">—%</strong>
+      <span class="data-badge-help">what's this?</span>
+    </div>
+    <div class="data-badge-tooltip">We are making sure all of the complex statistics and ML models are working while our user base grows. Help us get real!</div>
   </div>
 </footer>
 
@@ -616,6 +692,25 @@ document.addEventListener('click', function(e) {
     if (btn) btn.setAttribute('aria-expanded', 'false');
   }
 });
+</script>
+<script>
+// ── Data transparency badge hydration ──
+(function(){
+  fetch('data.json?_='+Date.now())
+    .then(r=>r.ok?r.json():null).then(d=>{
+      if(!d||!d._meta) return;
+      const total = d._meta.total_responses||0;
+      // Count test vs real from _meta if available, else fall back
+      const testPct = d._meta.test_pct != null
+        ? d._meta.test_pct
+        : (d._meta.contains_test_data ? 99 : 0);
+      const label = testPct != null ? Math.round(testPct)+'%' : '—%';
+      ['nav-test-pct','footer-test-pct'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.textContent=label;
+      });
+    }).catch(()=>{});
+})();
 </script>
 </body>
 </html>
