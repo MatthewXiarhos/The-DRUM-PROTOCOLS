@@ -1,0 +1,45 @@
+name: Sphere MOE Pipeline
+
+on:
+  workflow_dispatch:          # manual trigger only
+
+jobs:
+  run-moe-sphere:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install supabase scipy numpy python-dotenv openai google-api-python-client google-auth
+
+      - name: Run YouTube ingestion
+        env:
+          SUPABASE_URL:            ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY:    ${{ secrets.SUPABASE_SERVICE_KEY }}
+          YOUTUBE_CLIENT_ID:       ${{ secrets.YOUTUBE_CLIENT_ID }}
+          YOUTUBE_CLIENT_SECRET:   ${{ secrets.YOUTUBE_CLIENT_SECRET }}
+          YOUTUBE_REFRESH_TOKEN:   ${{ secrets.YOUTUBE_REFRESH_TOKEN }}
+        run: python youtube_ingestion.py --days 7
+
+      - name: Run MOE Sphere pipeline
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          NEBIUS_API_KEY:       ${{ secrets.NEBIUS_API_KEY }}
+          OPENAI_VECTOR_KEY:    ${{ secrets.OPENAI_VECTOR_KEY }}
+        run: python moe_sphere_pipeline.py --output data.json
+
+      - name: Commit data.json
+        run: |
+          git config user.name  "Sphere MOE Pipeline"
+          git config user.email "sphere@faces-of-dragonfly.bot"
+          git add data.json
+          git diff --cached --quiet || git commit -m "data: $(date +%Y-%m-%d) [moe]"
+          git push
