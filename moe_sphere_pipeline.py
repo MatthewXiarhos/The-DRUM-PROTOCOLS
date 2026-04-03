@@ -33,13 +33,12 @@ Requirements:
 Environment (.env or GitHub secrets):
   SUPABASE_URL          — Supabase project URL
   SUPABASE_SERVICE_KEY  — service_role key (bypasses RLS)
-  NEBIUS_API_KEY        — Nebius API key (all MOE model calls)
+  NEBIUS_API_KEY        — Nebius Token Factory API key
   OPENAI_VECTOR_KEY     — OpenAI API key for text-embedding-3-small
 
 Output:
-  ./data.json — same file as sphere_pipeline.py writes; whichever ran
-                most recently wins. moe_sphere.yml commits with a
-                distinct commit message for traceability.
+  ./data.json — same file as sphere_pipeline.py; commit message uses [moe]
+                tag for traceability in git history.
 
 Confidence scale (matches sphere.html CONF_PCT):
   early       n < 5    22%
@@ -51,7 +50,6 @@ Confidence scale (matches sphere.html CONF_PCT):
 import os
 import sys
 import json
-import math
 import random
 import hashlib
 import argparse
@@ -120,24 +118,29 @@ MOE_ANALYZER_FILE    = "sphere__analyzer__v1.md"
 MOE_SYNTHESIZER_FILE = "sphere__synthesizer__v1.md"
 
 # ── MOE MODEL POOL ────────────────────────────────────────────────────────────────────
+# All model IDs verified against https://nebius.com/token-factory/prices (April 2026).
+# Base URL updated to current Nebius Token Factory endpoint.
+# cost_in / cost_out: USD per million tokens (base tier).
+# synthesizer_eligible: whether the model may serve as the synthesizer.
 
-NEBIUS_BASE_URL = "https://api.studio.nebius.com/v1/"
+NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 
 MODEL_POOL = {
-    "GLM": {"name": "ai21labs/AI21-Jamba-1.6-Large",              "cost_in": 0.20, "cost_out": 1.20, "synthesizer_eligible": False},
-    "LLM": {"name": "meta-llama/Llama-3.3-70B-Instruct",          "cost_in": 0.25, "cost_out": 0.75, "synthesizer_eligible": False},
-    "NEM": {"name": "nvidia/Llama-3.1-Nemotron-Ultra-253B-v1",    "cost_in": 0.30, "cost_out": 0.90, "synthesizer_eligible": False},
-    "QWN": {"name": "Qwen/Qwen3-235B-A22B",                       "cost_in": 0.20, "cost_out": 0.80, "synthesizer_eligible": False},
-    "KIM": {"name": "moonshotai/Kimi-K2-Instruct",                "cost_in": 0.50, "cost_out": 2.50, "synthesizer_eligible": False},
-    "DSK": {"name": "deepseek-ai/DeepSeek-V3",                    "cost_in": 0.30, "cost_out": 0.45, "synthesizer_eligible": False},
-    "HRM": {"name": "NousResearch/Hermes-3-Llama-3.1-70B",        "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "GPT": {"name": "openai/gpt-4o-mini",                         "cost_in": 0.10, "cost_out": 0.50, "synthesizer_eligible": False},
-    "GMM": {"name": "google/gemma-3-27b-it",                      "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
-    "INT": {"name": "PrimeIntellect/INTELLECT-2-Instruct",        "cost_in": 0.20, "cost_out": 1.10, "synthesizer_eligible": True},
+    # Code  | Model ID (exact Nebius name)                     | In $/M | Out $/M | Synth?
+    "LLM": {"name": "Meta/Llama-3.3-70B-Instruct",            "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "QWN": {"name": "Qwen3-235B-A22B-Instruct-2507",          "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
+    "QWT": {"name": "Qwen3-235B-A22B-Thinking-2507",          "cost_in": 0.20, "cost_out": 0.80, "synthesizer_eligible": False},
+    "DSK": {"name": "DeepSeek-V3-0324",                       "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
+    "HRM": {"name": "Hermes-4-70B",                           "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "GPT": {"name": "gpt-oss-120b",                           "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
+    "GMM": {"name": "Gemma-2-9b-it",                          "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
+    "GLM": {"name": "GLM-4.5-Air",                            "cost_in": 0.20, "cost_out": 1.20, "synthesizer_eligible": False},
+    "KIM": {"name": "Kimi-K2-Instruct",                       "cost_in": 0.50, "cost_out": 2.40, "synthesizer_eligible": False},
+    "NEM": {"name": "Llama-3_1-Nemotron-Ultra-253B-v1",       "cost_in": 0.60, "cost_out": 1.80, "synthesizer_eligible": True},
 }
 
-N_ANALYZERS           = 5
-ANALYZER_MAX_TOKENS   = 4000
+N_ANALYZERS            = 5
+ANALYZER_MAX_TOKENS    = 4000
 SYNTHESIZER_MAX_TOKENS = 16000
 
 
@@ -244,7 +247,7 @@ def build_full_survey_context(full_rows, protocols_out):
         if not rows:
             continue
         def top(field, top_n=3):
-            vals   = [r.get(field) for r in rows if r.get(field)]
+            vals = [r.get(field) for r in rows if r.get(field)]
             if not vals: return "n/a"
             counts = Counter(vals)
             return " / ".join(f"{v}({c})" for v, c in counts.most_common(top_n))
@@ -310,22 +313,12 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
             "protocol_code, run_date, embedding, analysis_scope"
         ).eq("analysis_scope", "by_protocol").execute().data
 
-        def parse_emb(e):
-            """pgvector returns embeddings as strings — parse to float list."""
-            if isinstance(e, str):
-                return json.loads(e)
-            return e
-
         rows_with_emb = [r for r in rows if r.get("embedding")]
         if not rows_with_emb:
             return "No embeddings stored yet — first pipeline run."
 
-        # Parse all embeddings upfront
-        for r in rows_with_emb:
-            r["embedding"] = parse_emb(r["embedding"])
-
         def cosine_sim(a, b):
-            a, b  = np.array(a, dtype=float), np.array(b, dtype=float)
+            a, b  = np.array(a), np.array(b)
             denom = np.linalg.norm(a) * np.linalg.norm(b)
             return float(np.dot(a, b) / denom) if denom else 0.0
 
@@ -369,8 +362,8 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
         if len(latest_rows) < 3:
             lines.append("  Too few protocols with embeddings for cluster analysis.")
         else:
-            codes = [r["protocol_code"]        for r in latest_rows]
-            embs  = [parse_emb(r["embedding"]) for r in latest_rows]
+            codes = [r["protocol_code"] for r in latest_rows]
+            embs  = [r["embedding"]     for r in latest_rows]
             sim_matrix = {}
             for i, ci in enumerate(codes):
                 for j, cj in enumerate(codes):
@@ -402,11 +395,7 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
 def build_data_payload(protocols_out, series_summary, total_n,
                        total_n_full=0, full_rows=None,
                        youtube_data=None, embedding_context=""):
-    """
-    Renders sphere__user__v1.md with all {{INJECT:*}} placeholders.
-    Same output as sphere_pipeline.py's build_sphere_prompt(), plus
-    {{INJECT:EMBEDDING_CONTEXT}}.
-    """
+    """Renders sphere__user__v1.md with all {{INJECT:*}} placeholders."""
     template, _, _ = load_prompt(MOE_USER_FILE)
 
     series_lines = [
@@ -419,7 +408,7 @@ def build_data_payload(protocols_out, series_summary, total_n,
         meta     = PROTOCOL_META.get(code, {})
         bc       = p.get("bimodality_coefficient")
         flags    = []
-        if p["bimodal_flag"]:       flags.append(f"BIMODAL (BC={bc})")
+        if p["bimodal_flag"]:          flags.append(f"BIMODAL (BC={bc})")
         if p["confidence"] == "early": flags.append("EARLY DATA")
         flag_str = " [" + ", ".join(flags) + "]" if flags else ""
         src_str  = " | ".join(f"{k}:{v}" for k, v in p.get("src_counts", {}).items())
@@ -451,16 +440,16 @@ def build_data_payload(protocols_out, series_summary, total_n,
 def draw_panel():
     """
     Draw 5 distinct analyzer codes and 1 synthesizer code.
-    Synthesizer preference: INT (only fully eligible model).
-    If INT is drawn as an analyzer, synthesizer falls back to any remaining model.
+    Synthesizer preference: NEM (only fully eligible model).
+    If NEM is drawn as an analyzer, synthesizer falls back to any remaining model.
     Returns (analyzer_codes, synthesizer_code).
     """
     pool = list(MODEL_POOL.keys())
     random.shuffle(pool)
-    analyzer_codes   = pool[:N_ANALYZERS]
-    remaining        = pool[N_ANALYZERS:]
-    if "INT" not in analyzer_codes:
-        synthesizer_code = "INT"
+    analyzer_codes = pool[:N_ANALYZERS]
+    remaining      = pool[N_ANALYZERS:]
+    if "NEM" not in analyzer_codes:
+        synthesizer_code = "NEM"
     else:
         eligible = [c for c in remaining if MODEL_POOL[c]["synthesizer_eligible"]]
         synthesizer_code = random.choice(eligible if eligible else remaining)
@@ -561,8 +550,8 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
                     embedding_context=""):
     """
     Full MOE pipeline: draw panel → 5 parallel analyzers → 1 synthesizer.
-    Returns (commentary_dict, usage_dict, prompt_versions_info, analyzer_results,
-             synthesizer_result, combo).
+    Returns (commentary_dict, usage_dict, prompt_versions_info,
+             analyzer_results, synthesizer_result, combo).
     """
     client = get_nebius_client()
 
@@ -601,7 +590,7 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
     }
     print(f"\n  MOE total  : {usage['input_tokens']}in / {usage['output_tokens']}out  (~${usage['cost_usd']:.4f})")
 
-    commentary       = parse_json_output(synthesizer_result["output_text"])
+    commentary           = parse_json_output(synthesizer_result["output_text"])
     commentary["_combo"] = combo
 
     return commentary, usage, prompt_versions_info, analyzer_results, synthesizer_result, combo
@@ -817,8 +806,8 @@ def writeback_prompt_versions(supabase, prompt_versions_info, run_date):
     now  = datetime.datetime.now(timezone.utc).isoformat()
     rows = []
     for info in prompt_versions_info:
-        filename = info["filename"]
-        parts    = filename.replace(".md", "").split("__")
+        filename  = info["filename"]
+        parts     = filename.replace(".md", "").split("__")
         record_id = "__".join(parts[:3]) if len(parts) >= 3 else filename.replace(".md", "")
         rows.append({
             "id":             record_id,
@@ -1134,6 +1123,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
                           key=lambda x: (SERIES_ORDER.get(x[1]["series"], 9), x[0])):
         bimod = " [BIMODAL]" if p["bimodal_flag"] else ""
         print(f"    {code:<12} n={p['n']:<4} mean={p['mean']:.1f}  {p['confidence']}{bimod}")
+
     if youtube_data:
         print()
         print("  YouTube data summary (most recent row per protocol):")
@@ -1164,12 +1154,16 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
                 yt_s = series_yt.get(series)
                 if not yt_s: continue
                 total_views = sum(yt_s["views"])
-                mean_dur    = round(sum(yt_s["dur"]) / len(yt_s["dur"]), 0) if yt_s["dur"] else None
-                mean_pct    = round(sum(yt_s["pct"]) / len(yt_s["pct"]), 1) if yt_s["pct"] else None
+                # Guard against empty lists before formatting
+                mean_dur = round(sum(yt_s["dur"]) / len(yt_s["dur"]), 0) if yt_s["dur"] else None
+                mean_pct = round(sum(yt_s["pct"]) / len(yt_s["pct"]), 1) if yt_s["pct"] else None
+                dur_s    = f"{mean_dur:.0f}s" if mean_dur is not None else "NULL"
+                pct_s    = f"{mean_pct:.1f}%" if mean_pct is not None else "NULL"
                 print(f"    {series:<14} total_views={total_views:<5}  "
-                      f"mean_duration={mean_dur:.0f}s  mean_retention={mean_pct:.1f}%")
+                      f"mean_duration={dur_s:<8}  mean_retention={pct_s}")
     else:
         print("  YouTube data summary: no data available")
+
     print()
     if not dry_run:
         print("  Next step: data.json committed automatically by moe_sphere.yml.")
