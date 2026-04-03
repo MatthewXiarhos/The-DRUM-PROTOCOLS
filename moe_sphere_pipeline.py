@@ -126,18 +126,20 @@ MOE_SYNTHESIZER_FILE = "sphere__synthesizer__v1.md"
 NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 
 MODEL_POOL = {
-    # Code  | Model ID (exact Nebius API id)                              | In $/M | Out $/M | Synth?
-    # IDs confirmed via client.models.list() against api.tokenfactory.nebius.com/v1/
-    "LLM": {"name": "meta-llama/Meta-Llama-3.1-70B-Instruct",            "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "QWN": {"name": "Qwen/Qwen3-235B-A22B",                              "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
-    "DSK": {"name": "deepseek-ai/DeepSeek-V3",                           "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
-    "HRM": {"name": "NousResearch/Hermes-3-Llama-3.1-70B-Instruct",      "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "GPT": {"name": "openai/gpt-4o-mini",                                "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
-    "GMM": {"name": "google/gemma-2-9b-it",                              "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
-    "GLM": {"name": "THUDM/glm-4-9b-chat",                              "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
+    # Code  | Model ID (verified via --list-models, April 2026)           | In $/M | Out $/M | Synth?
+    "LLM": {"name": "meta-llama/Llama-3.3-70B-Instruct",                 "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "QWN": {"name": "Qwen/Qwen3-235B-A22B-Instruct-2507",               "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
+    "QWT": {"name": "Qwen/Qwen3-235B-A22B-Thinking-2507",               "cost_in": 0.20, "cost_out": 0.80, "synthesizer_eligible": False},
+    "DSK": {"name": "deepseek-ai/DeepSeek-V3-0324",                      "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
+    "DSV": {"name": "deepseek-ai/DeepSeek-V3.2",                         "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
+    "HRM": {"name": "NousResearch/Hermes-4-70B",                         "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "GPT": {"name": "openai/gpt-oss-120b",                               "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
+    "GMM": {"name": "google/gemma-3-27b-it",                             "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
+    "GLM": {"name": "zai-org/GLM-4.5-Air",                               "cost_in": 0.20, "cost_out": 1.20, "synthesizer_eligible": False},
     "KIM": {"name": "moonshotai/Kimi-K2-Instruct",                       "cost_in": 0.50, "cost_out": 2.40, "synthesizer_eligible": False},
-    "NEM": {"name": "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",        "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": True},
-    "MST": {"name": "mistralai/Mistral-Nemo-Instruct-2407",              "cost_in": 0.07, "cost_out": 0.07, "synthesizer_eligible": False},
+    "NEM": {"name": "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",           "cost_in": 0.60, "cost_out": 1.80, "synthesizer_eligible": True},
+    "INT": {"name": "PrimeIntellect/INTELLECT-3",                        "cost_in": 0.20, "cost_out": 1.10, "synthesizer_eligible": True},
+    "MMX": {"name": "MiniMaxAI/MiniMax-M2.5",                            "cost_in": 0.30, "cost_out": 1.20, "synthesizer_eligible": True},
 }
 
 
