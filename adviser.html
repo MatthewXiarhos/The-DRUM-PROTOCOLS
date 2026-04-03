@@ -335,9 +335,10 @@ a { color: inherit; }
 }
 .data-badge-tooltip-wrap:hover .data-badge-tooltip{display:block}
 @media(max-width:640px){.data-badge-tooltip{right:auto;left:0;width:200px}}
-/* Nav tooltip opens downward (footer tooltip opens upward — default) */
+/* Nav tooltip opens downward and stays right-aligned on mobile */
 .site-nav .data-badge-tooltip{bottom:auto;top:calc(100% + 8px)}
 .site-nav .data-badge-tooltip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(184,134,11,.35)}
+@media(max-width:640px){.site-nav .data-badge-tooltip{left:auto;right:0}}
 
 </style>
 </head>
