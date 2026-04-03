@@ -126,18 +126,49 @@ MOE_SYNTHESIZER_FILE = "sphere__synthesizer__v1.md"
 NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 
 MODEL_POOL = {
-    # Code  | Model ID (exact Nebius name)                     | In $/M | Out $/M | Synth?
-    "LLM": {"name": "Meta/Llama-3.3-70B-Instruct",            "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "QWN": {"name": "Qwen3-235B-A22B-Instruct-2507",          "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
-    "QWT": {"name": "Qwen3-235B-A22B-Thinking-2507",          "cost_in": 0.20, "cost_out": 0.80, "synthesizer_eligible": False},
-    "DSK": {"name": "DeepSeek-V3-0324",                       "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
-    "HRM": {"name": "Hermes-4-70B",                           "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "GPT": {"name": "gpt-oss-120b",                           "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
-    "GMM": {"name": "Gemma-2-9b-it",                          "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
-    "GLM": {"name": "GLM-4.5-Air",                            "cost_in": 0.20, "cost_out": 1.20, "synthesizer_eligible": False},
-    "KIM": {"name": "Kimi-K2-Instruct",                       "cost_in": 0.50, "cost_out": 2.40, "synthesizer_eligible": False},
-    "NEM": {"name": "Llama-3_1-Nemotron-Ultra-253B-v1",       "cost_in": 0.60, "cost_out": 1.80, "synthesizer_eligible": True},
+    # Code  | Model ID (exact Nebius API id)                              | In $/M | Out $/M | Synth?
+    # IDs confirmed via client.models.list() against api.tokenfactory.nebius.com/v1/
+    "LLM": {"name": "meta-llama/Meta-Llama-3.1-70B-Instruct",            "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "QWN": {"name": "Qwen/Qwen3-235B-A22B",                              "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
+    "DSK": {"name": "deepseek-ai/DeepSeek-V3",                           "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
+    "HRM": {"name": "NousResearch/Hermes-3-Llama-3.1-70B-Instruct",      "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
+    "GPT": {"name": "openai/gpt-4o-mini",                                "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
+    "GMM": {"name": "google/gemma-2-9b-it",                              "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
+    "GLM": {"name": "THUDM/glm-4-9b-chat",                              "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
+    "KIM": {"name": "moonshotai/Kimi-K2-Instruct",                       "cost_in": 0.50, "cost_out": 2.40, "synthesizer_eligible": False},
+    "NEM": {"name": "nvidia/Llama-3.1-Nemotron-70B-Instruct-HF",        "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": True},
+    "MST": {"name": "mistralai/Mistral-Nemo-Instruct-2407",              "cost_in": 0.07, "cost_out": 0.07, "synthesizer_eligible": False},
 }
+
+
+def validate_model_pool(client: OpenAI) -> list[str]:
+    """
+    Query the live Nebius model list and validate every MODEL_POOL entry.
+    Prints a warning for any model ID that doesn't appear in the live catalogue.
+    Returns list of invalid model codes so callers can remove them from the pool.
+
+    This runs once at pipeline startup — it's the definitive check against 404s.
+    If the live API call fails, we warn and continue (don't block the run).
+    """
+    print("  Validating model pool against live Nebius catalogue...")
+    try:
+        live_models = {m.id for m in client.models.list().data}
+        invalid     = []
+        for code, meta in MODEL_POOL.items():
+            model_id = meta["name"]
+            if model_id not in live_models:
+                print(f"    ✗ {code}: '{model_id}' NOT in live catalogue — will be skipped")
+                invalid.append(code)
+            else:
+                print(f"    ✓ {code}: '{model_id}'")
+        if not invalid:
+            print(f"  All {len(MODEL_POOL)} models validated.")
+        else:
+            print(f"  WARNING: {len(invalid)} model(s) invalid. Run 'python moe_sphere_pipeline.py --list-models' to see full catalogue.")
+        return invalid
+    except Exception as e:
+        print(f"  ⚠ Model validation failed ({e}) — proceeding without validation")
+        return []
 
 N_ANALYZERS            = 5
 ANALYZER_MAX_TOKENS    = 4000
@@ -317,8 +348,15 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
         if not rows_with_emb:
             return "No embeddings stored yet — first pipeline run."
 
+        def parse_emb(raw):
+            """Supabase returns pgvector as a string '[0.1,...]' — parse to list."""
+            if isinstance(raw, str):
+                import json
+                return json.loads(raw)
+            return raw
+
         def cosine_sim(a, b):
-            a, b  = np.array(a), np.array(b)
+            a, b  = np.array(parse_emb(a), dtype=float), np.array(parse_emb(b), dtype=float)
             denom = np.linalg.norm(a) * np.linalg.norm(b)
             return float(np.dot(a, b) / denom) if denom else 0.0
 
@@ -437,21 +475,22 @@ def build_data_payload(protocols_out, series_summary, total_n,
 
 # ── MOE MODEL SELECTION ───────────────────────────────────────────────────────────────
 
-def draw_panel():
+def draw_panel_from(valid_pool: dict):
     """
-    Draw 5 distinct analyzer codes and 1 synthesizer code.
-    Synthesizer preference: NEM (only fully eligible model).
-    If NEM is drawn as an analyzer, synthesizer falls back to any remaining model.
+    Draw 5 distinct analyzer codes and 1 synthesizer code from valid_pool.
+    Synthesizer preference: NEM if available and valid.
+    Falls back to any synthesizer_eligible model, then any remaining model.
     Returns (analyzer_codes, synthesizer_code).
     """
-    pool = list(MODEL_POOL.keys())
+    pool = list(valid_pool.keys())
     random.shuffle(pool)
     analyzer_codes = pool[:N_ANALYZERS]
     remaining      = pool[N_ANALYZERS:]
-    if "NEM" not in analyzer_codes:
+    # Prefer NEM as synthesizer if it is valid and not an analyzer
+    if "NEM" in valid_pool and "NEM" not in analyzer_codes:
         synthesizer_code = "NEM"
     else:
-        eligible = [c for c in remaining if MODEL_POOL[c]["synthesizer_eligible"]]
+        eligible = [c for c in remaining if valid_pool[c]["synthesizer_eligible"]]
         synthesizer_code = random.choice(eligible if eligible else remaining)
     return analyzer_codes, synthesizer_code
 
@@ -500,13 +539,17 @@ def call_model(client, model_code, system, user, max_tokens, label=""):
                 "cost_usd": 0.0, "error": str(e)}
 
 def run_analyzers(client, analyzer_codes, system_text, analyzer_text, data_payload):
-    """Run N_ANALYZERS in parallel via ThreadPoolExecutor."""
+    """
+    Run N_ANALYZERS in parallel via ThreadPoolExecutor.
+    System: Sphere persona only. User: analyzer role instructions + data payload.
+    """
     print(f"\n  Running {N_ANALYZERS} analyzers in parallel...")
-    combined_system = system_text + "\n\n" + analyzer_text
+    # Analyzer instructions prepended to data payload in the user message
+    user = analyzer_text + "\n\n" + data_payload
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=N_ANALYZERS) as ex:
         futures = {
-            ex.submit(call_model, client, code, combined_system, data_payload,
+            ex.submit(call_model, client, code, system_text, user,
                       ANALYZER_MAX_TOKENS, f"ANALYZER-{code}"): code
             for code in analyzer_codes
         }
@@ -516,7 +559,14 @@ def run_analyzers(client, analyzer_codes, system_text, analyzer_text, data_paylo
 
 def run_synthesizer(client, synthesizer_code, system_text, synthesizer_text,
                     data_payload, analyzer_results):
-    """Build synthesizer user prompt and call the model."""
+    """
+    Build synthesizer user prompt and call the model.
+
+    System prompt: Sphere persona only (system_text).
+    User prompt:   data payload + all analyzer outputs + synthesizer instructions.
+    synthesizer_text appears ONCE — in the user message — so the model is not
+    confused by receiving identical instructions in both turns.
+    """
     print(f"\n  Running synthesizer ({synthesizer_code})...")
     analyzer_block = "\n".join(
         f"=== ANALYZER {r['model_code']} ===\n"
@@ -528,9 +578,13 @@ def run_synthesizer(client, synthesizer_code, system_text, synthesizer_text,
         "\n\n=== ANALYZER OUTPUTS ===\n" + analyzer_block +
         "\n\n=== YOUR TASK ===\n" + synthesizer_text
     )
-    combined_system = system_text + "\n\n" + synthesizer_text
-    return call_model(client, synthesizer_code, combined_system, user,
-                      SYNTHESIZER_MAX_TOKENS, f"SYNTHESIZER-{synthesizer_code}")
+    # System is Sphere persona only — instructions are in the user message above
+    result = call_model(client, synthesizer_code, system_text, user,
+                        SYNTHESIZER_MAX_TOKENS, f"SYNTHESIZER-{synthesizer_code}")
+    # Log first 300 chars of raw output to help diagnose empty/malformed responses
+    preview = result["output_text"][:300].replace("\n", " ") if result["output_text"] else "[EMPTY]"
+    print(f"  Synthesizer raw preview: {preview}")
+    return result
 
 def parse_json_output(raw):
     text = raw.strip()
@@ -555,6 +609,14 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
     """
     client = get_nebius_client()
 
+    # Validate model IDs against live catalogue — removes invalid codes from pool
+    invalid_codes = validate_model_pool(client)
+    valid_pool    = {k: v for k, v in MODEL_POOL.items() if k not in invalid_codes}
+    if len(valid_pool) < N_ANALYZERS + 1:
+        print(f"ERROR: Only {len(valid_pool)} valid models available, need at least {N_ANALYZERS + 1}.")
+        print("       Run: python moe_sphere_pipeline.py --list-models")
+        sys.exit(1)
+
     system_text,      system_hash,      _ = load_prompt(MOE_SYSTEM_FILE)
     analyzer_text,    analyzer_hash,    _ = load_prompt(MOE_ANALYZER_FILE)
     synthesizer_text, synthesizer_hash, _ = load_prompt(MOE_SYNTHESIZER_FILE)
@@ -573,14 +635,27 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
         embedding_context=embedding_context,
     )
 
-    analyzer_codes, synthesizer_code = draw_panel()
+    analyzer_codes, synthesizer_code = draw_panel_from(valid_pool)
     combo = combination_string(analyzer_codes, synthesizer_code)
     print(f"\n  MOE panel  : analyzers={analyzer_codes}  synthesizer={synthesizer_code}")
     print(f"  Combo str  : {combo}")
 
     analyzer_results   = run_analyzers(client, analyzer_codes, system_text, analyzer_text, data_payload)
+
+    # Hard-fail if every analyzer errored — synthesizer has nothing to work with
+    successful_analyzers = [r for r in analyzer_results if not r["error"]]
+    if not successful_analyzers:
+        print("ERROR: All analyzers failed. Check model IDs and NEBIUS_API_KEY.")
+        sys.exit(1)
+    if len(successful_analyzers) < N_ANALYZERS:
+        print(f"  WARNING: {N_ANALYZERS - len(successful_analyzers)} analyzer(s) failed — proceeding with {len(successful_analyzers)} outputs")
+
     synthesizer_result = run_synthesizer(client, synthesizer_code, system_text,
                                          synthesizer_text, data_payload, analyzer_results)
+
+    if synthesizer_result["error"]:
+        print(f"ERROR: Synthesizer failed: {synthesizer_result['error']}")
+        sys.exit(1)
 
     all_results = analyzer_results + [synthesizer_result]
     usage = {
@@ -1179,11 +1254,30 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="THE DRUM PROTOCOLS — MOE pipeline: Supabase → stats → Nebius MOE → data.json"
     )
-    parser.add_argument("--real-only",  action="store_true", help="Filter to data_type='real' only")
-    parser.add_argument("--no-sphere",  action="store_true", help="Skip MOE call — stats only")
-    parser.add_argument("--output",     default=None,        help="Output path (default: ./data.json)")
-    parser.add_argument("--dry-run",    action="store_true", help="Print output, don't write file")
+    parser.add_argument("--real-only",    action="store_true", help="Filter to data_type='real' only")
+    parser.add_argument("--no-sphere",    action="store_true", help="Skip MOE call — stats only")
+    parser.add_argument("--output",       default=None,        help="Output path (default: ./data.json)")
+    parser.add_argument("--dry-run",      action="store_true", help="Print output, don't write file")
+    parser.add_argument("--list-models",  action="store_true", help="Print live Nebius model catalogue and exit")
     args = parser.parse_args()
+
+    if args.list_models:
+        load_dotenv()
+        client = get_nebius_client()
+        print("\nFetching live model list from Nebius Token Factory...\n")
+        try:
+            models = sorted(m.id for m in client.models.list().data)
+            for m in models:
+                print(f"  {m}")
+            print(f"\n{len(models)} models available.")
+            print("\nCurrent MODEL_POOL status:")
+            live_set = set(models)
+            for code, meta in MODEL_POOL.items():
+                status = "✓" if meta["name"] in live_set else "✗ NOT FOUND"
+                print(f"  {code}: {meta['name']}  {status}")
+        except Exception as e:
+            print(f"Error: {e}")
+        sys.exit(0)
 
     run_pipeline(
         real_only   = args.real_only,
