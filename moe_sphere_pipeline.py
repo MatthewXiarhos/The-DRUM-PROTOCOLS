@@ -752,11 +752,20 @@ def run_synthesizer_by_id(client, synthesizer_id: str, system_text: str,
 
 def parse_json_output(raw):
     text = raw.strip()
+    # Strip markdown fences
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:])
     if text.endswith("```"):
         text = "\n".join(text.split("\n")[:-1])
     text = text.strip()
+    # Strip reasoning model thinking blocks: <think>...</think>
+    # These appear before the actual JSON in models like MiniMax, Qwen-Thinking etc.
+    import re
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
+    # Find the first { to skip any preamble text before the JSON object
+    brace = text.find("{")
+    if brace > 0:
+        text = text[brace:]
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
