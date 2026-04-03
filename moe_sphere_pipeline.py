@@ -310,12 +310,22 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
             "protocol_code, run_date, embedding, analysis_scope"
         ).eq("analysis_scope", "by_protocol").execute().data
 
+        def parse_emb(e):
+            """pgvector returns embeddings as strings — parse to float list."""
+            if isinstance(e, str):
+                return json.loads(e)
+            return e
+
         rows_with_emb = [r for r in rows if r.get("embedding")]
         if not rows_with_emb:
             return "No embeddings stored yet — first pipeline run."
 
+        # Parse all embeddings upfront
+        for r in rows_with_emb:
+            r["embedding"] = parse_emb(r["embedding"])
+
         def cosine_sim(a, b):
-            a, b  = np.array(a), np.array(b)
+            a, b  = np.array(a, dtype=float), np.array(b, dtype=float)
             denom = np.linalg.norm(a) * np.linalg.norm(b)
             return float(np.dot(a, b) / denom) if denom else 0.0
 
@@ -359,8 +369,8 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
         if len(latest_rows) < 3:
             lines.append("  Too few protocols with embeddings for cluster analysis.")
         else:
-            codes = [r["protocol_code"] for r in latest_rows]
-            embs  = [r["embedding"]     for r in latest_rows]
+            codes = [r["protocol_code"]        for r in latest_rows]
+            embs  = [parse_emb(r["embedding"]) for r in latest_rows]
             sim_matrix = {}
             for i, ci in enumerate(codes):
                 for j, cj in enumerate(codes):
