@@ -17,7 +17,14 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install supabase scipy numpy python-dotenv openai google-api-python-client google-auth
+        run: pip install supabase scipy numpy python-dotenv openai requests google-api-python-client google-auth
+
+      - name: Run Tally ingestion
+        env:
+          SUPABASE_URL:         ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          TALLY_API_KEY:        ${{ secrets.TALLY_API_KEY }}
+        run: python tally_ingestion.py
 
       - name: Run YouTube ingestion
         env:
