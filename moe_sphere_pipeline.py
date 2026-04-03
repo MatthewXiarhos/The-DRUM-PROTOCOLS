@@ -125,52 +125,231 @@ MOE_SYNTHESIZER_FILE = "sphere__synthesizer__v1.md"
 
 NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
 
-MODEL_POOL = {
-    # Code  | Model ID (verified via --list-models, April 2026)           | In $/M | Out $/M | Synth?
-    "LLM": {"name": "meta-llama/Llama-3.3-70B-Instruct",                 "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "QWN": {"name": "Qwen/Qwen3-235B-A22B-Instruct-2507",               "cost_in": 0.20, "cost_out": 0.60, "synthesizer_eligible": False},
-    "QWT": {"name": "Qwen/Qwen3-235B-A22B-Thinking-2507",               "cost_in": 0.20, "cost_out": 0.80, "synthesizer_eligible": False},
-    "DSK": {"name": "deepseek-ai/DeepSeek-V3-0324",                      "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
-    "DSV": {"name": "deepseek-ai/DeepSeek-V3.2",                         "cost_in": 0.50, "cost_out": 1.50, "synthesizer_eligible": False},
-    "HRM": {"name": "NousResearch/Hermes-4-70B",                         "cost_in": 0.13, "cost_out": 0.40, "synthesizer_eligible": False},
-    "GPT": {"name": "openai/gpt-oss-120b",                               "cost_in": 0.15, "cost_out": 0.60, "synthesizer_eligible": False},
-    "GMM": {"name": "google/gemma-3-27b-it",                             "cost_in": 0.03, "cost_out": 0.09, "synthesizer_eligible": False},
-    "GLM": {"name": "zai-org/GLM-4.5-Air",                               "cost_in": 0.20, "cost_out": 1.20, "synthesizer_eligible": False},
-    "KIM": {"name": "moonshotai/Kimi-K2-Instruct",                       "cost_in": 0.50, "cost_out": 2.40, "synthesizer_eligible": False},
-    "NEM": {"name": "nvidia/Llama-3_1-Nemotron-Ultra-253B-v1",           "cost_in": 0.60, "cost_out": 1.80, "synthesizer_eligible": True},
-    "INT": {"name": "PrimeIntellect/INTELLECT-3",                        "cost_in": 0.20, "cost_out": 1.10, "synthesizer_eligible": True},
-    "MMX": {"name": "MiniMaxAI/MiniMax-M2.5",                            "cost_in": 0.30, "cost_out": 1.20, "synthesizer_eligible": True},
-}
+# ── Non-chat model exclusions ─────────────────────────────────────────────────
+# Applied to the live catalogue before any selection.
+# Suffixes: fast-tier duplicates of base models — same weights, lower latency.
+# Substrings: non-text-chat model types.
+EXCLUDE_SUFFIXES    = ("-fast",)
+EXCLUDE_SUBSTRINGS  = (
+    "embedding", "Embedding",   # embedding models
+    "bge-",                     # BAAI embedding
+    "e5-",                      # embedding
+    "flux",                     # image generation
+    "Guard",                    # safety classifier
+    "Coder",                    # code-specialist
+    "VL-",                      # vision-language
+    "Instruct-fast",            # fast tier (caught by suffix too, belt-and-suspenders)
+)
+
+# ── Cost cap ───────────────────────────────────────────────────────────────────
+# Models with these fragments in their ID are excluded from random selection
+# because they are known to be very expensive (large reasoning/parameter count)
+# or generate unpredictably large outputs that could blow the monthly budget.
+#
+# Rationale per fragment:
+#   405B          — 405B-param models, ~$1-3/M output
+#   480B          — Qwen Coder 480B
+#   397B          — Qwen3.5 397B
+#   Ultra-253B    — Nemotron Ultra 253B (allowed as synthesizer via PREFERRED list)
+#   R1            — DeepSeek R1 reasoning: generates long thinking chains, expensive
+#   Thinking      — Any "Thinking" variant: chain-of-thought multiplies output tokens
+#   K2-Thinking   — Kimi reasoning variant
+#
+# To allow a currently-excluded model, remove its fragment from this tuple.
+# To add a new expensive model family, add a fragment here.
+EXCLUDE_EXPENSIVE = (
+    "405B",
+    "480B",
+    "397B",
+    "Ultra-253B",
+    "-R1",
+    "Thinking",
+)
+
+# Hard ceiling on estimated cost per full MOE run (5 analyzers + 1 synthesizer).
+# Nebius models are very cheap — typical runs cost $0.01–$0.04 total.
+# This ceiling exists to catch accidental selection of unusually expensive models.
+# Set to None to disable the cap.
+MAX_COST_PER_RUN_USD       = 0.50   # $0.50 ceiling — well above realistic max, catches outliers
+COST_ESTIMATE_PER_CALL_USD = 0.005  # ~$0.005 per call at mid-tier Nebius pricing (fallback)
+
+# Preferred synthesizer orgs — pick synthesizer from these if available.
+# Using a large instruction-tuned model from a different org than the analyzers
+# reduces the risk of synthesizer groupthink.
+PREFERRED_SYNTHESIZER_ORGS = ("nvidia", "MiniMaxAI", "PrimeIntellect", "openai")
 
 
-def validate_model_pool(client: OpenAI) -> list[str]:
+def _org_of(model_id: str) -> str:
+    """Extract org prefix from 'org/model-name'."""
+    return model_id.split("/")[0]
+
+
+def _is_chat_model(model_id: str) -> bool:
+    """Return True if this model ID is chat-capable and within cost bounds."""
+    for s in EXCLUDE_SUFFIXES:
+        if model_id.endswith(s):
+            return False
+    for s in EXCLUDE_SUBSTRINGS:
+        if s in model_id:
+            return False
+    for s in EXCLUDE_EXPENSIVE:
+        if s in model_id:
+            return False
+    return True
+
+
+def fetch_live_chat_models(client: OpenAI) -> list[str]:
     """
-    Query the live Nebius model list and validate every MODEL_POOL entry.
-    Prints a warning for any model ID that doesn't appear in the live catalogue.
-    Returns list of invalid model codes so callers can remove them from the pool.
+    Query the Nebius catalogue and return IDs of affordable chat-capable models.
 
-    This runs once at pipeline startup — it's the definitive check against 404s.
-    If the live API call fails, we warn and continue (don't block the run).
+    Filtering applied in order:
+      1. Non-chat types (embeddings, image, vision, code-only, fast-tier duplicates)
+      2. Known expensive model families (EXCLUDE_EXPENSIVE fragments)
+
+    Also attempts to fetch per-model pricing via the verbose API endpoint.
+    If pricing is available, logs a cost estimate for the planned run.
+    Exits if the estimated run cost exceeds MAX_COST_PER_RUN_USD.
     """
-    print("  Validating model pool against live Nebius catalogue...")
     try:
-        live_models = {m.id for m in client.models.list().data}
-        invalid     = []
-        for code, meta in MODEL_POOL.items():
-            model_id = meta["name"]
-            if model_id not in live_models:
-                print(f"    ✗ {code}: '{model_id}' NOT in live catalogue — will be skipped")
-                invalid.append(code)
+        all_ids     = [m.id for m in client.models.list().data]
+        chat_models = [m for m in all_ids if _is_chat_model(m)]
+        excluded_expensive = [m for m in all_ids
+                              if any(s in m for s in EXCLUDE_EXPENSIVE)
+                              and not any(s in m for s in EXCLUDE_SUBSTRINGS)
+                              and not m.endswith(EXCLUDE_SUFFIXES)]
+        print(f"  Live catalogue : {len(all_ids)} models total")
+        print(f"  Chat-eligible  : {len(chat_models)} after filtering")
+        if excluded_expensive:
+            print(f"  Cost-excluded  : {len(excluded_expensive)} expensive models excluded "
+                  f"({', '.join(m.split('/')[-1] for m in excluded_expensive[:4])}"
+                  f"{'...' if len(excluded_expensive) > 4 else ''})")
+
+        # Try to fetch pricing via verbose endpoint
+        # Nebius verbose API: GET /v1/models?verbose=true
+        # Returns RichModel objects with input_price_per_1m_tokens / output_price_per_1m_tokens
+        try:
+            import urllib.request, urllib.error
+            api_key = os.environ.get("NEBIUS_API_KEY", "")
+            req     = urllib.request.Request(
+                "https://api.tokenfactory.nebius.com/v1/models?verbose=true",
+                headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                import json as _json
+                data        = _json.loads(resp.read())
+                price_map   = {}
+                for m in data.get("data", []):
+                    mid = m.get("id", "")
+                    inp = m.get("input_price_per_1m_tokens")
+                    out = m.get("output_price_per_1m_tokens")
+                    if inp is not None and out is not None:
+                        price_map[mid] = {"in": float(inp), "out": float(out)}
+
+            if price_map:
+                # Estimate: each analyzer ~3000 in + 2000 out; synthesizer ~20000 in + 8000 out
+                def est_call(mid, is_synth=False):
+                    # Fallback pricing when model not in verbose response: mid-tier Nebius estimate
+                    p     = price_map.get(mid, {"in": 0.20, "out": 0.80})
+                    i_tok = 20000 if is_synth else 3000
+                    o_tok = 8000  if is_synth else 2000
+                    return i_tok / 1_000_000 * p["in"] + o_tok / 1_000_000 * p["out"]
+
+                # Worst-case estimate: most expensive 5 chat models as analyzers
+                costs_by_model = {m: est_call(m) for m in chat_models}
+                top5           = sorted(costs_by_model.values(), reverse=True)[:N_ANALYZERS]
+                worst_case_est = sum(top5) + est_call(list(costs_by_model.keys())[0], is_synth=True)
+                typical_est    = sum(sorted(costs_by_model.values())[len(chat_models)//2 - 2:
+                                                                      len(chat_models)//2 + 3])                                  + est_call(list(costs_by_model.keys())[0], is_synth=True)
+                print(f"  Cost estimate  : typical ~${typical_est:.3f} / worst-case ~${worst_case_est:.3f} per run")
+
+                if MAX_COST_PER_RUN_USD and worst_case_est > MAX_COST_PER_RUN_USD:
+                    print(f"  WARNING: Worst-case estimate ${worst_case_est:.3f} exceeds cap "
+                          f"${MAX_COST_PER_RUN_USD:.2f} — expensive models may be in pool. "
+                          f"Proceeding (actual draw may be cheaper).")
             else:
-                print(f"    ✓ {code}: '{model_id}'")
-        if not invalid:
-            print(f"  All {len(MODEL_POOL)} models validated.")
-        else:
-            print(f"  WARNING: {len(invalid)} model(s) invalid. Run 'python moe_sphere_pipeline.py --list-models' to see full catalogue.")
-        return invalid
+                est = (N_ANALYZERS + 1) * COST_ESTIMATE_PER_CALL_USD
+                print(f"  Cost estimate  : ~${est:.2f} per run (flat estimate, pricing unavailable)")
+        except Exception:
+            est = (N_ANALYZERS + 1) * COST_ESTIMATE_PER_CALL_USD
+            print(f"  Cost estimate  : ~${est:.2f} per run (flat estimate, verbose API unavailable)")
+
+        return chat_models
     except Exception as e:
-        print(f"  ⚠ Model validation failed ({e}) — proceeding without validation")
-        return []
+        print(f"ERROR: Could not fetch live model list from Nebius: {e}")
+        sys.exit(1)
+
+
+def select_diverse_panel(chat_models: list[str], n_analyzers: int = 5) -> tuple[list[str], str]:
+    """
+    Select n_analyzers models maximising org diversity, then choose a synthesizer
+    from a different org to the selected analyzers where possible.
+
+    Selection algorithm:
+      1. Group all chat models by org.
+      2. Shuffle org order.
+      3. Pick one random model per org until n_analyzers reached.
+         (With 11+ orgs available this always yields n_analyzers distinct orgs.)
+      4. If still short (very small catalogue), fill randomly from remainder.
+      5. Choose synthesizer: prefer PREFERRED_SYNTHESIZER_ORGS not in analyzer orgs;
+         fall back to any remaining model from a different org;
+         last resort: any remaining model.
+
+    Returns (analyzer_model_ids, synthesizer_model_id).
+    """
+    from collections import defaultdict
+
+    by_org = defaultdict(list)
+    for m in chat_models:
+        by_org[_org_of(m)].append(m)
+
+    orgs = list(by_org.keys())
+    random.shuffle(orgs)
+
+    # Round 1: one per org
+    analyzers = []
+    for org in orgs:
+        if len(analyzers) >= n_analyzers:
+            break
+        analyzers.append(random.choice(by_org[org]))
+
+    # Round 2: fill if catalogue is tiny
+    if len(analyzers) < n_analyzers:
+        remaining = [m for m in chat_models if m not in analyzers]
+        random.shuffle(remaining)
+        analyzers += remaining[:n_analyzers - len(analyzers)]
+
+    analyzer_orgs = {_org_of(m) for m in analyzers}
+
+    # Synthesizer: prefer a preferred org not already in the analyzer panel
+    remaining_models = [m for m in chat_models if m not in analyzers]
+    synth_candidates = [
+        m for m in remaining_models
+        if _org_of(m) in PREFERRED_SYNTHESIZER_ORGS
+        and _org_of(m) not in analyzer_orgs
+    ]
+    if not synth_candidates:
+        # Broaden: any org not in analyzer panel
+        synth_candidates = [m for m in remaining_models if _org_of(m) not in analyzer_orgs]
+    if not synth_candidates:
+        # Last resort: anything remaining
+        synth_candidates = remaining_models
+    if not synth_candidates:
+        print("ERROR: Not enough models for a synthesizer after analyzer selection.")
+        sys.exit(1)
+
+    synthesizer = random.choice(synth_candidates)
+    return analyzers, synthesizer
+
+
+def combination_string_from_ids(analyzer_ids: list[str], synthesizer_id: str) -> str:
+    """
+    Build a short readable combo string from full model IDs.
+    e.g. 'Llama-3.3-70B|Kimi-K2|GLM-5|gemma-3-27b|DeepSeek-V3:INTELLECT-3'
+    Uses the model name portion (after org/) for brevity.
+    """
+    def short(model_id):
+        return model_id.split("/")[-1]
+    return "|".join(short(m) for m in analyzer_ids) + ":" + short(synthesizer_id)
 
 N_ANALYZERS            = 5
 ANALYZER_MAX_TOKENS    = 4000
@@ -477,32 +656,11 @@ def build_data_payload(protocols_out, series_summary, total_n,
 
 # ── MOE MODEL SELECTION ───────────────────────────────────────────────────────────────
 
-def draw_panel_from(valid_pool: dict):
-    """
-    Draw 5 distinct analyzer codes and 1 synthesizer code from valid_pool.
-    Synthesizer preference: NEM if available and valid.
-    Falls back to any synthesizer_eligible model, then any remaining model.
-    Returns (analyzer_codes, synthesizer_code).
-    """
-    pool = list(valid_pool.keys())
-    random.shuffle(pool)
-    analyzer_codes = pool[:N_ANALYZERS]
-    remaining      = pool[N_ANALYZERS:]
-    # Prefer NEM as synthesizer if it is valid and not an analyzer
-    if "NEM" in valid_pool and "NEM" not in analyzer_codes:
-        synthesizer_code = "NEM"
-    else:
-        eligible = [c for c in remaining if valid_pool[c]["synthesizer_eligible"]]
-        synthesizer_code = random.choice(eligible if eligible else remaining)
-    return analyzer_codes, synthesizer_code
+# draw_panel_from removed — replaced by select_diverse_panel
 
-def combination_string(analyzer_codes, synthesizer_code):
-    return "-".join(analyzer_codes) + ":" + synthesizer_code
+# combination_string removed — replaced by combination_string_from_ids
 
-def model_cost(code, input_tokens, output_tokens):
-    m = MODEL_POOL[code]
-    return round(input_tokens / 1_000_000 * m["cost_in"] +
-                 output_tokens / 1_000_000 * m["cost_out"], 6)
+# model_cost removed — cost now estimated inline in call_model_by_id
 
 
 # ── MOE API CALLS ─────────────────────────────────────────────────────────────────────
@@ -514,12 +672,17 @@ def get_nebius_client():
         sys.exit(1)
     return OpenAI(api_key=api_key, base_url=NEBIUS_BASE_URL)
 
-def call_model(client, model_code, system, user, max_tokens, label=""):
-    """Single model call. Returns result dict."""
-    tag = f"[{label or model_code}]"
+def call_model_by_id(client, model_id: str, system: str, user: str,
+                     max_tokens: int, label: str = "") -> dict:
+    """
+    Single Nebius model call using a full model ID string.
+    Returns a result dict with model_id, output_text, token counts, cost.
+    Cost is estimated at a flat rate (unknown models billed at mid-tier estimate).
+    """
+    tag = f"[{label or model_id.split('/')[-1]}]"
     try:
         response = client.chat.completions.create(
-            model      = MODEL_POOL[model_code]["name"],
+            model      = model_id,
             max_tokens = max_tokens,
             messages   = [
                 {"role": "system", "content": system},
@@ -529,49 +692,50 @@ def call_model(client, model_code, system, user, max_tokens, label=""):
         out   = response.choices[0].message.content.strip()
         i_tok = response.usage.prompt_tokens
         o_tok = response.usage.completion_tokens
-        cost  = model_cost(model_code, i_tok, o_tok)
+        # Flat cost estimate: $0.30/M in, $1.00/M out (conservative mid-pool average)
+        cost  = round(i_tok / 1_000_000 * 0.30 + o_tok / 1_000_000 * 1.00, 6)
         print(f"  {tag} ✓  {i_tok}in/{o_tok}out  (~${cost:.4f})")
-        return {"model_code": model_code, "output_text": out,
+        return {"model_id": model_id, "output_text": out,
                 "input_tokens": i_tok, "output_tokens": o_tok,
                 "cost_usd": cost, "error": None}
     except Exception as e:
         print(f"  {tag} ✗  ERROR: {e}")
-        return {"model_code": model_code, "output_text": "",
+        return {"model_id": model_id, "output_text": "",
                 "input_tokens": 0, "output_tokens": 0,
                 "cost_usd": 0.0, "error": str(e)}
 
-def run_analyzers(client, analyzer_codes, system_text, analyzer_text, data_payload):
+def run_analyzers_by_id(client, analyzer_ids: list[str], system_text: str,
+                        analyzer_text: str, data_payload: str) -> list[dict]:
     """
-    Run N_ANALYZERS in parallel via ThreadPoolExecutor.
-    System: Sphere persona only. User: analyzer role instructions + data payload.
+    Run len(analyzer_ids) models in parallel via ThreadPoolExecutor.
+    System: Sphere persona only. User: analyzer instructions + data payload.
     """
-    print(f"\n  Running {N_ANALYZERS} analyzers in parallel...")
-    # Analyzer instructions prepended to data payload in the user message
+    n = len(analyzer_ids)
+    print(f"\n  Running {n} analyzers in parallel...")
     user = analyzer_text + "\n\n" + data_payload
     results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=N_ANALYZERS) as ex:
+    with concurrent.futures.ThreadPoolExecutor(max_workers=n) as ex:
         futures = {
-            ex.submit(call_model, client, code, system_text, user,
-                      ANALYZER_MAX_TOKENS, f"ANALYZER-{code}"): code
-            for code in analyzer_codes
+            ex.submit(call_model_by_id, client, model_id, system_text, user,
+                      ANALYZER_MAX_TOKENS, f"ANALYZER"): model_id
+            for model_id in analyzer_ids
         }
         for future in concurrent.futures.as_completed(futures):
             results.append(future.result())
     return results
 
-def run_synthesizer(client, synthesizer_code, system_text, synthesizer_text,
-                    data_payload, analyzer_results):
+def run_synthesizer_by_id(client, synthesizer_id: str, system_text: str,
+                          synthesizer_text: str, data_payload: str,
+                          analyzer_results: list[dict]) -> dict:
     """
     Build synthesizer user prompt and call the model.
 
-    System prompt: Sphere persona only (system_text).
-    User prompt:   data payload + all analyzer outputs + synthesizer instructions.
-    synthesizer_text appears ONCE — in the user message — so the model is not
-    confused by receiving identical instructions in both turns.
+    System: Sphere persona only.
+    User:   data payload + all analyzer outputs + synthesizer instructions (once).
     """
-    print(f"\n  Running synthesizer ({synthesizer_code})...")
+    print(f"\n  Running synthesizer ({synthesizer_id.split('/')[-1]})...")
     analyzer_block = "\n".join(
-        f"=== ANALYZER {r['model_code']} ===\n"
+        f"=== ANALYZER {r['model_id'].split('/')[-1]} ===\n"
         + (r["output_text"] or "[NO OUTPUT — model error]") + "\n"
         for r in analyzer_results
     )
@@ -580,10 +744,8 @@ def run_synthesizer(client, synthesizer_code, system_text, synthesizer_text,
         "\n\n=== ANALYZER OUTPUTS ===\n" + analyzer_block +
         "\n\n=== YOUR TASK ===\n" + synthesizer_text
     )
-    # System is Sphere persona only — instructions are in the user message above
-    result = call_model(client, synthesizer_code, system_text, user,
-                        SYNTHESIZER_MAX_TOKENS, f"SYNTHESIZER-{synthesizer_code}")
-    # Log first 300 chars of raw output to help diagnose empty/malformed responses
+    result  = call_model_by_id(client, synthesizer_id, system_text, user,
+                                SYNTHESIZER_MAX_TOKENS, "SYNTHESIZER")
     preview = result["output_text"][:300].replace("\n", " ") if result["output_text"] else "[EMPTY]"
     print(f"  Synthesizer raw preview: {preview}")
     return result
@@ -609,14 +771,11 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
     Returns (commentary_dict, usage_dict, prompt_versions_info,
              analyzer_results, synthesizer_result, combo).
     """
-    client = get_nebius_client()
+    client     = get_nebius_client()
+    chat_models = fetch_live_chat_models(client)
 
-    # Validate model IDs against live catalogue — removes invalid codes from pool
-    invalid_codes = validate_model_pool(client)
-    valid_pool    = {k: v for k, v in MODEL_POOL.items() if k not in invalid_codes}
-    if len(valid_pool) < N_ANALYZERS + 1:
-        print(f"ERROR: Only {len(valid_pool)} valid models available, need at least {N_ANALYZERS + 1}.")
-        print("       Run: python moe_sphere_pipeline.py --list-models")
+    if len(chat_models) < N_ANALYZERS + 1:
+        print(f"ERROR: Only {len(chat_models)} chat models available, need at least {N_ANALYZERS + 1}.")
         sys.exit(1)
 
     system_text,      system_hash,      _ = load_prompt(MOE_SYSTEM_FILE)
@@ -637,23 +796,28 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
         embedding_context=embedding_context,
     )
 
-    analyzer_codes, synthesizer_code = draw_panel_from(valid_pool)
-    combo = combination_string(analyzer_codes, synthesizer_code)
-    print(f"\n  MOE panel  : analyzers={analyzer_codes}  synthesizer={synthesizer_code}")
+    analyzer_ids, synthesizer_id = select_diverse_panel(chat_models, N_ANALYZERS)
+    combo = combination_string_from_ids(analyzer_ids, synthesizer_id)
+
+    print(f"\n  MOE panel:")
+    for m in analyzer_ids:
+        print(f"    ANALYZER   {m}")
+    print(f"    SYNTHESIZER {synthesizer_id}")
     print(f"  Combo str  : {combo}")
 
-    analyzer_results   = run_analyzers(client, analyzer_codes, system_text, analyzer_text, data_payload)
+    analyzer_results   = run_analyzers_by_id(client, analyzer_ids, system_text, analyzer_text, data_payload)
 
     # Hard-fail if every analyzer errored — synthesizer has nothing to work with
     successful_analyzers = [r for r in analyzer_results if not r["error"]]
     if not successful_analyzers:
-        print("ERROR: All analyzers failed. Check model IDs and NEBIUS_API_KEY.")
+        print("ERROR: All analyzers failed. Check NEBIUS_API_KEY.")
         sys.exit(1)
     if len(successful_analyzers) < N_ANALYZERS:
-        print(f"  WARNING: {N_ANALYZERS - len(successful_analyzers)} analyzer(s) failed — proceeding with {len(successful_analyzers)} outputs")
+        print(f"  WARNING: {N_ANALYZERS - len(successful_analyzers)} analyzer(s) failed — "
+              f"proceeding with {len(successful_analyzers)} outputs")
 
-    synthesizer_result = run_synthesizer(client, synthesizer_code, system_text,
-                                         synthesizer_text, data_payload, analyzer_results)
+    synthesizer_result = run_synthesizer_by_id(client, synthesizer_id, system_text,
+                                                synthesizer_text, data_payload, analyzer_results)
 
     if synthesizer_result["error"]:
         print(f"ERROR: Synthesizer failed: {synthesizer_result['error']}")
@@ -849,13 +1013,14 @@ def writeback_moe_runs(supabase, run_date, analyzer_results,
                        synthesizer_result, combo):
     now  = datetime.datetime.now(timezone.utc).isoformat()
     rows = []
-    for r in analyzer_results:
-        code = r["model_code"]
+    for i, r in enumerate(analyzer_results):
+        model_id   = r["model_id"]
+        model_name = model_id.split("/")[-1]
         rows.append({
-            "id":            f"{run_date}-{code}",
+            "id":            f"{run_date}-analyzer-{i}",
             "run_date":      run_date,
-            "model_code":    code,
-            "model_name":    MODEL_POOL[code]["name"],
+            "model_code":    model_id,          # full ID in model_code column
+            "model_name":    model_name,
             "role":          "analyzer",
             "output_text":   r["output_text"],
             "input_tokens":  r["input_tokens"],
@@ -863,12 +1028,13 @@ def writeback_moe_runs(supabase, run_date, analyzer_results,
             "cost_usd":      r["cost_usd"],
             "created_at":    now,
         })
-    code = synthesizer_result["model_code"]
+    synth_id   = synthesizer_result["model_id"]
+    synth_name = synth_id.split("/")[-1]
     rows.append({
-        "id":            f"{run_date}-{code}-synth",
+        "id":            f"{run_date}-synthesizer",
         "run_date":      run_date,
-        "model_code":    code,
-        "model_name":    MODEL_POOL[code]["name"],
+        "model_code":    synth_id,
+        "model_name":    synth_name,
         "role":          "synthesizer",
         "output_text":   synthesizer_result["output_text"],
         "input_tokens":  synthesizer_result["input_tokens"],
@@ -1110,6 +1276,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         "protocols":           {code: public_protocol(p) for code, p in protocols_out.items()},
         "series_summary":      series_summary,
         "sphere_commentary": {
+            "run_date":            today,           # sphere.html date stamp reads this
             "overview":            sphere_commentary.get("overview", ""),
             "cross_series":        sphere_commentary.get("cross_series", ""),
             "anomalies":           sphere_commentary.get("anomalies", ""),
@@ -1268,15 +1435,18 @@ if __name__ == "__main__":
         client = get_nebius_client()
         print("\nFetching live model list from Nebius Token Factory...\n")
         try:
-            models = sorted(m.id for m in client.models.list().data)
-            for m in models:
-                print(f"  {m}")
-            print(f"\n{len(models)} models available.")
-            print("\nCurrent MODEL_POOL status:")
-            live_set = set(models)
-            for code, meta in MODEL_POOL.items():
-                status = "✓" if meta["name"] in live_set else "✗ NOT FOUND"
-                print(f"  {code}: {meta['name']}  {status}")
+            all_models  = sorted(m.id for m in client.models.list().data)
+            chat_models = [m for m in all_models if _is_chat_model(m)]
+            print(f"All models ({len(all_models)} total):")
+            for m in all_models:
+                tag = "  [chat]" if m in chat_models else ""
+                print(f"  {m}{tag}")
+            print(f"\n{len(all_models)} total  |  {len(chat_models)} chat-capable (eligible for MOE panel)")
+            print("\nOrg breakdown of chat models:")
+            from collections import Counter
+            orgs = Counter(_org_of(m) for m in chat_models)
+            for org, count in sorted(orgs.items()):
+                print(f"  {org:<25} {count} model(s)")
         except Exception as e:
             print(f"Error: {e}")
         sys.exit(0)
