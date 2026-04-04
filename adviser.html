@@ -19,7 +19,7 @@
 
 <!-- Twitter Card -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="Find Your Protocol · The Drum Protocols">
+<meta name="twitter:title"       content="AutoGluon Protocol Adviser · The Drum Protocols">
 <meta name="twitter:description" content="A guided adviser that matches you to one of 30 rhythmic audio protocols based on your current state — anxiety, sleep, focus, crisis, energy.">
 <meta name="twitter:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
 
@@ -29,7 +29,7 @@
 <link rel="icon" type="image/png"  sizes="16x16"   href="favicon-16x16.png">
 <link rel="manifest"               href="site.webmanifest">
 <meta name="theme-color"           content="#0d1720">
-<title>Protocol Adviser · The Drum Protocols</title>
+<title>AutoGluon Protocol Adviser · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -307,6 +307,34 @@ a { color: inherit; }
 .series-dot.transforming { background: var(--dp-transforming-accent); }
 .series-dot-name { font-size: 12px; font-weight: 500; color: var(--color-text-primary); margin-right: 4px; }
 .series-dot-label { font-size: 12px; color: var(--color-text-secondary); }
+/* ── AUTOGLUON IDENTITY CARD ── */
+.ag-card { background: linear-gradient(135deg, rgba(30,90,140,0.18) 0%, rgba(26,38,51,0.95) 100%); border: 0.5px solid rgba(74,158,202,0.3); }
+.ag-card:hover { border-color: rgba(74,158,202,0.55); }
+.ag-logo-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ag-logo { width: 36px; height: 36px; border-radius: 50%; overflow: hidden; flex-shrink: 0; border: 1px solid rgba(74,158,202,0.35); box-shadow: 0 0 12px rgba(74,158,202,0.2); }
+.ag-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ag-logo-text { display: flex; flex-direction: column; gap: 1px; }
+.ag-logo-name { font-size: 13px; font-weight: 600; color: #4a9eca; letter-spacing: 0.04em; }
+.ag-logo-sub { font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 0.08em; text-transform: uppercase; }
+.ag-stat-row { display: flex; gap: 6px; margin: 12px 0 10px; }
+.ag-stat { flex: 1; background: rgba(0,0,0,0.2); border: 0.5px solid rgba(74,158,202,0.15); border-radius: var(--radius-sm); padding: 8px 6px; text-align: center; }
+.ag-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: #4a9eca; line-height: 1; }
+.ag-stat-label { font-size: 9px; color: var(--color-text-tertiary); letter-spacing: 0.07em; text-transform: uppercase; margin-top: 3px; }
+.ag-feature-row { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+.ag-feature { display: flex; align-items: center; gap: 7px; }
+.ag-feature-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.ag-feature-bar { height: 100%; background: linear-gradient(90deg, #4a9eca, #52B788); border-radius: 2px; transition: width 1s ease; }
+.ag-feature-name { font-size: 10px; color: var(--color-text-secondary); width: 90px; flex-shrink: 0; }
+.ag-feature-val { font-size: 10px; color: var(--color-text-tertiary); width: 32px; text-align: right; flex-shrink: 0; }
+.ag-powered-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 10px; color: rgba(74,158,202,0.7); letter-spacing: 0.06em; }
+.ag-powered-badge::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #4a9eca; box-shadow: 0 0 6px rgba(74,158,202,0.8); }
+/* ── AG PANEL IDENTITY STRIP (on result screen) ── */
+.ag-result-strip { display: none; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(74,158,202,0.06); border-bottom: 0.5px solid rgba(74,158,202,0.18); }
+.ag-result-strip.visible { display: flex; }
+.ag-result-logo { width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(74,158,202,0.4); flex-shrink: 0; }
+.ag-result-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ag-result-text { font-size: 11px; color: rgba(74,158,202,0.9); letter-spacing: 0.06em; }
+.ag-result-text strong { color: #4a9eca; font-weight: 600; }
 .screen { display: none; }
 .screen.active { display: block; }
 .page-footer { background: var(--dp-slate-deeper); padding: 28px 24px 34px; text-align: center; border-top: 1px solid var(--color-border); }
@@ -412,9 +440,9 @@ a { color: inherit; }
           </div>
         </div>
         <div class="adviser-header">
-          <div class="adviser-brand">The Drum Protocols</div>
+          <div class="adviser-brand">The Drum Protocols · AutoGluon Adviser</div>
           <div class="adviser-title">Protocol Adviser</div>
-          <div class="adviser-sub">Three questions · Your match is waiting</div>
+          <div class="adviser-sub">Three questions · AutoML-powered matching</div>
         </div>
         <div class="progress-row">
           <div class="progress-dot active" id="dot-0"></div>
@@ -432,6 +460,11 @@ a { color: inherit; }
         </div>
       </div>
       <div id="screen-result" class="screen">
+        <!-- AutoGluon identity strip — shown when AG_RECS is driving the recommendation -->
+        <div class="ag-result-strip" id="ag-result-strip">
+          <div class="ag-result-logo"><img src="AG.png" alt="AutoGluon"></div>
+          <div class="ag-result-text"><strong>AutoGluon</strong> · Ensemble ML recommendation · <span id="ag-model-count">5</span> models</div>
+        </div>
         <div class="result-header" id="result-header">
           <div class="result-match-label">Your match</div>
           <div class="adviser-rec-badge" id="adviser-rec-badge" style="display:none">Adviser Recommendation</div>
@@ -525,6 +558,27 @@ a { color: inherit; }
       </div>
     </div>
     <aside class="adviser-sidebar">
+      <div class="sidebar-card ag-card">
+        <div class="ag-logo-row">
+          <div class="ag-logo"><img src="AG.png" alt="AutoGluon"></div>
+          <div class="ag-logo-text">
+            <div class="ag-logo-name">AutoGluon</div>
+            <div class="ag-logo-sub">Ensemble AutoML</div>
+          </div>
+        </div>
+        <div class="sidebar-card-label" style="margin-bottom:6px">Powered by AutoML</div>
+        <p style="font-size:12px;line-height:1.65;margin-bottom:0">Recommendations are generated by an AutoGluon ensemble — LightGBM, CatBoost, XGBoost, Random Forest, and neural networks trained on listener outcome data and protocol design parameters.</p>
+        <div class="ag-stat-row" id="ag-stat-row">
+          <div class="ag-stat"><div class="ag-stat-val" id="ag-n-train">—</div><div class="ag-stat-label">Training rows</div></div>
+          <div class="ag-stat"><div class="ag-stat-val" id="ag-n-models">—</div><div class="ag-stat-label">Models</div></div>
+          <div class="ag-stat"><div class="ag-stat-val" id="ag-combos">81</div><div class="ag-stat-label">Combos scored</div></div>
+        </div>
+        <div class="sidebar-card-label" style="margin:8px 0 6px">Top signal features</div>
+        <div class="ag-feature-row" id="ag-feature-row">
+          <div class="ag-feature"><div class="ag-feature-name" style="color:var(--color-text-tertiary);font-style:italic">Loading…</div></div>
+        </div>
+        <div class="ag-powered-badge">Retrained weekly on listener data</div>
+      </div>
       <div class="sidebar-card">
         <div class="sidebar-card-label">How it works</div>
         <div class="sidebar-card-title">Three questions, one protocol</div>
@@ -575,12 +629,15 @@ let QUESTIONS    = [];
 let ALL_PROTOCOLS= {};  // flat: { code: protocol }
 let ROUTING_POOLS= {};  // { zoneKey: [code, ...] }
 let STATS={}, DATA_DATE='';
+let AG_RECS={};         // autogluon.json: { "zone__time__intensity": { primary, cross_bucket, top_score } }
+let AG_META={};         // autogluon.json _meta
 
 // ── BOOTSTRAP ─────────────────────────────────────────────────────────────────
 Promise.all([
   fetch('protocols.json').then(r=>{if(!r.ok)throw new Error('protocols.json not found');return r.json();}),
-  fetch('data.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null)
-]).then(([pj, dj])=>{
+  fetch('data.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null),
+  fetch('autogluon.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null)
+]).then(([pj, dj, ag])=>{
 
   // Build QUESTIONS from protocols.json questions[]
   QUESTIONS = pj.questions.map(q=>({
@@ -638,6 +695,13 @@ Promise.all([
     });
   }
 
+  // Load AutoGluon recommendations — independent of data.json
+  if(ag && ag.recommendations){
+    AG_RECS = ag.recommendations;
+    AG_META = ag._meta || {};
+    hydrateAgSidebar(ag);
+  }
+
   // Start the adviser UI.
   // If returning from a survey with ?id=CODE in the URL, auto-load that result.
   const returnId = (new URLSearchParams(window.location.search).get('id')||''). toUpperCase();
@@ -676,20 +740,30 @@ function selectOption(key,btn){document.querySelectorAll('.option-btn').forEach(
 
 function nextStep(){if(currentQ<2){currentQ++;renderQuestion();}else showResult();}
 
+// ── AutoGluon recommendation key ──────────────────────────────────────────────
+function agKey(){
+  const timeMap={short:'short',mid:'mid',long:'long'};
+  return `${answers[0]||''}__${timeMap[answers[1]]||answers[1]||''}__${answers[2]||''}`;
+}
+
 function findProtocol(){
-  // Returns the top-ranked protocol from the zone pool for the primary match.
-  // Uses ranked logic: protocols with data.json scores sorted by mean desc,
-  // unranked protocols appended after. Returns the first result.
-  const results = rankedZoneProtocols(answers[0]);
+  // AutoGluon path: use primary[0] from autogluon.json if available
+  const rec=AG_RECS[agKey()];
+  if(rec&&rec.primary&&rec.primary.length){const p=ALL_PROTOCOLS[rec.primary[0]];if(p)return p;}
+  // Fallback: mean-ranked pool
+  const results=rankedZoneProtocols(answers[0]);
   return results.length ? results[0] : null;
 }
 
 function rankedZoneProtocols(zoneKey){
-  // Returns all protocols in the zone pool, ranked: scored first (desc by mean), unscored after.
-  const pool = (ROUTING_POOLS[zoneKey] || []).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
-  const scored   = pool.filter(p=>STATS[p.code]&&STATS[p.code].n>0).sort((a,b)=>(STATS[b.code].mean||0)-(STATS[a.code].mean||0));
-  const unscored = pool.filter(p=>!STATS[p.code]||STATS[p.code].n===0);
-  return [...scored, ...unscored];
+  // AutoGluon path: return full ranked primary list
+  const rec=AG_RECS[agKey()];
+  if(rec&&rec.primary&&rec.primary.length) return rec.primary.map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  // Fallback: sort by mean outcome score from STATS
+  const pool=(ROUTING_POOLS[zoneKey]||[]).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  const scored=pool.filter(p=>STATS[p.code]&&STATS[p.code].n>0).sort((a,b)=>(STATS[b.code].mean||0)-(STATS[a.code].mean||0));
+  const unscored=pool.filter(p=>!STATS[p.code]||STATS[p.code].n===0);
+  return [...scored,...unscored];
 }
 
 function drawCurve(p){
@@ -827,22 +901,37 @@ function renderCommentary(code){
 }
 
 function renderRelated(currentCode,sk){
-  // sk may be null on a direct return visit — fall back to matching by routing pool
-  let pool = ROUTING_POOLS[sk];
-  if(!pool){
-    // Find the pool that contains this protocol
-    pool = Object.values(ROUTING_POOLS).find(codes=>codes.includes(currentCode)) || [];
-  }
-  const codes=pool.filter(c=>c!==currentCode).slice(0,3).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  const rec=AG_RECS[agKey()];
+  const recCode=sessionStorage.getItem('dp-adviser-rec')||'';
   const list=document.getElementById('related-list');
-  if(!codes.length){list.innerHTML='<div style="font-size:13px;color:var(--color-text-tertiary);padding:8px 0">No related protocols found.</div>';return;}
-  const recCode = sessionStorage.getItem('dp-adviser-rec') || '';
-  list.innerHTML=codes.map(p=>{
+  // Primary alternatives: ranks 2-3 from AutoGluon, else pool fallback
+  let primaryAlts=[];
+  if(rec&&rec.primary&&rec.primary.length>1){
+    primaryAlts=rec.primary.slice(1,3).map(c=>ALL_PROTOCOLS[c]).filter(Boolean).filter(p=>p.code!==currentCode);
+  } else {
+    let pool=ROUTING_POOLS[sk];
+    if(!pool) pool=Object.values(ROUTING_POOLS).find(codes=>codes.includes(currentCode))||[];
+    primaryAlts=pool.filter(c=>c!==currentCode).slice(0,2).map(c=>ALL_PROTOCOLS[c]).filter(Boolean);
+  }
+  // Cross-bucket: out-of-zone protocols AutoGluon ranked highly
+  const crossCodes=(rec&&rec.cross_bucket&&rec.cross_bucket.length)
+    ?rec.cross_bucket.map(c=>ALL_PROTOCOLS[c]).filter(Boolean):[];
+  if(!primaryAlts.length&&!crossCodes.length){
+    list.innerHTML='<div style="font-size:13px;color:var(--color-text-tertiary);padding:8px 0">No related protocols found.</div>';return;
+  }
+  function cardHtml(p,entryLabel){
     const s=STATS[p.code];
     const sc=s&&s.n>0?`<div class="related-score">${s.mean?s.mean.toFixed(1):'—'}</div>`:`<div class="related-score no-data">—</div>`;
-    const isRec = p.code === recCode ? ' is-adviser-rec' : '';
-    return `<button class="related-card${isRec}" onclick="loadRelated('${p.code}')"><div class="related-dot ${p.series}"></div><div class="related-main"><div class="related-name">${p.name}</div><div class="related-meta">${p.meta}</div></div>${sc}</button>`;
-  }).join('');
+    const isRec=p.code===recCode?' is-adviser-rec':'';
+    const lbl=entryLabel?`<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:3px;opacity:.75">${entryLabel}</div>`:'';
+    return `<button class="related-card${isRec}" onclick="loadRelated('${p.code}')"><div class="related-dot ${p.series}"></div><div class="related-main">${lbl}<div class="related-name">${p.name}</div><div class="related-meta">${p.meta}</div></div>${sc}</button>`;
+  }
+  let html=primaryAlts.map(p=>cardHtml(p,null)).join('');
+  if(crossCodes.length){
+    html+=`<div style="font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--color-text-tertiary);margin:10px 0 6px;padding-left:2px">You might also explore</div>`;
+    html+=crossCodes.map(p=>cardHtml(p,p.entry)).join('');
+  }
+  list.innerHTML=html;
 }
 
 function loadRelated(code){const p=ALL_PROTOCOLS[code];if(!p)return;populateResult(p,answers[0]);scrollToPanel();}
@@ -865,6 +954,15 @@ function populateResult(p,sk){
   const recCode = sessionStorage.getItem('dp-adviser-rec') || '';
   const badge = document.getElementById('adviser-rec-badge');
   badge.style.display = (recCode && p.code === recCode) ? 'inline-flex' : 'none';
+  // Show AutoGluon strip when AG_RECS is driving recommendations
+  const agStrip=document.getElementById('ag-result-strip');
+  if(agStrip){
+    const hasAG=Object.keys(AG_RECS).length>0;
+    agStrip.classList.toggle('visible',hasAG);
+    if(hasAG&&AG_META.leaderboard_summary){
+      document.getElementById('ag-model-count').textContent=AG_META.leaderboard_summary.length||'—';
+    }
+  }
   drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
 }
 
@@ -885,6 +983,32 @@ function restart(){
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-adviser').classList.add('active');
   renderQuestion();scrollToPanel();
+}
+
+// ── AUTOGLUON SIDEBAR HYDRATION ──────────────────────────────────────────────
+function hydrateAgSidebar(ag){
+  if(!ag) return;
+  const meta=ag._meta||{};
+  // Training rows
+  const nEl=document.getElementById('ag-n-train');
+  if(nEl&&meta.n_training_rows) nEl.textContent=meta.n_training_rows.toLocaleString();
+  // Model count from leaderboard
+  const mEl=document.getElementById('ag-n-models');
+  if(mEl&&ag.leaderboard&&ag.leaderboard.length) mEl.textContent=ag.leaderboard.length;
+  // Feature importance bars
+  const fi=ag.feature_importance;
+  const featureRow=document.getElementById('ag-feature-row');
+  if(fi&&featureRow&&Object.keys(fi).length){
+    const entries=Object.entries(fi).slice(0,5);
+    const maxVal=entries[0][1]||1;
+    // Friendly display names
+    const nameMap={entry:'Entry match',avg_view_percentage:'Watch completion',adviser_driven:'Adviser-routed',avg_view_duration:'Watch duration',zone:'Zone alignment',endHz:'Landing Hz',delta:'Hz range',dur:'Duration',level:'Intensity level',series:'Protocol series',move:'Movement type',listener_type:'Listener type',settle_time:'Settle time',activity:'Activity',listen_method:'Listen method'};
+    featureRow.innerHTML=entries.map(([k,v])=>{
+      const pct=Math.round((v/maxVal)*100);
+      const label=nameMap[k]||k;
+      return `<div class="ag-feature"><div class="ag-feature-name">${label}</div><div class="ag-feature-bar-wrap"><div class="ag-feature-bar" style="width:${pct}%"></div></div><div class="ag-feature-val">${v.toFixed(3)}</div></div>`;
+    }).join('');
+  }
 }
 
 // ── PREVIOUS RECOMMENDATION CARD ─────────────────────────────────────────────
