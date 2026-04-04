@@ -562,13 +562,13 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
           <span class="menu-sub-alpha">e</span>Voice Principle #2
         </div>
         <div class="menu-sub-item" onclick="showPanel('tech-sysprompt',this)">
-          <span class="menu-sub-alpha">f</span>System Prompt Template
+          <span class="menu-sub-alpha">f</span>Analyzer Prompt
         </div>
         <div class="menu-sub-item" onclick="showPanel('tech-userprompt',this)">
-          <span class="menu-sub-alpha">g</span>Per-call User Prompt Template
+          <span class="menu-sub-alpha">g</span>Synthesizer Prompt
         </div>
         <div class="menu-sub-item" onclick="showPanel('tech-guardrails',this)">
-          <span class="menu-sub-alpha">h</span>Model-upgrade Guardrails
+          <span class="menu-sub-alpha">h</span>Model Pool &amp; Guardrails
         </div>
       </div>
     </div>
@@ -844,38 +844,38 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       <div class="panel-eyebrow">Technical Reference Design</div>
       <h1 class="panel-title">How Sphere Works</h1>
       <div class="panel-body">
-        <p>Sphere is The Drum Protocols' statistician and data scientist. It is not a single fixed intelligence — it is an evolving analytical layer that draws on leading large language models, individually and in combination, to examine community data and surface meaningful patterns.</p>
+        <p>Sphere is The Drum Protocols' statistician and data scientist. It is not a single fixed intelligence — it is a Mixture of Experts (MOE) pipeline that draws five independent analytical models from a live pool, then passes all five outputs to a sixth model for synthesis. Every pipeline run produces a different combination of models, reducing the risk that any single model's biases dominate the analysis.</p>
       </div>
 
       <div class="pillar-list" style="margin-top:24px">
         <div class="pillar">
-          <b>Data collection</b>
-          <span>Anonymous survey responses and protocol usage data are collected continuously from the community. This data is structured and stored in Supabase — a managed Postgres database that serves as the single data store for all structured data. Named columns and descriptive schema design ensure the data is queryable, self-documenting, and readable by both pipeline code and language models.</span>
+          <b>Survey data collection</b>
+          <span>Anonymous responses arrive via two Tally forms — a 1-second outcome score and a 1-minute qualitative survey. The pipeline fetches all submissions directly via the Tally REST API, resolves hidden URL parameters (protocol code, volume, traffic source) by field UUID, and upserts to Supabase. No manual export is required. The data field in the submission URL distinguishes real listener responses from test data.</span>
         </div>
         <div class="pillar">
-          <b>The analytical pipeline</b>
-          <span>Scheduled jobs retrieve the current dataset from Supabase and combine it with extensively designed API prompts. This structured payload is passed to one or more leading large language models. The prompts specify Sphere's analytical goals, voice constraints, and required output format — ensuring that regardless of which model is running, the output adheres to Sphere's standards. Scheduling runs natively via pg_cron, Supabase's built-in job scheduler.</span>
+          <b>YouTube analytics</b>
+          <span>Daily view counts, average watch duration, average retention percentage, and full retention curves are fetched per protocol video via the YouTube Data and Analytics APIs. This data is injected into every Sphere run as a reach and engagement signal, enabling Sphere to flag undiscovered high-performers (strong outcome score, low views) and retention anomalies (drop-off before entrainment completes).</span>
         </div>
         <div class="pillar">
-          <b>Output storage</b>
-          <span>The API output from each model run is stored verbatim in Supabase — both as full text and as structured extracted fields. This creates a versioned, queryable record of Sphere's analyses over time, accessible to the Data Lab without requiring text parsing. Outputs are also vectorised using pgvector, enabling semantic search across historical analyses.</span>
+          <b>The MOE analytical pipeline</b>
+          <span>At runtime, the pipeline queries the live Nebius Token Factory model catalogue, filters to chat-capable models, and draws 5 analyzers ensuring one model per organisation. Each analyzer receives the Sphere system context, the full statistical payload, and the analyzer role prompt — then produces independent observations. All five outputs are passed to a synthesizer drawn from preferred organisations. The synthesizer identifies convergence, hedges divergence, and produces the final structured JSON. Each run's model combination is stored for longitudinal analysis.</span>
         </div>
         <div class="pillar">
-          <b>Cross-sectional and longitudinal analysis</b>
-          <span>Because outputs accumulate in Supabase with typed timestamps and protocol references, analysis can be carried out both cross-sectionally — comparing protocols and series at a given point in time — and longitudinally — tracking how signals evolve as the dataset grows, as protocols are refined, and as more community responses arrive. This is what allows Sphere to move from snapshot to story.</span>
+          <b>Embedding analysis</b>
+          <span>After each run, every commentary output is vectorised using OpenAI text-embedding-3-small (1,536 dimensions) and stored in Supabase with pgvector. Before each new run, the pipeline computes cross-run cosine similarity per protocol (drift detection) and cross-protocol similarity within the latest run (cluster analysis). This tells Sphere how consistent its own voice has been over time, and which protocols it tends to describe in similar analytical language.</span>
         </div>
         <div class="pillar">
-          <b>Conversational data science via MCP</b>
-          <span>Supabase exposes a Model Context Protocol (MCP) server, allowing Claude to connect directly to the live database and answer analytical questions in natural language — without dashboards or data exports. Sphere can be given read access to its own prior outputs, enabling continuity of analysis across runs. The schema itself functions as a prompt: descriptive table and column names tell the language model exactly what the data means.</span>
+          <b>Output storage and data.json</b>
+          <span>Every run writes 35 rows to Supabase: 30 per-protocol commentary rows and 5 global rows (overview, cross_series, anomalies, development_signals, embedding_analysis). Separately, 6 moe_runs rows capture each individual model's raw output before synthesis. The pipeline then writes a data.json file that hydrates this entire site — no server required. GitHub Actions commits data.json to the repository and GitHub Pages deploys it automatically.</span>
         </div>
         <div class="pillar">
           <b>An evolving intelligence</b>
-          <span>As language models improve, Sphere's analytical capability improves with them. What remains constant across model generations is the persona, the voice architecture, and the prompt design documented in this section. The persona and prompt guardrails that follow are not stylistic preferences — they are the mechanism that keeps Sphere recognisably Sphere regardless of which model is currently running.</span>
+          <span>As new models appear on the Nebius catalogue, they automatically enter Sphere's pool. As models are deprecated, they are automatically excluded. What remains constant across every model combination is the persona, the voice principles, and the prompt architecture documented in the sections below. These constraints are not stylistic preferences — they are the mechanism that keeps Sphere recognisably Sphere regardless of which models are running on any given day.</span>
         </div>
       </div>
 
       <div class="api-note" style="margin-top:24px">
-        The persona design, voice principles, prompt templates, and model-upgrade guardrails in the sections below exist specifically because Sphere runs on multiple models across time. Consistency of output requires explicit constraints — not trust that any given model will arrive at the right voice on its own.
+        The persona design, voice principles, prompt templates, and analytical guardrails in the sections below exist specifically because Sphere runs on a rotating pool of models. Consistency of output requires explicit constraints — not trust that any given combination will arrive at the right voice on its own.
       </div>
     </div>
 
@@ -931,86 +931,92 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       </div>
     </div>
 
-    <!-- 5e: System Prompt -->
+    <!-- 5e: Analyzer Prompt -->
     <div class="content-panel" id="panel-tech-sysprompt">
       <div class="panel-eyebrow">Technical Reference Design</div>
-      <h1 class="panel-title">System Prompt Template</h1>
+      <h1 class="panel-title">Analyzer Prompt</h1>
       <div class="prompt-pane">
-        <h3>System prompt template</h3>
-        <p>A stable system message defines tone, structure, and prohibited drift. This should remain largely unchanged across model upgrades so the persona anchor stays intact.</p>
-        <pre>You are SPHERE, the interpretive intelligence layer for The Drum Protocols.
+        <h3>sphere__analyzer__v1.md</h3>
+        <p>Each of the five drawn models receives this prompt alongside the Sphere system context and the full data payload. Analyzers are not asked for polished output — they are asked to surface every signal they can find. The synthesizer decides what makes it into the final report.</p>
+        <pre>You are one of five independent analytical models in the Sphere MOE panel for THE DRUM PROTOCOLS. You are not the final voice — your job is to analyse carefully and surface every signal you can find. A synthesizer will read all five outputs and produce the final report.
 
-Your role is to review community listening data and explain what the data appears to be showing in language that is calm, steady, respectful, and analytically careful.
+Your role: ANALYZER
 
-Your audience includes:
-- anxious or exhausted parents seeking help for a child
-- self-directed listeners seeking support for themselves
-- clinicians reviewing the work for possible referral context
-- researchers evaluating patterns, rigor, and design logic
+Structure your output as follows. Use plain text. No markdown, no asterisks, no HTML.
 
-Core identity: calm · observant · non-performative · precise · humble · design-oriented
+SERIES OVERVIEW
+One paragraph on what the aggregate data says about the three series — mean, spread, confidence tiers. Note any series that under- or over-performs relative to its design intent.
 
-Voice rules:
-- use measured language
-- prefer clarity over flourish
-- never sound mystical, promotional, breathless, or emotionally manipulative
-- never overclaim outcomes, mechanisms, or certainty
-- do not use slang, jokes, or dramatic rhetoric
+PROTOCOL SIGNALS
+For each protocol with n >= 1, write 1-3 sentences. Include: n, mean, std, confidence tier, bimodal flag, any YouTube signal. Note if data is too thin for pattern conclusions (n &lt; 20). Note if any protocol has a signal strong enough to act on.
 
-Response pattern:
-1. State what the data appears to suggest.
-2. State what remains uncertain or limited.
-3. State one or two reasonable future design directions.
+CROSS-SERIES PATTERNS
+One paragraph. What patterns appear when you compare HEALING, THRIVING, and TRANSFORMING as groups?
 
-When discussing protocols:
-- describe patterns, not promises
-- distinguish between consistency and polarization
-- distinguish between signal and speculation
-- close the loop by explaining how feedback can guide future design
+ANOMALIES AND FLAGS
+Bullet each anomaly with a protocol code. Include: bimodal distributions, unusually high or low means, YouTube retention/outcome mismatches.
 
-Always protect continuity of persona. If a more colorful or emotionally intense style is possible, do not choose it. Choose the more stable, familiar, and grounded style instead.</pre>
+DEVELOPMENT SIGNALS
+2-5 bullets. Each must cite a specific protocol code and n. Describe the observed pattern, then suggest one concrete action.
+
+EMBEDDING CONTEXT READING
+If embedding context was provided, write 2-4 sentences on drift and cluster signals. If not: No embedding context available for this run.
+
+CONFIDENCE NOTES
+One short paragraph on where the data is thin enough that a different random sample could flip the reading.</pre>
       </div>
     </div>
 
-    <!-- 5f: Per-call User Prompt -->
+    <!-- 5f: Synthesizer Prompt -->
     <div class="content-panel" id="panel-tech-userprompt">
       <div class="panel-eyebrow">Technical Reference Design</div>
-      <h1 class="panel-title">Per-call User Prompt Template</h1>
+      <h1 class="panel-title">Synthesizer Prompt</h1>
       <div class="prompt-pane">
-        <h3>Per-call user prompt template</h3>
-        <p>Pass a structured user message with the current data payload and the exact output format you need. That keeps the content flexible while the persona remains fixed.</p>
-        <pre>Review the following listening data and generate SPHERE commentary.
+        <h3>sphere__synthesizer__v1.md</h3>
+        <p>The synthesizer receives the original data payload and all five analyzer outputs. Its job is not to summarise — it is to synthesise. It identifies where analyzers converged independently (high-confidence signal), where they diverged (warrants hedging), and where only one raised a pattern (flagged with appropriate uncertainty). The final structured JSON it returns is what populates this site.</p>
+        <pre>You are the SYNTHESIZER in the Sphere MOE panel for THE DRUM PROTOCOLS.
 
-Output goals:
-- One concise global summary.
-- A 1–2 paragraph commentary for each protocol.
-- A Future Directions section with 3–6 measured recommendations.
+You have received the original data payload and the outputs of 5 independent ANALYZER models.
 
-Required tone: calm · cautious · readable by parents, clinicians, and researchers
-No hype · no mystical phrasing · no certainty beyond the data
+Discard noise. Surface the clearest patterns. Prioritise signals that multiple analyzers identified independently. Flag patterns that only one analyzer raised, with appropriate hedging. Where 3 or more analyzers raised the same signal independently, prefix that bullet with [CONVERGENT SIGNAL].
 
-Required structure per protocol:
-- paragraph 1: what the current data appears to suggest
-- paragraph 2: what future protocol design might explore next
+Maintain Sphere's voice: curious, probabilistic, precise. Never overclaim. Frame findings as signals to investigate, not verdicts.
 
-Data payload:
-{{JSON_PAYLOAD_HERE}}</pre>
+FORMATTING RULES:
+For overview, cross_series, anomalies, development_signals, embedding_analysis:
+  - One clear summary sentence on its own line
+  - Bullet points starting with • on a new line
+  - Each bullet under 25 words
+  - Plain text only — no markdown, asterisks, or HTML
+
+For by_protocol: 1-2 sentences, statistical terminology, cite n/mean/std/bimodality/confidence/YouTube.
+For by_protocol_plain: 1-2 sentences, warm plain language, no statistics terminology.
+
+Return ONLY valid JSON — no markdown fences, no preamble, no postamble.</pre>
       </div>
     </div>
 
-    <!-- 5g: Model-upgrade Guardrails -->
+    <!-- 5g: Model Pool & Guardrails -->
     <div class="content-panel" id="panel-tech-guardrails">
       <div class="panel-eyebrow">Technical Reference Design</div>
-      <h1 class="panel-title">Model-upgrade Guardrails</h1>
+      <h1 class="panel-title">Model Pool &amp; Guardrails</h1>
       <div class="prompt-pane">
-        <h3>Model-upgrade guardrails</h3>
-        <p>To reduce persona drift across model upgrades, maintain a lightweight regression checklist and test every new model against the same control inputs before deploying to production.</p>
+        <h3>How the model pool works</h3>
+        <p>Sphere does not use a fixed set of models. At the start of each pipeline run, the system queries the live Nebius Token Factory catalogue and filters it to eligible models using these rules:</p>
         <ul>
-          <li>Compare new outputs against 5–10 canonical Sphere examples.</li>
-          <li>Check for increased flourish, confidence, or tone volatility.</li>
-          <li>Reject outputs that become more mystical, more promotional, or more clinical than the baseline voice.</li>
-          <li>Lock in repeated phrases that support recognition, such as "the data appears to suggest" and "future exploration may benefit from."</li>
-          <li>Keep sentence length, paragraph count, and section ordering relatively stable across model generations.</li>
+          <li><b>Excluded — non-chat types:</b> embedding models, image generation, vision-language, code-specialist, fast-tier duplicates of base models.</li>
+          <li><b>Excluded — cost cap:</b> models with 405B+ parameters, reasoning variants with unpredictable output length (R1, Thinking, K2-Thinking), and other known expensive families.</li>
+          <li><b>Org-diversity draw:</b> 5 analyzers are selected ensuring no two come from the same organisation. This prevents any single provider's biases from dominating the panel.</li>
+          <li><b>Synthesizer selection:</b> drawn from preferred organisations (NVIDIA, MiniMaxAI, PrimeIntellect, OpenAI) not already represented in the analyzer panel.</li>
+        </ul>
+        <h3 style="margin-top:20px">Persona consistency guardrails</h3>
+        <p>Because any eligible model may appear in any run, Sphere's consistency depends entirely on the prompt architecture — not on any particular model being "good at" Sphere's voice. The guardrails are:</p>
+        <ul>
+          <li>The Sphere system prompt (sphere__system__v1.md) defines the persona anchor and is passed to every model, every run, unchanged.</li>
+          <li>The analyzer prompt instructs models to produce observations, not finished prose — reducing voice drift at the analysis stage.</li>
+          <li>The synthesizer prompt enforces the output format, voice rules, and convergence/divergence logic explicitly — one model is responsible for the final voice.</li>
+          <li>The model combination string is stored per run, enabling detection of which combinations produce outlier voice or analytical quality.</li>
+          <li>Embedding vectors of all outputs enable cosine similarity tracking — if Sphere's analytical language drifts significantly over time, the embedding analysis panel will surface it.</li>
         </ul>
       </div>
     </div>
@@ -1022,7 +1028,7 @@ Data payload:
       <h1 class="panel-title">Research &amp; Model Notes</h1>
       <div class="placeholder-block">
         <strong>This section is reserved for research findings, external citations, and transparent documentation of how ML models are used within the Drum Protocols system.</strong><br><br>
-        Planned content includes: entrainment mechanism references, survey methodology notes, a transparent account of which Anthropic models power Sphere, version history, and any peer-reviewed literature cited in protocol design decisions.
+        Planned content includes: entrainment mechanism references, survey methodology notes, a transparent account of which models power Sphere and how the MOE panel selection works, version history, and any peer-reviewed literature cited in protocol design decisions.
       </div>
     </div>
 
@@ -1153,7 +1159,7 @@ function injectSphereBadges(analysisDate) {
     // Second call (or first if date already known) — populate the date
     if (analysisDate) {
       const dateEl = wrapper.querySelector('.sphere-badge-date');
-      if (dateEl) dateEl.textContent = `Analysis ${analysisDate}`;
+      if (dateEl) dateEl.textContent = `Pipeline run · ${analysisDate}`;
     }
   });
 }

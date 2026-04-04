@@ -60,8 +60,21 @@ a{color:inherit;text-decoration:none}
 }
 
 /* ── TAB NAVIGATION ── */
-.tab-nav-wrap{background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);position:sticky;top:52px;z-index:100}
-.tab-nav{max-width:1100px;margin:0 auto;padding:0 32px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tab-nav-wrap{background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);position:sticky;top:52px;z-index:100;display:flex;align-items:stretch}
+.tab-scroll-btn{
+  flex-shrink:0;width:36px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--dp-slate-deeper);border:none;
+  color:rgba(255,255,255,.35);cursor:pointer;
+  font-size:14px;transition:color .15s,background .15s;
+  border-bottom:1px solid transparent;
+  position:relative;z-index:2;
+}
+.tab-scroll-btn:hover{color:var(--dp-gold-light);background:rgba(184,134,11,.06)}
+.tab-scroll-btn.left{border-right:1px solid var(--color-border)}
+.tab-scroll-btn.right{border-left:1px solid var(--color-border)}
+.tab-scroll-btn:disabled{opacity:.18;cursor:default;pointer-events:none}
+.tab-nav{flex:1;min-width:0;margin:0;padding:0 8px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
 .tab-nav::-webkit-scrollbar{display:none}
 .tab-btn{
   flex-shrink:0;
@@ -84,7 +97,10 @@ a{color:inherit;text-decoration:none}
 .tab-btn.active[data-color="thriving"]{border-bottom-color:var(--dp-thriving-accent);color:var(--dp-thriving-accent)}
 .tab-btn.active[data-color="transforming"]{border-bottom-color:var(--dp-transforming-accent);color:var(--dp-transforming-accent)}
 
-@media(max-width:700px){.tab-nav{padding:0 12px}}
+@media(max-width:700px){
+  .tab-scroll-btn{width:30px;font-size:12px}
+  .tab-nav{padding:0 4px}
+}
 
 /* ── MOBILE ACCORDION (hidden on desktop) ── */
 .tab-accordion{display:none}
@@ -103,12 +119,12 @@ a{color:inherit;text-decoration:none}
   .accordion-btn .acc-arrow{font-size:10px;transition:transform .15s}
   .accordion-btn.active .acc-arrow{transform:rotate(180deg)}
   .accordion-content{display:none}
-  .accordion-content.open{display:block}
+  .accordion-content.open{display:block;padding:20px 20px 32px}
 }
 
 /* ── MAIN ── */
 .main{max-width:1100px;margin:0 auto;padding:40px 32px 80px}
-@media(max-width:700px){.main{padding:24px 12px 60px}.body-text{padding-left:8px}.panel-intro{padding-left:8px}.phi-callout{margin-left:0}.curve-annotation{margin-left:0}.series-band{padding:20px 16px}.code-ref-grid{grid-template-columns:1fr}}
+@media(max-width:700px){.main{padding:24px 20px 60px}.body-text{padding-left:0}.panel-intro{padding-left:0}.overview-intro{padding-left:0}.phi-callout{margin-left:0}.curve-annotation{margin-left:0}.series-band{padding:20px 18px}.code-ref-grid{grid-template-columns:1fr}}
 
 /* ── CONTENT PANELS ── */
 .panel{display:none}
@@ -202,6 +218,20 @@ a{color:inherit;text-decoration:none}
 /* ── DIVIDER ── */
 .panel-divider{height:.5px;background:var(--color-border-mid);margin:32px 0}
 
+/* ── OVERVIEW INTRO BLOCK ── */
+.overview-intro{max-width:700px;margin-bottom:36px}
+.overview-intro-lead{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.5vw,42px);font-weight:600;color:#fff;line-height:1.1;margin-bottom:20px}
+.overview-intro-body{font-size:15px;line-height:1.82;color:rgba(255,255,255,.65);margin-bottom:18px}
+.overview-intro-body p+p{margin-top:12px}
+.overview-scenarios{list-style:none;padding:0;margin:20px 0 24px;display:flex;flex-direction:column;gap:0}
+.overview-scenarios li{padding:14px 0 14px 20px;border-top:.5px solid var(--color-border);position:relative;font-size:14px;line-height:1.72;color:rgba(255,255,255,.58)}
+.overview-scenarios li:last-child{border-bottom:.5px solid var(--color-border)}
+.overview-scenarios li::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:4px;height:4px;border-radius:50%;background:rgba(184,134,11,.5)}
+.overview-scenarios li em{color:rgba(255,255,255,.82);font-style:normal}
+.overview-cta{font-size:15px;line-height:1.82;color:rgba(255,255,255,.65)}
+.overview-cta p+p{margin-top:12px}
+.overview-cta strong{color:var(--dp-gold-light);font-weight:500}
+
 /* ── FOOTER ── */
 .page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 32px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light)}
@@ -279,8 +309,10 @@ a{color:inherit;text-decoration:none}
 
 <!-- ── TAB NAVIGATION — desktop ── -->
 <div class="tab-nav-wrap">
-  <div class="tab-nav" role="tablist">
+  <button class="tab-scroll-btn left" id="tab-scroll-left" aria-label="Scroll tabs left" onclick="scrollTabs(-1)">&#8592;</button>
+  <div class="tab-nav" role="tablist" id="tab-nav">
     <button class="tab-btn active" onclick="showTab('overview',this)" role="tab">Overview</button>
+    <button class="tab-btn" onclick="showTab('whattheyare',this)" role="tab">What They Are</button>
     <button class="tab-btn" data-color="healing" onclick="showTab('healing',this)" role="tab">Healing</button>
     <button class="tab-btn" data-color="thriving" onclick="showTab('thriving',this)" role="tab">Thriving</button>
     <button class="tab-btn" data-color="transforming" onclick="showTab('transforming',this)" role="tab">Transforming</button>
@@ -291,6 +323,7 @@ a{color:inherit;text-decoration:none}
     <button class="tab-btn" onclick="showTab('signal',this)" role="tab">Entrainment Signal</button>
     <button class="tab-btn" onclick="showTab('groove',this)" role="tab">Groove</button>
   </div>
+  <button class="tab-scroll-btn right" id="tab-scroll-right" aria-label="Scroll tabs right" onclick="scrollTabs(1)">&#8594;</button>
 </div>
 
 <!-- ── TAB NAVIGATION — mobile accordion ── -->
@@ -298,6 +331,10 @@ a{color:inherit;text-decoration:none}
   <div class="accordion-item">
     <button class="accordion-btn active" onclick="toggleAccordion(this,'overview')">Overview <span class="acc-arrow">▾</span></button>
     <div class="accordion-content open" id="acc-overview"></div>
+  </div>
+  <div class="accordion-item">
+    <button class="accordion-btn" onclick="toggleAccordion(this,'whattheyare')">What They Are <span class="acc-arrow">▾</span></button>
+    <div class="accordion-content" id="acc-whattheyare"></div>
   </div>
   <div class="accordion-item">
     <button class="accordion-btn" onclick="toggleAccordion(this,'healing')">Healing <span class="acc-arrow">▾</span></button>
@@ -343,6 +380,29 @@ a{color:inherit;text-decoration:none}
   <!-- ══ OVERVIEW ══ -->
   <div class="panel active" id="panel-overview">
     <div class="panel-eyebrow">System Overview</div>
+
+    <!-- New intro block -->
+    <div class="overview-intro">
+      <h1 class="overview-intro-lead">Overview</h1>
+      <div class="overview-intro-body">
+        <p>We all know what it feels like when the mind and body are not where we need them to be.</p>
+        <p>Sometimes the problem is too much activation. Sometimes it is too little. Sometimes it is stress, overstimulation, exhaustion, scattered attention, or the need to go deeper into a calm and reflective state.</p>
+        <p>Do any of these feel familiar?</p>
+      </div>
+      <ul class="overview-scenarios">
+        <li>It is 2 a.m. and you are staring at the ceiling again. No screens. No distractions. Still no sleep. Morning is coming too soon.</li>
+        <li>Your child is nearing meltdown in the back seat. The day has been too stimulating, and now they are stimming hard just to hold things together. How do you help them regulate and feel safe again?</li>
+        <li>Your boss just tore into you. Again. Your heart is pounding. Your hands are shaking. You can feel panic building, and you cannot seem to slow it down. How do you regain control?</li>
+        <li>Morning comes, but instead of possibility, it brings dread. No energy. No momentum. No desire to begin. How do you meet the day when everything in you wants to withdraw?</li>
+        <li>Your creativity is alive, but your attention will not stay with it. Ideas are coming fast, yet focus and follow-through are nowhere to be found. How do you bring clarity to the flow?</li>
+        <li>You finally feel calm. Quiet. Present. You do not want stimulation. You want depth. You want to feel centered, alert, and able to reflect. How do you move into that state on purpose?</li>
+      </ul>
+      <div class="overview-cta">
+        <p>The <strong>DRUM PROTOCOLS</strong> were created for moments like these.</p>
+        <p>They begin with a simple question: what state are you in, and where do you need to go next? From there, the system offers different rhythm-based pathways designed to help support regulation, activation, focus, grounding, or deeper reflective states.</p>
+      </div>
+    </div>
+
     <div class="graphic-zone tall">
       <svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
         <defs>
@@ -403,6 +463,21 @@ a{color:inherit;text-decoration:none}
       <p>The Drum Protocols is a library of thirty audio protocols built to move the nervous system — down toward regulation, sideways into sustained focus, or upward toward engagement and activation.</p>
       <p>Everything in the system is organised around one question: <em>where is your nervous system right now, and where does it need to go?</em> The answer determines which of three series you enter, which of ten entry points applies to your current state, and which of three intensity levels matches where you are today.</p>
       <p>The tabs above walk through each layer of the system — from the broad categories down to the precise mathematics that shapes every protocol's arc. Start anywhere. The system reveals itself in pieces.</p>
+    </div>
+  </div>
+
+  <!-- ══ WHAT THEY ARE ══ -->
+  <div class="panel" id="panel-whattheyare">
+    <div class="panel-eyebrow">The Drum Protocols</div>
+    <div class="overview-intro">
+      <h1 class="overview-intro-lead">What Are The DRUM PROTOCOLS?</h1>
+      <div class="overview-intro-body">
+        <p>The DRUM PROTOCOLS are purpose-built rhythmic listening experiences designed to support intentional shifts in state.</p>
+        <p>Each protocol is created with a different goal in mind: calming, grounding, activating, focusing, or helping the listener move into a deeper and more reflective condition. Instead of treating rhythm as passive background sound, The DRUM PROTOCOLS treat rhythm as something that can be designed with intention.</p>
+        <p>These are not generic drum tracks. They are structured rhythmic environments shaped through choices about tempo, texture, density, progression, and overall feel. The goal is to create listening experiences that may help the nervous system settle, organize, activate, or deepen in ways that feel supportive and usable in everyday life.</p>
+        <p>Some protocols are designed to help reduce overstimulation and support regulation. Others are designed to support activation, attentional coherence, emotional grounding, sustained focus, or contemplative depth. Rather than offering one listening experience for every situation, The DRUM PROTOCOLS are organized around different needs and different starting points.</p>
+        <p>Taken together, The DRUM PROTOCOLS form a growing library of rhythmic tools for real-world moments when state matters.</p>
+      </div>
     </div>
   </div>
 
@@ -1202,6 +1277,28 @@ document.addEventListener('click',function(e){
     const btn=document.querySelector('.nav-hamburger');
     if(btn) btn.setAttribute('aria-expanded','false');
   }
+});
+
+// ── Tab scroll arrows ──
+function scrollTabs(dir){
+  const nav=document.getElementById('tab-nav');
+  if(!nav) return;
+  nav.scrollBy({left:dir*180,behavior:'smooth'});
+  setTimeout(updateScrollBtns,200);
+}
+function updateScrollBtns(){
+  const nav=document.getElementById('tab-nav');
+  const btnL=document.getElementById('tab-scroll-left');
+  const btnR=document.getElementById('tab-scroll-right');
+  if(!nav||!btnL||!btnR) return;
+  btnL.disabled=nav.scrollLeft<=2;
+  btnR.disabled=nav.scrollLeft+nav.clientWidth>=nav.scrollWidth-2;
+}
+document.addEventListener('DOMContentLoaded',function(){
+  const nav=document.getElementById('tab-nav');
+  if(nav) nav.addEventListener('scroll',updateScrollBtns);
+  window.addEventListener('resize',updateScrollBtns);
+  updateScrollBtns();
 });
 
 // ── Tab system ──
