@@ -107,7 +107,7 @@ Example format for cross_series:
   "development_signals": "One summary paragraph.\n• Signal one — cite protocol code and suggested action\n• Signal two — cite protocol code and suggested action\n• Signal three — cite protocol code and suggested action (if warranted)\n• Signal four (if warranted)",
   "embedding_analysis": "One summary paragraph.\n• CROSS-RUN DRIFT: finding or 'Insufficient run history for drift analysis'\n• CROSS-PROTOCOL SEMANTIC CLUSTERS: finding\n• Confidence note on embedding data quantity",
   "by_protocol": {
-    "H-OS-L1": "2-4 sentence technical reading — use statistical terminology, cite n, mean, std, bimodality, confidence tier. Where qualitative data exists, reference it briefly. Where YouTube data exists, note views and retention. Where AutoGluon predicted score differs materially from observed mean, note the delta.",
+    "H-OS-L1": "One full paragraph (4-6 sentences) — use statistical terminology, cite n, mean, std, bimodality, confidence tier. Where qualitative data exists, reference it. Where YouTube data exists, note views and retention. Where AutoGluon predicted score differs materially from observed mean, note the delta and what it may indicate.",
     "... (include all 30 protocols)"
   },
   "by_protocol_plain": {

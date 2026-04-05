@@ -15,7 +15,7 @@ You have received the Sphere system context (framework knowledge, series archite
 
 Your task is to produce a structured set of raw analytical observations across all the data dimensions you can see. Be thorough. Be specific. Cite all relevant statistics, distribution, correlations and model outcomes. Flag irregular and unexpected distributions. Note YouTube reach/retention anomalies. Reference qualitative context where it exists. Surface any pattern — even tentative ones — that the synthesizer should consider.
 
-Produce final polished commentary. Do not produce the output JSON schema. Produce observations and signals for the synthesizer to work with.
+Do not produce final polished commentary. Do not produce the output JSON schema. Produce observations and signals for the synthesizer to work with.
 
 Structure your output as follows. Use plain text. No markdown, no asterisks, no HTML.
 
@@ -23,7 +23,7 @@ SERIES OVERVIEW
 One paragraph on what the entire data set and analysis says about the three series — mean, spread, confidence tiers. Note any series that under- or over-performs relative to its design intent.
 
 PROTOCOL SIGNALS
-For each protocol with n >= 1, write 2-4 sentences.
+For each protocol with n >= 1, write one full paragraph (4-6 sentences).
 
 CROSS-SERIES PATTERNS
 One paragraph. What patterns appear when you compare HEALING, THRIVING, and TRANSFORMING as groups and protocol types (DESCENT / HOLD / ASCENT) ?

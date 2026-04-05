@@ -26,7 +26,7 @@ For overview, cross_series, anomalies, development_signals, and embedding_analys
 - Keep each bullet under 25 words
 - Plain text only — no markdown, asterisks, or HTML tags
 
-For by_protocol entries: 2-4 sentences using statistical, machine learning and artificial intelligence terminology, citing n, mean, std, bimodality, and confidence tier. Reference qualitative data and YouTube signals where available.
+For by_protocol entries: one full paragraph (4-6 sentences) using statistical, machine learning and artificial intelligence terminology, citing n, mean, std, bimodality, and confidence tier. Reference qualitative data and YouTube signals where available. Include AutoGluon predicted score where it differs materially from the observed mean.
 
 For by_protocol_plain entries: 1-2 sentences in warm plain language for a non-technical listener. No statistics terminology. Focus on what the data means for the listening experience.
 
@@ -45,10 +45,10 @@ The JSON schema is:
   "overview": "One summary paragraph.\n• Key finding one\n• Key finding two\n• Key finding three (if warranted)",
   "cross_series": "One summary paragraph.\n• HEALING finding\n• THRIVING finding\n• TRANSFORMING finding",
   "anomalies": "One summary paragraph.\n• Anomaly one with protocol code\n• Anomaly two with protocol code (if present)\n• Note on what the anomaly suggests",
-  "development_signals": "One summary paragaph.\n• Signal — cite protocol code and suggested action\n• Signal — cite protocol code and suggested action\n• Signal (if warranted)\n• Signal (if warranted)",
+  "development_signals": "One summary paragraph.\n• Signal — cite protocol code and suggested action\n• Signal — cite protocol code and suggested action\n• Signal (if warranted)\n• Signal (if warranted)",
   "embedding_analysis": "One summary paragraph.\n• CROSS-RUN DRIFT: finding or 'Insufficient run history for drift analysis'\n• CROSS-PROTOCOL SEMANTIC CLUSTERS: finding\n• Confidence note on embedding data quantity",
   "by_protocol": {
-    "H-OS-L1": "2-4 sentence technical reading — n, mean, std, bimodality, confidence tier, YouTube signal where available.",
+    "H-OS-L1": "One full paragraph (4-6 sentences) — n, mean, std, bimodality, confidence tier, YouTube signal, AutoGluon predicted score delta where material.",
     "... all 30 protocols"
   },
   "by_protocol_plain": {
@@ -56,7 +56,7 @@ The JSON schema is:
     "... all 30 protocols"
   },
   "prompt_improvements": {
-    "summary": "One parapgraph on the overall quality of the current analyzer prompt based on panel feedback.",
+    "summary": "One paragraph on the overall quality of the current analyzer prompt based on panel feedback.",
     "recommendations": [
       {
         "type": "ADD | EDIT | DELETE",
