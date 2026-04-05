@@ -37,8 +37,16 @@ Environment (.env or GitHub secrets):
   OPENAI_VECTOR_KEY     — OpenAI API key for text-embedding-3-small
 
 Output:
-  ./data.json — same file as sphere_pipeline.py; commit message uses [moe]
-                tag for traceability in git history.
+  ./data.json    — same file as sphere_pipeline.py; commit message uses [moe]
+                   tag for traceability in git history.
+  ./prompts.json — runtime prompt store. Replaces individual .md files as the
+                   source of truth read by the pipeline. Human authors edit
+                   .md files in prompts/; the pipeline syncs any .md file
+                   newer than its prompts.json entry on startup. The MOE
+                   synthesizer writes new versioned prompt text directly into
+                   prompts.json when recommendations are sufficiently
+                   convergent. Both files are committed together by the
+                   existing moe_sphere.yml git step.
 
 Confidence scale (matches sphere.html CONF_PCT):
   early       n < 5    22%
@@ -66,8 +74,9 @@ from openai import OpenAI
 
 # ── CONFIGURATION ──────────────────────────────────────────────────────────────────────
 
-OUTPUT_DIR  = "."
-PROMPTS_DIR = "prompts"
+OUTPUT_DIR       = "."
+PROMPTS_DIR      = "prompts"       # authoring directory — .md files edited by humans
+PROMPTS_JSON     = "prompts.json"  # runtime store — read/written by the pipeline
 
 N_DEVELOPING = 5
 N_MEANINGFUL = 20
@@ -111,11 +120,11 @@ PROTOCOL_META = {
     "X-MC-L3": {"name": "Cosmos",     "series": "TRANSFORMING", "entry": "Mind & Clarity",          "move": "DESCENT"},
 }
 
-# Active prompt filenames
-MOE_SYSTEM_FILE      = "sphere__system__v1.md"
-MOE_USER_FILE        = "sphere__user__v1.md"
-MOE_ANALYZER_FILE    = "sphere__analyzer__v1.md"
-MOE_SYNTHESIZER_FILE = "sphere__synthesizer__v1.md"
+# Prompt scopes — keys used in prompts.json
+PROMPT_SCOPE_SYSTEM      = "system"
+PROMPT_SCOPE_USER        = "user"
+PROMPT_SCOPE_ANALYZER    = "analyzer"
+PROMPT_SCOPE_SYNTHESIZER = "synthesizer"
 
 # ── MOE MODEL POOL ────────────────────────────────────────────────────────────────────
 # All model IDs verified against https://nebius.com/token-factory/prices (April 2026).
@@ -141,37 +150,55 @@ EXCLUDE_SUBSTRINGS  = (
     "Instruct-fast",            # fast tier (caught by suffix too, belt-and-suspenders)
 )
 
-# ── Cost cap ───────────────────────────────────────────────────────────────────
-# Models with these fragments in their ID are excluded from random selection
-# because they are known to be very expensive (large reasoning/parameter count)
-# or generate unpredictably large outputs that could blow the monthly budget.
-#
-# Rationale per fragment:
-#   405B          — 405B-param models, ~$1-3/M output
-#   480B          — Qwen Coder 480B
-#   397B          — Qwen3.5 397B
-#   Ultra-253B    — Nemotron Ultra 253B (allowed as synthesizer via PREFERRED list)
-#   R1            — DeepSeek R1 reasoning: generates long thinking chains, expensive
-#   Thinking      — Any "Thinking" variant: chain-of-thought multiplies output tokens
-#   K2-Thinking   — Kimi reasoning variant
-#
-# To allow a currently-excluded model, remove its fragment from this tuple.
-# To add a new expensive model family, add a fragment here.
-EXCLUDE_EXPENSIVE = (
-    "405B",
-    "480B",
-    "397B",
-    "Ultra-253B",
-    "-R1",
-    "Thinking",
-)
+# Note: reasoning/large models are excluded by price filter at runtime, not by name fragments.
 
-# Hard ceiling on estimated cost per full MOE run (5 analyzers + 1 synthesizer).
-# Nebius models are very cheap — typical runs cost $0.01–$0.04 total.
-# This ceiling exists to catch accidental selection of unusually expensive models.
-# Set to None to disable the cap.
-MAX_COST_PER_RUN_USD       = 0.50   # $0.50 ceiling — well above realistic max, catches outliers
-COST_ESTIMATE_PER_CALL_USD = 0.005  # ~$0.005 per call at mid-tier Nebius pricing (fallback)
+MAX_OUTPUT_PRICE_PER_1M = 2.50   # USD — models above this per million output tokens are excluded
+PRICE_FALLBACK_OUTPUT   = 0.80   # USD — used when a model is not in NEBIUS_OUTPUT_PRICES
+                                  # Conservative estimate; keeps unknown new models in pool
+
+# ── Nebius Token Factory output prices (USD per 1M tokens, base tier) ─────────────────
+# Source: https://nebius.com/token-factory/prices  — updated 2026-04-04
+# Keys match the model ID format returned by client.models.list() (no org prefix).
+# Fast-tier variants are excluded by EXCLUDE_SUFFIXES before this table is consulted.
+# To update: visit the pricing page and edit the values below.
+NEBIUS_OUTPUT_PRICES = {
+    "gpt-oss-120b":                       0.60,
+    "gpt-oss-20b":                        0.20,
+    "Kimi-K2-Instruct":                   2.40,
+    "Kimi-K2-Thinking":                   2.40,   # same family, same tier
+    "Kimi-K2.5":                          2.40,   # same family
+    "Qwen3-235B-A22B-Thinking-2507":      0.80,
+    "Qwen3-235B-A22B-Instruct-2507":      0.60,
+    "Qwen3-30B-A3B-Thinking-2507":        0.30,
+    "Qwen3-30B-A3B-Instruct-2507":        0.30,
+    "Qwen3-30B-A3B":                      0.30,
+    "Qwen3-32B":                          0.30,
+    "Qwen3-14B":                          0.24,
+    "Qwen2.5-72B-Instruct":               0.40,
+    "Qwen3-Next-80B-A3B-Thinking":        0.80,   # same family as 235B-Thinking, estimated
+    "Qwen3.5-397B-A17B":                  0.80,   # large Qwen3.5 family, estimated
+    "QwQ-32B":                            0.45,
+    "GLM-4.5":                            2.20,
+    "GLM-4.5-Air":                        1.20,
+    "GLM-4.7-FP8":                        2.00,   # GLM-4.7 page shows $2/M, FP8 variant
+    "GLM-5":                              2.20,   # flagship GLM, same tier as GLM-4.5
+    "DeepSeek-R1-0528":                   2.40,
+    "DeepSeek-V3-0324":                   1.50,
+    "DeepSeek-V3.2":                      1.50,   # V3 family
+    "Meta-Llama-3.1-8B-Instruct":         0.06,
+    "Llama-3.3-70B-Instruct":             0.40,
+    "Llama-3_1-Nemotron-Ultra-253B-v1":   1.80,
+    "Nemotron-Nano-V2-12b":               0.24,   # Nano family, estimated at 14B tier
+    "NVIDIA-Nemotron-3-Nano-30B-A3B":     0.30,   # Nemotron-3 Nano, estimated
+    "nemotron-3-super-120b-a12b":         0.90,   # OpenRouter shows $0.90/M
+    "INTELLECT-3":                        1.10,   # OpenRouter shows $1.10/M
+    "Hermes-4-405B":                      3.00,
+    "Hermes-4-70B":                       0.40,
+    "gemma-2-2b-it":                      0.06,
+    "gemma-3-27b-it":                     0.24,   # Gemma-3 27B, estimated at 9B tier x3
+    "MiniMax-M2.1":                       1.20,   # OpenRouter shows $1.20/M
+    "MiniMax-M2.5":                       1.20,   # same family
+}
 
 # Preferred synthesizer orgs — pick synthesizer from these if available.
 # Using a large instruction-tuned model from a different org than the analyzers
@@ -185,14 +212,12 @@ def _org_of(model_id: str) -> str:
 
 
 def _is_chat_model(model_id: str) -> bool:
-    """Return True if this model ID is chat-capable and within cost bounds."""
+    """Return True if this model ID is a chat-capable type (non-embedding, non-image, etc).
+    Price filtering is applied separately using live pricing data."""
     for s in EXCLUDE_SUFFIXES:
         if model_id.endswith(s):
             return False
     for s in EXCLUDE_SUBSTRINGS:
-        if s in model_id:
-            return False
-    for s in EXCLUDE_EXPENSIVE:
         if s in model_id:
             return False
     return True
@@ -200,83 +225,70 @@ def _is_chat_model(model_id: str) -> bool:
 
 def fetch_live_chat_models(client: OpenAI) -> list[str]:
     """
-    Query the Nebius catalogue and return IDs of affordable chat-capable models.
+    Query the Nebius catalogue and return IDs of chat-capable models
+    whose output price is <= MAX_OUTPUT_PRICE_PER_1M (default $2.50/M).
 
-    Filtering applied in order:
-      1. Non-chat types (embeddings, image, vision, code-only, fast-tier duplicates)
-      2. Known expensive model families (EXCLUDE_EXPENSIVE fragments)
+    Filtering pipeline:
+      1. Non-chat type exclusions (EXCLUDE_SUFFIXES, EXCLUDE_SUBSTRINGS)
+      2. Price filter using NEBIUS_OUTPUT_PRICES table
+         - Models in table with price <= MAX_OUTPUT_PRICE_PER_1M → included
+         - Models in table with price >  MAX_OUTPUT_PRICE_PER_1M → excluded, logged
+         - Models not in table                                   → included at PRICE_FALLBACK_OUTPUT
+           (new models not yet added to the table are assumed affordable)
 
-    Also attempts to fetch per-model pricing via the verbose API endpoint.
-    If pricing is available, logs a cost estimate for the planned run.
-    Exits if the estimated run cost exceeds MAX_COST_PER_RUN_USD.
+    Exits if fewer than N_ANALYZERS + 1 models survive filtering.
+    To update prices: edit NEBIUS_OUTPUT_PRICES at the top of this file.
+    Current prices: https://nebius.com/token-factory/prices
     """
     try:
         all_ids     = [m.id for m in client.models.list().data]
         chat_models = [m for m in all_ids if _is_chat_model(m)]
-        excluded_expensive = [m for m in all_ids
-                              if any(s in m for s in EXCLUDE_EXPENSIVE)
-                              and not any(s in m for s in EXCLUDE_SUBSTRINGS)
-                              and not m.endswith(EXCLUDE_SUFFIXES)]
         print(f"  Live catalogue : {len(all_ids)} models total")
-        print(f"  Chat-eligible  : {len(chat_models)} after filtering")
-        if excluded_expensive:
-            print(f"  Cost-excluded  : {len(excluded_expensive)} expensive models excluded "
-                  f"({', '.join(m.split('/')[-1] for m in excluded_expensive[:4])}"
-                  f"{'...' if len(excluded_expensive) > 4 else ''})")
-
-        # Try to fetch pricing via verbose endpoint
-        # Nebius verbose API: GET /v1/models?verbose=true
-        # Returns RichModel objects with input_price_per_1m_tokens / output_price_per_1m_tokens
-        try:
-            import urllib.request, urllib.error
-            api_key = os.environ.get("NEBIUS_API_KEY", "")
-            req     = urllib.request.Request(
-                "https://api.tokenfactory.nebius.com/v1/models?verbose=true",
-                headers={"Authorization": f"Bearer {api_key}", "Accept": "application/json"},
-            )
-            with urllib.request.urlopen(req, timeout=10) as resp:
-                import json as _json
-                data        = _json.loads(resp.read())
-                price_map   = {}
-                for m in data.get("data", []):
-                    mid = m.get("id", "")
-                    inp = m.get("input_price_per_1m_tokens")
-                    out = m.get("output_price_per_1m_tokens")
-                    if inp is not None and out is not None:
-                        price_map[mid] = {"in": float(inp), "out": float(out)}
-
-            if price_map:
-                # Estimate: each analyzer ~3000 in + 2000 out; synthesizer ~20000 in + 8000 out
-                def est_call(mid, is_synth=False):
-                    # Fallback pricing when model not in verbose response: mid-tier Nebius estimate
-                    p     = price_map.get(mid, {"in": 0.20, "out": 0.80})
-                    i_tok = 20000 if is_synth else 3000
-                    o_tok = 8000  if is_synth else 2000
-                    return i_tok / 1_000_000 * p["in"] + o_tok / 1_000_000 * p["out"]
-
-                # Worst-case estimate: most expensive 5 chat models as analyzers
-                costs_by_model = {m: est_call(m) for m in chat_models}
-                top5           = sorted(costs_by_model.values(), reverse=True)[:N_ANALYZERS]
-                worst_case_est = sum(top5) + est_call(list(costs_by_model.keys())[0], is_synth=True)
-                typical_est    = sum(sorted(costs_by_model.values())[len(chat_models)//2 - 2:
-                                                                      len(chat_models)//2 + 3])                                  + est_call(list(costs_by_model.keys())[0], is_synth=True)
-                print(f"  Cost estimate  : typical ~${typical_est:.3f} / worst-case ~${worst_case_est:.3f} per run")
-
-                if MAX_COST_PER_RUN_USD and worst_case_est > MAX_COST_PER_RUN_USD:
-                    print(f"  WARNING: Worst-case estimate ${worst_case_est:.3f} exceeds cap "
-                          f"${MAX_COST_PER_RUN_USD:.2f} — expensive models may be in pool. "
-                          f"Proceeding (actual draw may be cheaper).")
-            else:
-                est = (N_ANALYZERS + 1) * COST_ESTIMATE_PER_CALL_USD
-                print(f"  Cost estimate  : ~${est:.2f} per run (flat estimate, pricing unavailable)")
-        except Exception:
-            est = (N_ANALYZERS + 1) * COST_ESTIMATE_PER_CALL_USD
-            print(f"  Cost estimate  : ~${est:.2f} per run (flat estimate, verbose API unavailable)")
-
-        return chat_models
+        print(f"  Chat-eligible  : {len(chat_models)} after type filtering")
     except Exception as e:
         print(f"ERROR: Could not fetch live model list from Nebius: {e}")
         sys.exit(1)
+
+    # ── Price filter using local table ────────────────────────────────────
+    affordable, too_expensive, unpriced = [], [], []
+    for mid in chat_models:
+        # Model IDs from models.list() have no org prefix; table keys match this format
+        short_id = mid.split("/")[-1]
+        if short_id not in NEBIUS_OUTPUT_PRICES:
+            unpriced.append(mid)
+            affordable.append(mid)   # new/unknown model — include at fallback price
+        elif NEBIUS_OUTPUT_PRICES[short_id] <= MAX_OUTPUT_PRICE_PER_1M:
+            affordable.append(mid)
+        else:
+            too_expensive.append(mid)
+
+    if too_expensive:
+        print(f"  Price-excluded : {len(too_expensive)} model(s) above "
+              f"${MAX_OUTPUT_PRICE_PER_1M}/M output: "
+              f"{', '.join(m.split('/')[-1] for m in too_expensive)}")
+    if unpriced:
+        print(f"  Unpriced       : {len(unpriced)} model(s) not in price table — "
+              f"included at ${PRICE_FALLBACK_OUTPUT}/M fallback "
+              f"(update NEBIUS_OUTPUT_PRICES if needed): "
+              f"{', '.join(m.split('/')[-1] for m in unpriced)}")
+
+    priced_affordable = [NEBIUS_OUTPUT_PRICES[mid.split('/')[-1]]
+                         for mid in affordable if mid.split('/')[-1] in NEBIUS_OUTPUT_PRICES]
+    if priced_affordable:
+        lo = min(priced_affordable)
+        hi = max(priced_affordable)
+        print(f"  Price-eligible : {len(affordable)} model(s)  "
+              f"(known range ${lo:.2f}–${hi:.2f}/M output)")
+    else:
+        print(f"  Price-eligible : {len(affordable)} model(s)")
+
+    if len(affordable) < N_ANALYZERS + 1:
+        print(f"ERROR: Only {len(affordable)} affordable chat models available, "
+              f"need at least {N_ANALYZERS + 1}. "
+              f"Consider raising MAX_OUTPUT_PRICE_PER_1M (currently ${MAX_OUTPUT_PRICE_PER_1M}).")
+        sys.exit(1)
+
+    return affordable
 
 
 def select_diverse_panel(chat_models: list[str], n_analyzers: int = 5) -> tuple[list[str], str]:
@@ -356,23 +368,216 @@ ANALYZER_MAX_TOKENS    = 4000
 SYNTHESIZER_MAX_TOKENS = 16000
 
 
-# ── PROMPT LOADING ────────────────────────────────────────────────────────────────────
+# ── PROMPT LOADING — prompts.json runtime store ───────────────────────────────────────
+#
+# prompts.json is the runtime source of truth for all prompt text.
+# Structure:
+#   {
+#     "analyzer": {
+#       "active": "v2",
+#       "versions": {
+#         "v1": { "active_from": "2026-04-02", "description": "...", "text": "..." },
+#         "v2": { "active_from": "2026-04-04", "description": "...", "text": "..." }
+#       }
+#     },
+#     "synthesizer": { ... },
+#     "system":      { ... },
+#     "user":        { ... }
+#   }
+#
+# On pipeline startup, sync_md_to_prompts_json() checks whether any .md file
+# in prompts/ is newer than its prompts.json entry and imports it if so.
+# This means humans keep editing .md files; the pipeline keeps prompts.json current.
+#
+# At the end of a successful MOE run, maybe_write_new_prompt_versions() checks
+# whether the synthesizer produced a sufficiently convergent revised_*_draft and,
+# if so, writes a new version into prompts.json and bumps the active pointer.
 
 def _strip_frontmatter(text):
+    """Remove YAML frontmatter block from .md file text."""
     if text.startswith("---"):
         end = text.find("---", 3)
         if end != -1:
             return text[end + 3:].lstrip("\n")
     return text
 
-def load_prompt(filename):
-    filepath = os.path.join(PROMPTS_DIR, filename)
-    if not os.path.exists(filepath):
-        print(f"ERROR: Prompt file not found: {filepath}")
+def _parse_frontmatter(text):
+    """Return dict of frontmatter fields, or {} if none."""
+    if not text.startswith("---"):
+        return {}
+    end = text.find("---", 3)
+    if end == -1:
+        return {}
+    block = text[3:end].strip()
+    result = {}
+    for line in block.splitlines():
+        if ":" in line:
+            k, _, v = line.partition(":")
+            result[k.strip()] = v.strip()
+    return result
+
+def load_prompts_json(path=None):
+    """Load prompts.json; return empty dict if file does not exist yet."""
+    path = path or PROMPTS_JSON
+    if not os.path.exists(path):
+        return {}
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+def save_prompts_json(store, path=None):
+    """Write prompts.json atomically."""
+    path = path or PROMPTS_JSON
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(store, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+def sync_md_to_prompts_json(prompts_dir=None, json_path=None):
+    """
+    Scan prompts_dir for sphere_<scope>_v<N>.md files.
+    For each one that is:
+      - not yet present in prompts.json, OR
+      - has an mtime newer than the prompts.json file itself
+    import its text into prompts.json and set it as the active version
+    if its version number is the highest seen for that scope.
+
+    This is the one-way sync: human edits .md → picked up by pipeline.
+    The pipeline never writes back to .md files.
+    """
+    import re
+    prompts_dir = prompts_dir or PROMPTS_DIR
+    json_path   = json_path   or PROMPTS_JSON
+
+    if not os.path.isdir(prompts_dir):
+        return  # no prompts dir — nothing to sync
+
+    store        = load_prompts_json(json_path)
+    json_mtime   = os.path.getmtime(json_path) if os.path.exists(json_path) else 0
+    pattern      = re.compile(r"^sphere_(\w+)_v(\d+)\.md$")
+    imported     = []
+
+    for fname in sorted(os.listdir(prompts_dir)):
+        m = pattern.match(fname)
+        if not m:
+            continue
+        scope    = m.group(1)
+        version  = f"v{m.group(2)}"
+        fpath    = os.path.join(prompts_dir, fname)
+        fmtime   = os.path.getmtime(fpath)
+
+        already_stored = (
+            scope in store and
+            version in store[scope].get("versions", {})
+        )
+        if already_stored and fmtime <= json_mtime:
+            continue  # up to date — skip
+
+        raw  = open(fpath, encoding="utf-8").read()
+        meta = _parse_frontmatter(raw)
+        text = _strip_frontmatter(raw)
+
+        store.setdefault(scope, {"active": version, "versions": {}})
+        store[scope]["versions"][version] = {
+            "active_from": meta.get("active_from", datetime.date.today().isoformat()),
+            "description": meta.get("description", ""),
+            "text":        text,
+        }
+
+        # Bump active pointer if this version is numerically higher
+        current_active = store[scope].get("active", "v0")
+        current_n = int(current_active.lstrip("v") or 0)
+        this_n    = int(m.group(2))
+        if this_n >= current_n:
+            store[scope]["active"] = version
+
+        imported.append(f"{scope}/{version} ← {fname}")
+
+    if imported:
+        save_prompts_json(store, json_path)
+        for item in imported:
+            print(f"  [prompts.json] synced: {item}")
+
+def load_prompt(scope, version=None, json_path=None):
+    """
+    Load a prompt from prompts.json by scope.
+    If version is None, loads the active version.
+    Returns (text, content_hash, version_string).
+    Exits if scope or version is not found.
+    """
+    json_path = json_path or PROMPTS_JSON
+    store     = load_prompts_json(json_path)
+
+    if scope not in store:
+        print(f"ERROR: Scope '{scope}' not found in {json_path}. "
+              f"Available: {list(store.keys()) or 'none — run sync first'}")
         sys.exit(1)
-    raw          = open(filepath, encoding="utf-8").read()
-    content_hash = hashlib.sha256(raw.encode()).hexdigest()[:16]
-    return _strip_frontmatter(raw), content_hash, filepath
+
+    version = version or store[scope].get("active")
+    if not version or version not in store[scope].get("versions", {}):
+        print(f"ERROR: Version '{version}' not found for scope '{scope}' in {json_path}.")
+        sys.exit(1)
+
+    text         = store[scope]["versions"][version]["text"]
+    content_hash = hashlib.sha256(text.encode()).hexdigest()[:16]
+    return text, content_hash, version
+
+def maybe_write_new_prompt_versions(sphere_commentary, json_path=None, dry_run=False):
+    """
+    Inspect the synthesizer's prompt_improvements output.
+    If a revised_analyzer_draft or revised_synthesizer_draft is present and
+    not the 'insufficiently convergent' fallback, write a new version into
+    prompts.json and bump the active pointer for that scope.
+
+    Returns list of (scope, new_version) for any versions written.
+    """
+    skip_marker  = "insufficiently convergent"
+    improvements = sphere_commentary.get("prompt_improvements")
+    if not improvements:
+        print("  [prompts.json] No prompt_improvements in synthesizer output — skipping.")
+        return []
+
+    json_path = json_path or PROMPTS_JSON
+    store     = load_prompts_json(json_path)
+    today     = datetime.date.today().isoformat()
+    summary   = improvements.get("summary", "Auto-generated by MOE pipeline.")
+    written   = []
+
+    draft_keys = {
+        PROMPT_SCOPE_ANALYZER:    "revised_analyzer_draft",
+        PROMPT_SCOPE_SYNTHESIZER: "revised_synthesizer_draft",
+    }
+
+    for scope, draft_key in draft_keys.items():
+        draft = improvements.get(draft_key, "")
+        if not draft or skip_marker.lower() in draft.lower():
+            print(f"  [prompts.json] {scope}: no convergent redraft — skipping.")
+            continue
+
+        # Determine next version number
+        existing_versions = store.get(scope, {}).get("versions", {})
+        version_nums = [int(v.lstrip("v")) for v in existing_versions if v.startswith("v")]
+        next_n       = (max(version_nums) + 1) if version_nums else 2
+        new_version  = f"v{next_n}"
+
+        if dry_run:
+            print(f"  [prompts.json DRY RUN] Would write {scope}/{new_version} "
+                  f"({len(draft)} chars)")
+            continue
+
+        store.setdefault(scope, {"active": new_version, "versions": {}})
+        store[scope]["versions"][new_version] = {
+            "active_from": today,
+            "description": summary,
+            "text":        draft,
+        }
+        store[scope]["active"] = new_version
+        written.append((scope, new_version))
+        print(f"  [prompts.json] ✓ wrote {scope}/{new_version} and set as active")
+
+    if written and not dry_run:
+        save_prompts_json(store, json_path)
+        print(f"  [prompts.json] ✓ saved ({len(written)} new version(s))")
+
+    return written
 
 
 # ── STAT HELPERS ──────────────────────────────────────────────────────────────────────
@@ -614,8 +819,8 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
 def build_data_payload(protocols_out, series_summary, total_n,
                        total_n_full=0, full_rows=None,
                        youtube_data=None, embedding_context=""):
-    """Renders sphere__user__v1.md with all {{INJECT:*}} placeholders."""
-    template, _, _ = load_prompt(MOE_USER_FILE)
+    """Renders user prompt with all {{INJECT:*}} placeholders."""
+    template, _, _ = load_prompt(PROMPT_SCOPE_USER)
 
     series_lines = [
         f"{s}: n={v['n']}, mean={v['mean']}, std={v['std']}, protocols={v['protocols']}"
@@ -676,8 +881,13 @@ def call_model_by_id(client, model_id: str, system: str, user: str,
                      max_tokens: int, label: str = "") -> dict:
     """
     Single Nebius model call using a full model ID string.
-    Returns a result dict with model_id, output_text, token counts, cost.
-    Cost is estimated at a flat rate (unknown models billed at mid-tier estimate).
+    Returns a result dict with model_id, output_text, token counts, cost, error.
+
+    error_type is set to help the retry logic decide whether to blacklist the model:
+      'context_limit' — model's context window is too small for this payload (blacklist)
+      'null_response' — model returned None content (blacklist — unreliable)
+      'transient'     — rate limit, timeout, or other recoverable error (retry with any model)
+      None            — success
     """
     tag = f"[{label or model_id.split('/')[-1]}]"
     try:
@@ -689,40 +899,107 @@ def call_model_by_id(client, model_id: str, system: str, user: str,
                 {"role": "user",   "content": user},
             ],
         )
-        out   = response.choices[0].message.content.strip()
+        out = response.choices[0].message.content
+        if out is None:
+            print(f"  {tag} ✗  ERROR: model returned None content")
+            return {"model_id": model_id, "output_text": "",
+                    "input_tokens": 0, "output_tokens": 0,
+                    "cost_usd": 0.0, "error": "null response", "error_type": "null_response"}
+        out   = out.strip()
         i_tok = response.usage.prompt_tokens
         o_tok = response.usage.completion_tokens
-        # Flat cost estimate: $0.30/M in, $1.00/M out (conservative mid-pool average)
         cost  = round(i_tok / 1_000_000 * 0.30 + o_tok / 1_000_000 * 1.00, 6)
         print(f"  {tag} ✓  {i_tok}in/{o_tok}out  (~${cost:.4f})")
         return {"model_id": model_id, "output_text": out,
                 "input_tokens": i_tok, "output_tokens": o_tok,
-                "cost_usd": cost, "error": None}
+                "cost_usd": cost, "error": None, "error_type": None}
     except Exception as e:
-        print(f"  {tag} ✗  ERROR: {e}")
+        err_str = str(e)
+        if "maximum context length" in err_str or "context" in err_str.lower() and "400" in err_str:
+            error_type = "context_limit"
+        elif "429" in err_str or "rate" in err_str.lower() or "timeout" in err_str.lower():
+            error_type = "transient"
+        else:
+            error_type = "null_response"  # unknown failures treated as model unreliable
+        print(f"  {tag} ✗  ERROR [{error_type}]: {e}")
         return {"model_id": model_id, "output_text": "",
                 "input_tokens": 0, "output_tokens": 0,
-                "cost_usd": 0.0, "error": str(e)}
+                "cost_usd": 0.0, "error": err_str, "error_type": error_type}
 
 def run_analyzers_by_id(client, analyzer_ids: list[str], system_text: str,
-                        analyzer_text: str, data_payload: str) -> list[dict]:
+                        analyzer_text: str, data_payload: str,
+                        all_chat_models: list[str],
+                        max_attempts: int = 3) -> list[dict]:
     """
-    Run len(analyzer_ids) models in parallel via ThreadPoolExecutor.
-    System: Sphere persona only. User: analyzer instructions + data payload.
+    Run N_ANALYZERS models in parallel. If any fail, immediately draw replacements
+    from the remaining pool and retry — repeating until N_ANALYZERS successful
+    results are collected or max_attempts rounds are exhausted.
+
+    Blacklisted models (context_limit or null_response errors) are removed from
+    the pool permanently so they are never retried. Transient errors allow the
+    same model to be retried once via a replacement draw.
+
+    Returns exactly N_ANALYZERS result dicts (all with error=None) if possible,
+    or the best set available after max_attempts if the pool runs dry.
     """
-    n = len(analyzer_ids)
-    print(f"\n  Running {n} analyzers in parallel...")
-    user = analyzer_text + "\n\n" + data_payload
-    results = []
-    with concurrent.futures.ThreadPoolExecutor(max_workers=n) as ex:
-        futures = {
-            ex.submit(call_model_by_id, client, model_id, system_text, user,
-                      ANALYZER_MAX_TOKENS, f"ANALYZER"): model_id
-            for model_id in analyzer_ids
-        }
-        for future in concurrent.futures.as_completed(futures):
-            results.append(future.result())
-    return results
+    n            = len(analyzer_ids)
+    user         = analyzer_text + "\n\n" + data_payload
+    successful   = []
+    blacklisted  = set()
+    used         = set(analyzer_ids)
+    remaining    = [m for m in all_chat_models if m not in used]
+    attempt      = 0
+    to_run       = list(analyzer_ids)
+
+    while to_run and attempt < max_attempts:
+        attempt += 1
+        if attempt == 1:
+            print(f"\n  Running {n} analyzers in parallel...")
+        else:
+            print(f"\n  Retry round {attempt}: running {len(to_run)} replacement analyzer(s)...")
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=len(to_run)) as ex:
+            futures = {
+                ex.submit(call_model_by_id, client, model_id, system_text, user,
+                          ANALYZER_MAX_TOKENS, "ANALYZER"): model_id
+                for model_id in to_run
+            }
+            round_results = [f.result() for f in concurrent.futures.as_completed(futures)]
+
+        to_run = []
+        for r in round_results:
+            if not r["error"]:
+                successful.append(r)
+            else:
+                etype = r.get("error_type", "null_response")
+                blacklisted.add(r["model_id"])
+                # Draw a replacement from the pool (skip blacklisted and already used)
+                replacement = next(
+                    (m for m in remaining if m not in blacklisted and m not in used),
+                    None
+                )
+                if replacement:
+                    used.add(replacement)
+                    remaining = [m for m in remaining if m != replacement]
+                    to_run.append(replacement)
+                    print(f"  → Replacing {r['model_id'].split('/')[-1]} "
+                          f"[{etype}] with {replacement.split('/')[-1]}")
+                else:
+                    print(f"  → No replacement available for "
+                          f"{r['model_id'].split('/')[-1]} [{etype}] — pool exhausted")
+
+        if len(successful) >= n:
+            break
+
+    if len(successful) < n:
+        print(f"  WARNING: Only {len(successful)}/{n} analyzers succeeded after "
+              f"{attempt} attempt(s). Blacklisted: "
+              f"{', '.join(m.split('/')[-1] for m in blacklisted)}")
+    else:
+        if attempt > 1:
+            print(f"  ✓ {n}/{n} analyzers succeeded after {attempt} attempt(s)")
+
+    return successful[:n]
 
 def run_synthesizer_by_id(client, synthesizer_id: str, system_text: str,
                           synthesizer_text: str, data_payload: str,
@@ -780,24 +1057,51 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
     Returns (commentary_dict, usage_dict, prompt_versions_info,
              analyzer_results, synthesizer_result, combo).
     """
-    client     = get_nebius_client()
+    # ── Load prompts first so version inventory prints before catalogue fetch ─
+    system_text,      system_hash,      system_ver      = load_prompt(PROMPT_SCOPE_SYSTEM)
+    analyzer_text,    analyzer_hash,    analyzer_ver    = load_prompt(PROMPT_SCOPE_ANALYZER)
+    synthesizer_text, synthesizer_hash, synthesizer_ver = load_prompt(PROMPT_SCOPE_SYNTHESIZER)
+    _,                user_hash,        user_ver        = load_prompt(PROMPT_SCOPE_USER)
+
+    prompt_versions_info = [
+        {"filename": f"sphere_system_{system_ver}.md",           "content_hash": system_hash},
+        {"filename": f"sphere_analyzer_{analyzer_ver}.md",       "content_hash": analyzer_hash},
+        {"filename": f"sphere_synthesizer_{synthesizer_ver}.md", "content_hash": synthesizer_hash},
+        {"filename": f"sphere_user_{user_ver}.md",               "content_hash": user_hash},
+    ]
+
+    # Print prompt version inventory — all available versions, active one flagged
+    store = load_prompts_json()
+    print()
+    print("  Prompt versions:")
+    for scope, label in (
+        (PROMPT_SCOPE_SYSTEM,      "system     "),
+        (PROMPT_SCOPE_USER,        "user       "),
+        (PROMPT_SCOPE_ANALYZER,    "analyzer   "),
+        (PROMPT_SCOPE_SYNTHESIZER, "synthesizer"),
+    ):
+        entry    = store.get(scope, {})
+        active   = entry.get("active", "?")
+        versions = sorted(entry.get("versions", {}).keys(),
+                          key=lambda v: int(v.lstrip("v")))
+        ver_list = "  ".join(
+            f"[{v} ← USING]" if v == active else v
+            for v in versions
+        )
+        hash_str = next(
+            (info["content_hash"] for info in prompt_versions_info
+             if info["filename"].startswith(f"sphere_{scope}_")),
+            "?"
+        )
+        print(f"    {label}  {ver_list}   hash={hash_str}")
+    print()
+
+    client      = get_nebius_client()
     chat_models = fetch_live_chat_models(client)
 
     if len(chat_models) < N_ANALYZERS + 1:
         print(f"ERROR: Only {len(chat_models)} chat models available, need at least {N_ANALYZERS + 1}.")
         sys.exit(1)
-
-    system_text,      system_hash,      _ = load_prompt(MOE_SYSTEM_FILE)
-    analyzer_text,    analyzer_hash,    _ = load_prompt(MOE_ANALYZER_FILE)
-    synthesizer_text, synthesizer_hash, _ = load_prompt(MOE_SYNTHESIZER_FILE)
-    _,                user_hash,        _ = load_prompt(MOE_USER_FILE)
-
-    prompt_versions_info = [
-        {"filename": MOE_SYSTEM_FILE,      "content_hash": system_hash},
-        {"filename": MOE_ANALYZER_FILE,    "content_hash": analyzer_hash},
-        {"filename": MOE_SYNTHESIZER_FILE, "content_hash": synthesizer_hash},
-        {"filename": MOE_USER_FILE,        "content_hash": user_hash},
-    ]
 
     data_payload = build_data_payload(
         protocols_out, series_summary, total_n, total_n_full,
@@ -814,16 +1118,15 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
     print(f"    SYNTHESIZER {synthesizer_id}")
     print(f"  Combo str  : {combo}")
 
-    analyzer_results   = run_analyzers_by_id(client, analyzer_ids, system_text, analyzer_text, data_payload)
+    analyzer_results = run_analyzers_by_id(
+        client, analyzer_ids, system_text, analyzer_text, data_payload,
+        all_chat_models=chat_models,
+    )
 
-    # Hard-fail if every analyzer errored — synthesizer has nothing to work with
-    successful_analyzers = [r for r in analyzer_results if not r["error"]]
-    if not successful_analyzers:
-        print("ERROR: All analyzers failed. Check NEBIUS_API_KEY.")
+    # Hard-fail only if every analyzer errored — synthesizer has nothing to work with
+    if not analyzer_results:
+        print("ERROR: All analyzers failed after retries. Check NEBIUS_API_KEY.")
         sys.exit(1)
-    if len(successful_analyzers) < N_ANALYZERS:
-        print(f"  WARNING: {N_ANALYZERS - len(successful_analyzers)} analyzer(s) failed — "
-              f"proceeding with {len(successful_analyzers)} outputs")
 
     synthesizer_result = run_synthesizer_by_id(client, synthesizer_id, system_text,
                                                 synthesizer_text, data_payload, analyzer_results)
@@ -1055,18 +1358,34 @@ def writeback_moe_runs(supabase, run_date, analyzer_results,
     print(f"    ✓ moe_runs: {len(rows)} rows written (combo: {combo})")
 
 def writeback_prompt_versions(supabase, prompt_versions_info, run_date):
-    now  = datetime.datetime.now(timezone.utc).isoformat()
-    rows = []
+    """
+    Write active prompt versions to Supabase prompt_versions table.
+    Reads prompt text from prompts.json (runtime store) rather than .md files.
+    """
+    now   = datetime.datetime.now(timezone.utc).isoformat()
+    store = load_prompts_json()
+    rows  = []
     for info in prompt_versions_info:
-        filename  = info["filename"]
-        parts     = filename.replace(".md", "").split("__")
+        filename = info["filename"]
+        parts    = filename.replace(".md", "").split("__")
+        # parts: ["sphere", scope, "vN"]
+        scope    = parts[1] if len(parts) > 1 else "unknown"
+        version  = parts[2] if len(parts) > 2 else "v1"
         record_id = "__".join(parts[:3]) if len(parts) >= 3 else filename.replace(".md", "")
+
+        # Pull text from prompts.json store
+        prompt_text = (
+            store.get(scope, {})
+                 .get("versions", {})
+                 .get(version, {})
+                 .get("text", f"[text not found in prompts.json for {scope}/{version}]")
+        )
         rows.append({
             "id":             record_id,
-            "version":        parts[2] if len(parts) > 2 else "v1",
+            "version":        version,
             "task_type":      parts[0] if len(parts) > 0 else "sphere",
-            "analysis_scope": parts[1] if len(parts) > 1 else "system",
-            "prompt_text":    open(os.path.join(PROMPTS_DIR, filename), encoding="utf-8").read(),
+            "analysis_scope": scope,
+            "prompt_text":    prompt_text,
             "is_active":      True,
             "created_at":     now,
         })
@@ -1137,6 +1456,22 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
 
     # ── 1. Connect ─────────────────────────────────────────────────────────
     load_dotenv()
+
+    # Sync any .md files in prompts/ that are newer than prompts.json
+    print("[0] Syncing prompts/ → prompts.json...")
+    sync_md_to_prompts_json()
+    store = load_prompts_json()
+    for scope in (PROMPT_SCOPE_SYSTEM, PROMPT_SCOPE_USER,
+                  PROMPT_SCOPE_ANALYZER, PROMPT_SCOPE_SYNTHESIZER):
+        if scope not in store:
+            print(f"ERROR: Scope '{scope}' missing from prompts.json after sync. "
+                  f"Ensure prompts/sphere_{scope}_v1.md exists.")
+            sys.exit(1)
+        active = store[scope].get("active", "?")
+        print(f"  {scope:<12} active={active}  "
+              f"versions={list(store[scope].get('versions', {}).keys())}")
+    print()
+
     supa_url = os.environ.get("SUPABASE_URL")
     supa_key = os.environ.get("SUPABASE_SERVICE_KEY")
     if not supa_url or not supa_key:
@@ -1259,6 +1594,16 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             protocols_out[code]["sphere_plain"] = by_protocol_plain.get(code, "")
         print("  Sphere MOE commentary generated.")
 
+        # ── 6b. Write new prompt versions if synthesizer produced convergent drafts ──
+        print("\n  Checking for prompt improvement drafts...")
+        new_prompt_versions = maybe_write_new_prompt_versions(
+            sphere_commentary, dry_run=dry_run
+        )
+        if new_prompt_versions:
+            print(f"  ✓ New prompt versions written: "
+                  f"{', '.join(f'{s}/{v}' for s, v in new_prompt_versions)}")
+            print(f"  These will be committed alongside data.json and prompts.json.")
+
     # ── 7. Assemble data.json ──────────────────────────────────────────────
     protocols_with_data = sum(1 for p in protocols_out.values() if p["n"] > 0)
     total_all   = len(short_rows) + len(full_rows)
@@ -1270,14 +1615,23 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         return {k: v for k, v in p.items()
                 if k not in ("src_counts", "vol_counts", "bimodality_coefficient")}
 
+    store = load_prompts_json()
+    active_prompt_versions = {
+        scope: store[scope].get("active", "unknown")
+        for scope in (PROMPT_SCOPE_SYSTEM, PROMPT_SCOPE_USER,
+                      PROMPT_SCOPE_ANALYZER, PROMPT_SCOPE_SYNTHESIZER)
+        if scope in store
+    }
+
     data_json = {
         "_meta": {
-            "generated_iso":      generated_iso,
-            "mode":               "real_only" if real_only else "all",
-            "contains_test_data": contains_test,
-            "total_responses":    total_n,
-            "test_pct":           test_pct,
-            "real_pct":           round(100 - test_pct, 1),
+            "generated_iso":          generated_iso,
+            "mode":                   "real_only" if real_only else "all",
+            "contains_test_data":     contains_test,
+            "total_responses":        total_n,
+            "test_pct":               test_pct,
+            "real_pct":               round(100 - test_pct, 1),
+            "active_prompt_versions": active_prompt_versions,
         },
         "generated":           today,
         "analysis_date":       today,
@@ -1306,11 +1660,21 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         for i, line in enumerate(json_str.splitlines()):
             if i >= 80: print("  ... (truncated)"); break
             print(line)
+        print("\n── DRY RUN — prompts.json would be written/updated ──────────")
+        store = load_prompts_json()
+        for scope, info in store.items():
+            print(f"  {scope:<12} active={info.get('active','?')}  "
+                  f"versions={list(info.get('versions',{}).keys())}")
     else:
         os.makedirs(os.path.dirname(output_path) or ".", exist_ok=True)
         with open(output_path, "w", encoding="utf-8") as f:
             f.write(json_str)
         print(f"\n  ✓ Written to {output_path}  ({os.path.getsize(output_path)/1024:.1f} KB)")
+        # prompts.json is written in-place by sync_md_to_prompts_json and
+        # maybe_write_new_prompt_versions — just report its current state here
+        if os.path.exists(PROMPTS_JSON):
+            print(f"  ✓ prompts.json current  ({os.path.getsize(PROMPTS_JSON)/1024:.1f} KB)  "
+                  f"[committed alongside data.json by moe_sphere.yml]")
 
     # ── 9. Write-back to Supabase ──────────────────────────────────────────
     if not dry_run:
@@ -1322,7 +1686,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
                 writeback_llm_outputs(
                     supabase, protocols_out, sphere_commentary,
                     run_date=today, model_used=combo,
-                    prompt_version=MOE_SYSTEM_FILE.replace(".md", ""),
+                    prompt_version=f"sphere_system_{active_prompt_versions.get(PROMPT_SCOPE_SYSTEM, 'v1')}",
                 )
                 writeback_moe_runs(supabase, today, analyzer_results, synthesizer_result, combo)
                 writeback_prompt_versions(supabase, prompt_versions_info, today)

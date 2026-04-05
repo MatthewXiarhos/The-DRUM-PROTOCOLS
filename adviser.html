@@ -329,12 +329,26 @@ a { color: inherit; }
 .ag-powered-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 10px; color: rgba(74,158,202,0.7); letter-spacing: 0.06em; }
 .ag-powered-badge::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #4a9eca; box-shadow: 0 0 6px rgba(74,158,202,0.8); }
 /* ── AG PANEL IDENTITY STRIP (on result screen) ── */
-.ag-result-strip { display: none; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(74,158,202,0.06); border-bottom: 0.5px solid rgba(74,158,202,0.18); }
+.ag-result-strip { display: none; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(74,158,202,0.06); border-bottom: 0.5px solid rgba(74,158,202,0.18); flex-wrap: wrap; }
 .ag-result-strip.visible { display: flex; }
 .ag-result-logo { width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(74,158,202,0.4); flex-shrink: 0; }
 .ag-result-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.ag-result-text { font-size: 11px; color: rgba(74,158,202,0.9); letter-spacing: 0.06em; }
+.ag-result-text { font-size: 11px; color: rgba(74,158,202,0.9); letter-spacing: 0.06em; flex: 1; }
 .ag-result-text strong { color: #4a9eca; font-weight: 600; }
+.ag-tooltip-btn { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(74,158,202,0.65); background: none; border: 0.5px solid rgba(74,158,202,0.3); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
+.ag-tooltip-btn:hover { color: #4a9eca; border-color: rgba(74,158,202,0.65); }
+.ag-tooltip-panel { display: none; width: 100%; padding: 14px 18px 16px; border-top: 0.5px solid rgba(74,158,202,0.15); background: rgba(74,158,202,0.04); }
+.ag-tooltip-panel.open { display: block; animation: fadeIn .18s ease; }
+.ag-tooltip-panel h4 { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a9eca; margin-bottom: 10px; }
+.ag-tooltip-panel p { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); margin-bottom: 8px; }
+.ag-tooltip-panel p:last-child { margin-bottom: 0; }
+.ag-feature-bars { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.ag-feature-row { display: flex; align-items: center; gap: 8px; }
+.ag-feature-row-name { font-size: 11px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
+.ag-feature-row-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.ag-feature-row-bar { height: 100%; background: linear-gradient(90deg, #4a9eca, #52B788); border-radius: 2px; }
+.ag-feature-row-val { font-size: 10px; color: var(--color-text-tertiary); width: 36px; text-align: right; flex-shrink: 0; }
+.ag-tooltip-meta { font-size: 10px; color: var(--color-text-tertiary); margin-top: 12px; padding-top: 10px; border-top: 0.5px solid rgba(74,158,202,0.12); }
 .screen { display: none; }
 .screen.active { display: block; }
 .page-footer { background: var(--dp-slate-deeper); padding: 28px 24px 34px; text-align: center; border-top: 1px solid var(--color-border); }
@@ -464,6 +478,14 @@ a { color: inherit; }
         <div class="ag-result-strip" id="ag-result-strip">
           <div class="ag-result-logo"><img src="AG.png" alt="AutoGluon"></div>
           <div class="ag-result-text"><strong>AutoGluon</strong> · Ensemble ML recommendation · <span id="ag-model-count">5</span> models</div>
+          <button class="ag-tooltip-btn" onclick="toggleAgTooltip()" id="ag-tooltip-btn">What is AutoGluon?</button>
+          <div class="ag-tooltip-panel" id="ag-tooltip-panel">
+            <h4>AutoGluon · Ensemble AutoML</h4>
+            <p>This recommendation is powered by AutoGluon — an ensemble ML model trained on listener outcome data. It combines LightGBM, CatBoost, XGBoost, and Random Forest models, stacked across two levels, to predict which protocol is most likely to work for your current state.</p>
+            <p>Unlike a fixed rule system, AutoGluon learns from real listener outcomes. The more data it trains on, the more precisely it can match listener states to protocols that have genuinely helped people in similar situations.</p>
+            <div id="ag-tooltip-features"></div>
+            <div class="ag-tooltip-meta" id="ag-tooltip-meta"></div>
+          </div>
         </div>
         <div class="result-header" id="result-header">
           <div class="result-match-label">Your match</div>
@@ -698,7 +720,11 @@ Promise.all([
   // Load AutoGluon recommendations — independent of data.json
   if(ag && ag.recommendations){
     AG_RECS = ag.recommendations;
-    AG_META = ag._meta || {};
+    AG_META = {
+      ...(ag._meta || {}),
+      feature_importance: ag.feature_importance || {},
+      best_rmse: ag.leaderboard && ag.leaderboard[0] ? Math.abs(ag.leaderboard[0].score_val).toFixed(3) : null,
+    };
     hydrateAgSidebar(ag);
   }
 
@@ -1008,6 +1034,53 @@ function hydrateAgSidebar(ag){
       const label=nameMap[k]||k;
       return `<div class="ag-feature"><div class="ag-feature-name">${label}</div><div class="ag-feature-bar-wrap"><div class="ag-feature-bar" style="width:${pct}%"></div></div><div class="ag-feature-val">${v.toFixed(3)}</div></div>`;
     }).join('');
+  }
+}
+
+// ── AUTOGLUON TOOLTIP TOGGLE ─────────────────────────────────────────────────
+function toggleAgTooltip(){
+  const panel = document.getElementById('ag-tooltip-panel');
+  const btn   = document.getElementById('ag-tooltip-btn');
+  if(!panel) return;
+  const isOpen = panel.classList.toggle('open');
+  if(btn) btn.textContent = isOpen ? 'Close ✕' : 'What is AutoGluon?';
+  // Hydrate feature bars from AG_META on first open
+  if(isOpen && Object.keys(AG_META).length){
+    hydrateAgTooltip();
+  }
+}
+
+function hydrateAgTooltip(){
+  const featEl = document.getElementById('ag-tooltip-features');
+  const metaEl = document.getElementById('ag-tooltip-meta');
+  if(featEl && featEl.children.length === 0 && AG_META.feature_importance){
+    const fi      = AG_META.feature_importance || {};
+    const entries = Object.entries(fi).slice(0,6);
+    const maxVal  = entries[0] ? entries[0][1] : 1;
+    const nameMap = {
+      avg_view_percentage:'Watch completion', avg_view_duration:'Watch duration',
+      level:'Intensity level', endHz:'Landing Hz', startHz:'Starting Hz',
+      series:'Protocol series', zone:'Zone alignment', hz_abs:'Hz range',
+      delta:'Hz range (signed)', dur:'Duration', entry:'Entry match',
+      move:'Movement type', adviser_driven:'Adviser-routed'
+    };
+    if(entries.length){
+      featEl.innerHTML = '<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(74,158,202,.65);margin:10px 0 6px">Top outcome predictors</div>'
+        + '<div class="ag-feature-bars">'
+        + entries.map(([k,v])=>{
+            const pct = Math.round((v/maxVal)*100);
+            return `<div class="ag-feature-row">
+              <div class="ag-feature-row-name">${nameMap[k]||k}</div>
+              <div class="ag-feature-row-bar-wrap"><div class="ag-feature-row-bar" style="width:${pct}%"></div></div>
+              <div class="ag-feature-row-val">${v.toFixed(3)}</div>
+            </div>`;
+          }).join('')
+        + '</div>';
+    }
+  }
+  if(metaEl && !metaEl.textContent && AG_META.run_date){
+    const rmse = AG_META.best_rmse ? ` · RMSE ${AG_META.best_rmse}` : '';
+    metaEl.textContent = `Trained ${AG_META.run_date} · ${(AG_META.n_training_rows||0).toLocaleString()} listener responses${rmse}`;
   }
 }
 

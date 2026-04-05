@@ -1,10 +1,10 @@
 {
   "_meta": {
-    "generated_iso": "2026-04-04T04:49:52.086641+00:00",
+    "generated_iso": "2026-04-04T20:17:51.639939+00:00",
     "run_date": "2026-04-04",
     "n_training_rows": 1000,
     "model_path": "autogluon_model",
-    "source": "autogluon_recommender.py",
+    "source": "autogluon_analysis.py",
     "note": "Decoupled from data.json. Fetched independently by adviser.html."
   },
   "recommendations": {
@@ -1008,61 +1008,6 @@
       "top_score": 6.847
     }
   },
-  "feature_importance": {
-    "avg_view_percentage": 0.3422,
-    "avg_view_duration": 0.3139,
-    "level": 0.2829,
-    "endHz": 0.1779,
-    "startHz": 0.1395,
-    "series": 0.1349,
-    "zone": 0.1261,
-    "hz_abs": 0.126,
-    "entry": 0.1104,
-    "dur": 0.0961,
-    "delta": 0.052,
-    "move": 0.0389,
-    "adviser_driven": 0.0192
-  },
-  "leaderboard": [
-    {
-      "model": "WeightedEnsemble_L3",
-      "score_val": -1.0609471495918006,
-      "pred_time_val": 0.3172123432159424
-    },
-    {
-      "model": "LightGBM_BAG_L2",
-      "score_val": -1.0843264850952041,
-      "pred_time_val": 0.14387130737304688
-    },
-    {
-      "model": "RandomForest_BAG_L2",
-      "score_val": -1.090459326681381,
-      "pred_time_val": 0.2172539234161377
-    },
-    {
-      "model": "CatBoost_BAG_L2",
-      "score_val": -1.1076754356507372,
-      "pred_time_val": 0.17420411109924316
-    },
-    {
-      "model": "XGBoost_BAG_L2",
-      "score_val": -1.1249590526236528,
-      "pred_time_val": 0.15983200073242188
-    },
-    {
-      "model": "WeightedEnsemble_L2",
-      "score_val": -1.7560622537432793,
-      "pred_time_val": 0.03932023048400879
-    },
-    {
-      "model": "XGBoost_BAG_L1",
-      "score_val": -1.7573847101911169,
-      "pred_time_val": 0.028833866119384766
-    },
-    {
-      "model": "CatBoost_BAG_L1",
-      "score_val": -1.7590325623382264,
-      "pred_time_val": 0.010486364364624023
-    }
-  ]
+  "feature_importance": {},
+  "leaderboard": []
 }

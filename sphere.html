@@ -242,7 +242,8 @@ a{color:inherit;text-decoration:none}
 .panel-body ul li{position:relative;padding-left:16px;font-size:14px;line-height:1.75;color:rgba(255,255,255,.68)}
 .panel-body ul li::before{content:'—';position:absolute;left:0;color:var(--dp-gold-light);opacity:.7}
 
-.panel-badge{display:inline-block;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:4px 10px;margin-bottom:16px}
+.panel-badge{display:inline-flex;align-items:center;gap:8px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:4px 10px;margin-bottom:16px}
+.panel-badge-date{font-size:9px;letter-spacing:.04em;text-transform:none;color:rgba(184,134,11,.55);font-weight:400;border-left:.5px solid rgba(184,134,11,.3);padding-left:8px;white-space:nowrap}
 
 /* Pillar blocks */
 .pillar-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
@@ -354,6 +355,48 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 .badge-bimodal{font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;background:rgba(176,106,176,.12);border:.5px solid rgba(176,106,176,.35);color:var(--dp-transforming-accent)}
 .compare-stat{font-size:11px;color:var(--color-text-tertiary);margin-bottom:8px;letter-spacing:.02em}
 
+/* ── PIPELINE FLOW ── */
+.pipeline-flow{display:flex;align-items:center;flex-wrap:wrap;gap:0;margin:20px 0 4px;padding:16px 18px;background:rgba(0,0,0,.2);border:.5px solid var(--color-border);border-radius:var(--radius-md)}
+.pipeline-step{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 10px;flex:1;min-width:80px;text-align:center}
+.pipeline-step-icon{font-size:18px;line-height:1}
+.pipeline-step-label{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dp-gold-light);line-height:1.3}
+.pipeline-step-sub{font-size:10px;color:var(--color-text-tertiary);line-height:1.35}
+.pipeline-arrow{color:rgba(184,134,11,.4);font-size:14px;flex-shrink:0;padding:0 2px;align-self:center;margin-bottom:14px}
+@media(max-width:560px){.pipeline-flow{gap:4px}.pipeline-step{min-width:60px;padding:6px 4px}.pipeline-step-sub{display:none}.pipeline-arrow{font-size:11px}}
+/* ── LAYER CARDS ── */
+.layer-grid{display:flex;flex-direction:column;gap:8px;margin:16px 0 4px}
+.layer-card{display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:var(--radius-md);border:.5px solid var(--color-border-mid);background:rgba(255,255,255,.02)}
+.layer-num{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);min-width:20px;padding-top:2px;font-weight:600;flex-shrink:0}
+.layer-content{flex:1}
+.layer-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:3px}
+.layer-desc{font-size:12px;line-height:1.65;color:var(--color-text-secondary)}
+/* ── CONFIDENCE BLOCK ── */
+.confidence-block{margin-top:20px;padding:14px 16px;background:rgba(184,134,11,.04);border:.5px solid rgba(184,134,11,.18);border-radius:var(--radius-md)}
+.confidence-block-title{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--dp-gold-light);margin-bottom:10px}
+.confidence-block ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:6px}
+.confidence-block ul li{font-size:12px;line-height:1.6;color:var(--color-text-secondary);padding-left:14px;position:relative}
+.confidence-block ul li::before{content:'—';position:absolute;left:0;color:rgba(184,134,11,.5)}
+/* ── AG SIDEBAR ── */
+.ag-card{background:linear-gradient(135deg,rgba(30,90,140,.18) 0%,rgba(26,38,51,.95) 100%);border:.5px solid rgba(74,158,202,.3)}
+.ag-card:hover{border-color:rgba(74,158,202,.55)}
+.ag-logo-row{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ag-logo{width:36px;height:36px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid rgba(74,158,202,.35);box-shadow:0 0 12px rgba(74,158,202,.2)}
+.ag-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.ag-logo-text{display:flex;flex-direction:column;gap:1px}
+.ag-logo-name{font-size:13px;font-weight:600;color:#4a9eca;letter-spacing:.04em}
+.ag-logo-sub{font-size:10px;color:var(--color-text-tertiary);letter-spacing:.08em;text-transform:uppercase}
+.ag-stat-row{display:flex;gap:6px;margin:12px 0 10px}
+.ag-stat{flex:1;background:rgba(0,0,0,.2);border:.5px solid rgba(74,158,202,.15);border-radius:var(--radius-sm);padding:8px 6px;text-align:center}
+.ag-stat-val{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:#4a9eca;line-height:1}
+.ag-stat-label{font-size:9px;color:var(--color-text-tertiary);letter-spacing:.07em;text-transform:uppercase;margin-top:3px}
+.ag-feature-row-ag{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.ag-feat{display:flex;align-items:center;gap:7px}
+.ag-feat-bar-wrap{flex:1;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.ag-feat-bar{height:100%;background:linear-gradient(90deg,#4a9eca,#52B788);border-radius:2px;transition:width 1s ease}
+.ag-feat-name{font-size:10px;color:var(--color-text-secondary);width:90px;flex-shrink:0}
+.ag-feat-val{font-size:10px;color:var(--color-text-tertiary);width:32px;text-align:right;flex-shrink:0}
+.ag-powered-badge{display:inline-flex;align-items:center;gap:5px;margin-top:10px;font-size:10px;color:rgba(74,158,202,.7);letter-spacing:.06em}
+.ag-powered-badge::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:#4a9eca;box-shadow:0 0 6px rgba(74,158,202,.8)}
 /* ── FOOTER ── */
 .page-footer{background:var(--dp-slate-deeper);border-top:1px solid var(--color-border);padding:28px 24px 34px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
 .footer-brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dp-gold-light)}
@@ -573,10 +616,33 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       </div>
     </div>
 
-    <!-- 6. Research Findings -->
+    <!-- 6. AutoGluon Layer -->
+    <div class="menu-item">
+      <div class="menu-top" onclick="menuToggle(this,'autogluon')" data-group="autogluon">
+        <span class="menu-top-num">6</span>
+        <span class="menu-top-label">AutoGluon Layer</span>
+        <span class="menu-top-arrow">▾</span>
+      </div>
+      <div class="menu-sub" id="sub-autogluon">
+        <div class="menu-sub-item" onclick="showPanel('ag-overview',this)">
+          <span class="menu-sub-alpha">a</span>What AutoGluon Does
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('ag-adviser',this)">
+          <span class="menu-sub-alpha">b</span>Adviser Recommender
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('ag-sphere',this)">
+          <span class="menu-sub-alpha">c</span>Sphere Analysis Feed
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('ag-features',this)">
+          <span class="menu-sub-alpha">d</span>Feature Importance
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Research Findings -->
     <div class="menu-item">
       <div class="menu-top" onclick="menuToggle(this,'research')" data-group="research">
-        <span class="menu-top-num">6</span>
+        <span class="menu-top-num">7</span>
         <span class="menu-top-label">Research &amp; Model Notes</span>
         <span class="menu-top-arrow">▾</span>
       </div>
@@ -587,10 +653,10 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       </div>
     </div>
 
-    <!-- 7. Protocol Review -->
+    <!-- 8. Protocol Review -->
     <div class="menu-item">
       <div class="menu-top" onclick="menuToggle(this,'protrev')" data-group="protrev">
-        <span class="menu-top-num">7</span>
+        <span class="menu-top-num">8</span>
         <span class="menu-top-label">Protocol Review</span>
         <span class="menu-top-arrow">▾</span>
       </div>
@@ -609,17 +675,23 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 1a: About Sphere — merged -->
     <div class="content-panel active" id="panel-about-intro">
       <div class="panel-eyebrow">About Sphere · The Drum Protocols</div>
-      <!-- Sphere intro badge -->
       <div class="sphere-badge-intro" title="This is Sphere">
         <div class="sphere-badge"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>
         <div class="sphere-badge-caption">This is<br>Sphere</div>
       </div>
       <h1 class="panel-title">Sphere's<br>Data Lab</h1>
       <div class="panel-body" style="margin-top:4px">
+        <p style="font-size:13px;color:rgba(255,255,255,.45);font-style:italic;border-left:2px solid rgba(184,134,11,.3);padding-left:12px;margin-bottom:16px">Sphere does not diagnose, prescribe, or prove clinical effect. It looks for patterns in listener feedback and engagement data.</p>
         <p>Sphere is The Drum Protocols' statistician and data scientist. Its role is to examine community listening data and translate patterns into clear, measured language — naming what the data appears to show, acknowledging what it cannot yet tell us, and pointing toward where future design might go next.</p>
-        <p>Sphere is not a personality, and it is not one fixed thing. It is an evolving analytical intelligence — a structured layer that runs on leading large language models, individually and in combination. As models improve, Sphere improves with them. What stays constant across model generations is the persona, the voice, and the analytical principles that govern every output.</p>
-        <p>Community survey data and protocol usage data are collected continuously, processed by scheduled scripts, and passed — together with carefully designed analytical prompts — to the current generation of language models. Results are stored and made available here. Analysis runs both cross-sectionally (comparing protocols at a point in time) and longitudinally (tracking how signals change as the dataset grows).</p>
-        <p>Use the menu to navigate Sphere's analyses — global signals, series cautions, future design recommendations, and technical reference. All content is generated by the Sphere pipeline and updated as new community data arrives. For the full technical picture, see <a href="#" onclick="showPanelById('tech-how');return false;" style="color:var(--dp-gold-light);text-decoration:underline;text-underline-offset:3px">How Sphere Works</a>.</p>
+        <p>Sphere is not a personality, and it is not one fixed thing. It is an evolving analytical intelligence built on two layers: an AutoGluon ensemble ML model that finds quantitative patterns, and a rotating panel of language models that interprets those patterns in language. Each layer does what it is genuinely best at.</p>
+        <h4 style="margin-top:20px">How the data moves</h4>
+        <p>Listener feedback enters through short and long Tally surveys. Viewing and retention data are pulled from YouTube. Both are stored in Supabase and prepared for analysis.</p>
+        <h4>How the analysis works</h4>
+        <p>AutoGluon looks for quantitative patterns that predict stronger or weaker outcomes. Sphere then uses a rotating panel of language models to interpret those patterns, compare viewpoints, and produce cautious written commentary.</p>
+        <h4>What appears on this page</h4>
+        <p>The site displays the latest stored results through <code style="font-size:12px;background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;color:var(--dp-gold-light)">data.json</code>, so what you read here is the output of the most recent completed pipeline run.</p>
+        <h4>What this can and cannot mean</h4>
+        <p>These signals help guide protocol design and recommendation logic, but they are not clinical conclusions. Use the menu to navigate Sphere's analyses. For the full technical picture, see <a href="#" onclick="showPanelById('tech-how');return false;" style="color:var(--dp-gold-light);text-decoration:underline;text-underline-offset:3px">How Sphere Works</a>.</p>
       </div>
     </div>
 
@@ -653,12 +725,12 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 2a: Overview Signal -->
     <div class="content-panel" id="panel-sig-overview">
       <div class="panel-eyebrow">Insights — Global Signals</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Overview Signal</h1>
       <div class="signal-grid" id="sigOverviewGrid">
         <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Overview signal</div>
-          <p id="sigOverviewText">Across all series, mean efficacy ratings cluster in the 7.0–7.8 range, suggesting a broadly positive listener experience. The data is encouraging as an early signal, but sample sizes remain modest. Sphere treats these numbers as directional, not definitive.</p>
+          <p id="sigOverviewText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="api-note">Payload key: <code>sphere_commentary.overview</code></div>
@@ -667,12 +739,12 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 2b: Cross-series Comparison -->
     <div class="content-panel" id="panel-sig-cross">
       <div class="panel-eyebrow">Insights — Global Signals</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Cross-series Comparison</h1>
       <div class="signal-grid">
         <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Cross-series comparison</div>
-          <p id="sigCrossText">The Thriving series carries the highest mean efficacy at this stage, with Focus &amp; Clarity and Creative Flow both above 7.3. The Healing series shows the widest distribution across its entry points — a useful signal for routing refinement.</p>
+          <p id="sigCrossText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="api-note">Payload key: <code>sphere_commentary.cross_series</code></div>
@@ -681,12 +753,12 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 2c: Anomaly -->
     <div class="content-panel" id="panel-sig-anomaly">
       <div class="panel-eyebrow">Insights — Global Signals</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Anomaly Worth Watching</h1>
       <div class="signal-grid">
         <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Anomaly worth watching</div>
-          <p id="sigAnomalyText">Anchor (H-CR-L1) shows a notably wide standard deviation and a distribution that clusters at both ends of the scale. This is less a performance signal and more a listener-matching signal — suggesting the protocol may be reaching some listeners for whom it is not well-suited.</p>
+          <p id="sigAnomalyText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="api-note">Payload key: <code>sphere_commentary.anomalies</code></div>
@@ -695,12 +767,12 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 2d: Development Signal -->
     <div class="content-panel" id="panel-sig-dev">
       <div class="panel-eyebrow">Insights — Global Signals</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Development Signal</h1>
       <div class="signal-grid">
         <div class="signal-card" style="grid-column:1/-1">
           <div class="signal-label">Development signal</div>
-          <p id="sigDevText">Lantern and Hammock (H-SL-L1, L2) are among the most consistent performers in the dataset, with high means and low variance. This profile warrants closer attention as a potential design reference point for other entry categories.</p>
+          <p id="sigDevText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="api-note">Payload key: <code>sphere_commentary.development_signals</code></div>
@@ -714,7 +786,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         <div class="compare-card">
           <h3>Series Caution</h3>
           <div class="compare-stat" id="compareHealingStat"></div>
-          <p id="compareHealingText">The widest entry breadth of any series, spanning acute distress through restorative sleep. This breadth may mean that Healing protocols face the most diverse audience expectations — a factor worth tracking in routing accuracy.</p>
+          <p id="compareHealingText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="panel-body" style="margin-top:16px">
@@ -730,7 +802,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         <div class="compare-card">
           <h3>Series Caution</h3>
           <div class="compare-stat" id="compareThrivingStat"></div>
-          <p id="compareThrivingText">The highest current series mean, with relatively consistent scores across entry points. The Thriving series may benefit from the clarity of its stated purpose — listeners who reach it may already be well-matched to it.</p>
+          <p id="compareThrivingText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="panel-body" style="margin-top:16px">
@@ -746,7 +818,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         <div class="compare-card">
           <h3>Series Caution</h3>
           <div class="compare-stat" id="compareTransformingStat"></div>
-          <p id="compareTransformingText">The smallest response count and the most varied mean scores. This is the youngest series in terms of community exposure. Sphere recommends interpreting Transforming data with particular caution until response depth grows.</p>
+          <p id="compareTransformingText"><span style="color:var(--color-text-tertiary);font-style:italic">Loading…</span></p>
         </div>
       </div>
       <div class="panel-body" style="margin-top:16px">
@@ -757,7 +829,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <!-- 4a–4f: Recommendations -->
     <div class="content-panel" id="panel-rec-routing">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Routing Refinement</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -771,7 +843,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
     <div class="content-panel" id="panel-rec-design">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Protocol Design</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -785,7 +857,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
     <div class="content-panel" id="panel-rec-depth">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Response Depth</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -799,7 +871,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
     <div class="content-panel" id="panel-rec-series">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Series Expansion</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -813,7 +885,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
     <div class="content-panel" id="panel-rec-adviser">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Adviser Logic</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -827,7 +899,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
     <div class="content-panel" id="panel-rec-longitudinal">
       <div class="panel-eyebrow">Recommendations — Future Directions</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Longitudinal Signal</h1>
       <div class="direction-grid">
         <div class="direction-card">
@@ -844,39 +916,52 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       <div class="panel-eyebrow">Technical Reference Design</div>
       <h1 class="panel-title">How Sphere Works</h1>
       <div class="panel-body">
-        <p>Sphere is The Drum Protocols' statistician and data scientist. It is not a single fixed intelligence — it is a Mixture of Experts (MOE) pipeline that draws five independent analytical models from a live pool, then passes all five outputs to a sixth model for synthesis. Every pipeline run produces a different combination of models, reducing the risk that any single model's biases dominate the analysis.</p>
+        <p style="font-size:13px;color:rgba(255,255,255,.45);font-style:italic;border-left:2px solid rgba(184,134,11,.3);padding-left:12px;margin-bottom:16px">Sphere does not diagnose, prescribe, or prove clinical effect. It looks for patterns in listener feedback and engagement data.</p>
+        <p>Sphere sits between raw community data and actionable design insight. The pipeline runs in two stages: an AutoGluon ensemble ML model finds quantitative patterns first, then a Mixture of Experts LLM panel interprets those findings in language.</p>
       </div>
-
+      <div class="pipeline-flow">
+        <div class="pipeline-step"><div class="pipeline-step-icon">📋</div><div class="pipeline-step-label">Tally</div><div class="pipeline-step-sub">Surveys</div></div>
+        <div class="pipeline-arrow">+</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">▶</div><div class="pipeline-step-label">YouTube</div><div class="pipeline-step-sub">Retention</div></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">🗄</div><div class="pipeline-step-label">Supabase</div><div class="pipeline-step-sub">Storage</div></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">⚙</div><div class="pipeline-step-label">AutoGluon</div><div class="pipeline-step-sub">ML model</div></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">🔮</div><div class="pipeline-step-label">Sphere MOE</div><div class="pipeline-step-sub">LLM panel</div></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">📄</div><div class="pipeline-step-label">data.json</div><div class="pipeline-step-sub">Output</div></div>
+        <div class="pipeline-arrow">→</div>
+        <div class="pipeline-step"><div class="pipeline-step-icon">🌐</div><div class="pipeline-step-label">Website</div><div class="pipeline-step-sub">You are here</div></div>
+      </div>
+      <div class="panel-body" style="margin-top:24px">
+        <h4>Four distinct layers</h4>
+        <p>A reader can blur these together. They are different things.</p>
+      </div>
+      <div class="layer-grid">
+        <div class="layer-card"><div class="layer-num">1</div><div class="layer-content"><div class="layer-title">Observed data</div><div class="layer-desc">Anonymous listener ratings from Tally surveys, and YouTube viewing and retention metrics per protocol. Raw inputs — nothing inferred yet.</div></div></div>
+        <div class="layer-card"><div class="layer-num">2</div><div class="layer-content"><div class="layer-title">Derived metrics</div><div class="layer-desc">Means, variance, response depth, bimodality coefficients, and retention patterns. Descriptive — they summarise what happened, not why.</div></div></div>
+        <div class="layer-card"><div class="layer-num">3</div><div class="layer-content"><div class="layer-title">Predictive ML — AutoGluon</div><div class="layer-desc">Feature importance and predicted outcome scores from a trained ensemble model. Identifies which protocol design variables most strongly predict listener outcomes. Still quantitative — no language yet.</div></div></div>
+        <div class="layer-card"><div class="layer-num">4</div><div class="layer-content"><div class="layer-title">Interpretive layer — Sphere commentary</div><div class="layer-desc">Five independent LLM analyzers reason from the AutoGluon output, then a sixth synthesizer produces the final written commentary. Language-based interpretation of quantitative signals — not measurement itself.</div></div></div>
+      </div>
       <div class="pillar-list" style="margin-top:24px">
-        <div class="pillar">
-          <b>Survey data collection</b>
-          <span>Anonymous responses arrive via two Tally forms — a 1-second outcome score and a 1-minute qualitative survey. The pipeline fetches all submissions directly via the Tally REST API, resolves hidden URL parameters (protocol code, volume, traffic source) by field UUID, and upserts to Supabase. No manual export is required. The data field in the submission URL distinguishes real listener responses from test data.</span>
-        </div>
-        <div class="pillar">
-          <b>YouTube analytics</b>
-          <span>Daily view counts, average watch duration, average retention percentage, and full retention curves are fetched per protocol video via the YouTube Data and Analytics APIs. This data is injected into every Sphere run as a reach and engagement signal, enabling Sphere to flag undiscovered high-performers (strong outcome score, low views) and retention anomalies (drop-off before entrainment completes).</span>
-        </div>
-        <div class="pillar">
-          <b>The MOE analytical pipeline</b>
-          <span>At runtime, the pipeline queries the live Nebius Token Factory model catalogue, filters to chat-capable models, and draws 5 analyzers ensuring one model per organisation. Each analyzer receives the Sphere system context, the full statistical payload, and the analyzer role prompt — then produces independent observations. All five outputs are passed to a synthesizer drawn from preferred organisations. The synthesizer identifies convergence, hedges divergence, and produces the final structured JSON. Each run's model combination is stored for longitudinal analysis.</span>
-        </div>
-        <div class="pillar">
-          <b>Embedding analysis</b>
-          <span>After each run, every commentary output is vectorised using OpenAI text-embedding-3-small (1,536 dimensions) and stored in Supabase with pgvector. Before each new run, the pipeline computes cross-run cosine similarity per protocol (drift detection) and cross-protocol similarity within the latest run (cluster analysis). This tells Sphere how consistent its own voice has been over time, and which protocols it tends to describe in similar analytical language.</span>
-        </div>
-        <div class="pillar">
-          <b>Output storage and data.json</b>
-          <span>Every run writes 35 rows to Supabase: 30 per-protocol commentary rows and 5 global rows (overview, cross_series, anomalies, development_signals, embedding_analysis). Separately, 6 moe_runs rows capture each individual model's raw output before synthesis. The pipeline then writes a data.json file that hydrates this entire site — no server required. GitHub Actions commits data.json to the repository and GitHub Pages deploys it automatically.</span>
-        </div>
-        <div class="pillar">
-          <b>An evolving intelligence</b>
-          <span>As new models appear on the Nebius catalogue, they automatically enter Sphere's pool. As models are deprecated, they are automatically excluded. What remains constant across every model combination is the persona, the voice principles, and the prompt architecture documented in the sections below. These constraints are not stylistic preferences — they are the mechanism that keeps Sphere recognisably Sphere regardless of which models are running on any given day.</span>
-        </div>
+        <div class="pillar"><b>1 · Data In</b><span>Anonymous responses arrive via two Tally forms — a 1-second outcome score and a 1-minute qualitative survey. Daily YouTube view counts, watch duration, and retention percentages are fetched per protocol. A URL flag distinguishes real listener responses from test data.</span></div>
+        <div class="pillar"><b>2 · Processing</b><span>Survey and YouTube data are joined in Supabase. AutoGluon trains a stacked ensemble on all available outcome data, producing feature importance rankings and predicted scores for all 30 protocols. This quantitative context is written to autogluon_context.json for use by the Sphere pipeline.</span></div>
+        <div class="pillar"><b>3 · Analysis</b><span>The pipeline draws 5 analyzers (one per organisation) and 1 synthesizer from the live Nebius model catalogue. Each analyzer receives the Sphere system context, the full AutoGluon quantitative block, and the analyzer role prompt. The synthesizer reads all five outputs, identifies convergence, hedges divergence, and produces the final structured commentary JSON.</span></div>
+        <div class="pillar"><b>4 · Outputs</b><span>Every run writes 30 per-protocol and 5 global commentary rows to Supabase. Commentary outputs are vectorised and stored for cross-run drift detection. The pipeline commits data.json to the repository. GitHub Actions deploys it via GitHub Pages. No server required.</span></div>
+        <div class="pillar"><b>5 · Limits &amp; Confidence</b><span>AutoGluon recommendations and Sphere commentary are analytical tools, not clinical conclusions. Model-generated language carries inherent uncertainty that no prompt architecture fully eliminates.</span></div>
       </div>
-
-      <div class="api-note" style="margin-top:24px">
-        The persona design, voice principles, prompt templates, and analytical guardrails in the sections below exist specifically because Sphere runs on a rotating pool of models. Consistency of output requires explicit constraints — not trust that any given combination will arrive at the right voice on its own.
+      <div class="confidence-block">
+        <div class="confidence-block-title">What affects confidence in current outputs</div>
+        <ul>
+          <li>Small sample sizes — most protocols have fewer than 50 real responses</li>
+          <li>Test data still present in the training set</li>
+          <li>Uneven response depth across protocols</li>
+          <li>Engagement data does not equal efficacy — watch completion predicts outcomes but is not the same as clinical effect</li>
+          <li>Model outputs are interpretive, not definitive</li>
+        </ul>
       </div>
+      <div class="api-note" style="margin-top:20px">The persona design, voice principles, and prompt constraints documented below exist because Sphere runs on a rotating pool of models. Consistency requires explicit architecture — not trust that any combination will arrive at the right voice on its own.</div>
     </div>
 
     <!-- 5b: Core Identity -->
@@ -931,68 +1016,39 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       </div>
     </div>
 
-    <!-- 5e: Analyzer Prompt -->
+    <!-- 5e: Analyzer Prompt — hydrated from prompts/ via data.json _meta -->
     <div class="content-panel" id="panel-tech-sysprompt">
       <div class="panel-eyebrow">Technical Reference Design</div>
       <h1 class="panel-title">Analyzer Prompt</h1>
       <div class="prompt-pane">
-        <h3>sphere__analyzer__v1.md</h3>
-        <p>Each of the five drawn models receives this prompt alongside the Sphere system context and the full data payload. Analyzers are not asked for polished output — they are asked to surface every signal they can find. The synthesizer decides what makes it into the final report.</p>
-        <pre>You are one of five independent analytical models in the Sphere MOE panel for THE DRUM PROTOCOLS. You are not the final voice — your job is to analyse carefully and surface every signal you can find. A synthesizer will read all five outputs and produce the final report.
-
-Your role: ANALYZER
-
-Structure your output as follows. Use plain text. No markdown, no asterisks, no HTML.
-
-SERIES OVERVIEW
-One paragraph on what the aggregate data says about the three series — mean, spread, confidence tiers. Note any series that under- or over-performs relative to its design intent.
-
-PROTOCOL SIGNALS
-For each protocol with n >= 1, write 1-3 sentences. Include: n, mean, std, confidence tier, bimodal flag, any YouTube signal. Note if data is too thin for pattern conclusions (n &lt; 20). Note if any protocol has a signal strong enough to act on.
-
-CROSS-SERIES PATTERNS
-One paragraph. What patterns appear when you compare HEALING, THRIVING, and TRANSFORMING as groups?
-
-ANOMALIES AND FLAGS
-Bullet each anomaly with a protocol code. Include: bimodal distributions, unusually high or low means, YouTube retention/outcome mismatches.
-
-DEVELOPMENT SIGNALS
-2-5 bullets. Each must cite a specific protocol code and n. Describe the observed pattern, then suggest one concrete action.
-
-EMBEDDING CONTEXT READING
-If embedding context was provided, write 2-4 sentences on drift and cluster signals. If not: No embedding context available for this run.
-
-CONFIDENCE NOTES
-One short paragraph on where the data is thin enough that a different random sample could flip the reading.</pre>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <h3 id="analyzer-prompt-filename" style="margin:0;font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff">Loading…</h3>
+          <span id="analyzer-prompt-version" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:3px 10px"></span>
+        </div>
+        <p id="analyzer-prompt-description" style="margin-top:0;margin-bottom:8px;font-size:12px;color:var(--color-text-tertiary)">Loading description…</p>
+        <p>Each of the five drawn models receives this prompt alongside the Sphere system context, the full statistical payload, and the AutoGluon quantitative context block. Analyzers surface every signal they can find — the synthesizer decides what makes it into the final report.</p>
+      </div>
+      <div class="prompt-pane" style="margin-top:12px">
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:10px">Active prompt text</div>
+        <pre id="analyzer-prompt-text" style="max-height:480px;overflow-y:auto;font-size:11px">Loading from prompts/ directory…</pre>
       </div>
     </div>
 
-    <!-- 5f: Synthesizer Prompt -->
+    <!-- 5f: Synthesizer Prompt — hydrated from prompts/ via data.json _meta -->
     <div class="content-panel" id="panel-tech-userprompt">
       <div class="panel-eyebrow">Technical Reference Design</div>
       <h1 class="panel-title">Synthesizer Prompt</h1>
       <div class="prompt-pane">
-        <h3>sphere__synthesizer__v1.md</h3>
-        <p>The synthesizer receives the original data payload and all five analyzer outputs. Its job is not to summarise — it is to synthesise. It identifies where analyzers converged independently (high-confidence signal), where they diverged (warrants hedging), and where only one raised a pattern (flagged with appropriate uncertainty). The final structured JSON it returns is what populates this site.</p>
-        <pre>You are the SYNTHESIZER in the Sphere MOE panel for THE DRUM PROTOCOLS.
-
-You have received the original data payload and the outputs of 5 independent ANALYZER models.
-
-Discard noise. Surface the clearest patterns. Prioritise signals that multiple analyzers identified independently. Flag patterns that only one analyzer raised, with appropriate hedging. Where 3 or more analyzers raised the same signal independently, prefix that bullet with [CONVERGENT SIGNAL].
-
-Maintain Sphere's voice: curious, probabilistic, precise. Never overclaim. Frame findings as signals to investigate, not verdicts.
-
-FORMATTING RULES:
-For overview, cross_series, anomalies, development_signals, embedding_analysis:
-  - One clear summary sentence on its own line
-  - Bullet points starting with • on a new line
-  - Each bullet under 25 words
-  - Plain text only — no markdown, asterisks, or HTML
-
-For by_protocol: 1-2 sentences, statistical terminology, cite n/mean/std/bimodality/confidence/YouTube.
-For by_protocol_plain: 1-2 sentences, warm plain language, no statistics terminology.
-
-Return ONLY valid JSON — no markdown fences, no preamble, no postamble.</pre>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+          <h3 id="synthesizer-prompt-filename" style="margin:0;font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff">Loading…</h3>
+          <span id="synthesizer-prompt-version" style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--dp-gold-light);border:.5px solid var(--color-border-gold);border-radius:999px;padding:3px 10px"></span>
+        </div>
+        <p id="synthesizer-prompt-description" style="margin-top:0;margin-bottom:8px;font-size:12px;color:var(--color-text-tertiary)">Loading description…</p>
+        <p>The synthesizer receives the original data payload, the AutoGluon quantitative context, and all five analyzer outputs. It identifies convergence (high-confidence signal), hedges divergence, and flags single-source patterns. Signals raised by 3 or more analyzers independently are prefixed [CONVERGENT SIGNAL].</p>
+      </div>
+      <div class="prompt-pane" style="margin-top:12px">
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:10px">Active prompt text</div>
+        <pre id="synthesizer-prompt-text" style="max-height:480px;overflow-y:auto;font-size:11px">Loading from prompts/ directory…</pre>
       </div>
     </div>
 
@@ -1021,7 +1077,70 @@ Return ONLY valid JSON — no markdown fences, no preamble, no postamble.</pre>
       </div>
     </div>
 
-    <!-- 6a: Research Findings -->
+    <!-- 6a: AutoGluon — What it Does -->
+    <div class="content-panel" id="panel-ag-overview">
+      <div class="panel-eyebrow">AutoGluon Layer</div>
+      <h1 class="panel-title">What AutoGluon Does</h1>
+      <div class="panel-body">
+        <p>AutoGluon is an open-source AutoML framework developed by AWS. In The Drum Protocols system it provides the quantitative statistical foundation that LLMs are not suited for — rigorous, reproducible ensemble ML prediction trained directly on listener outcome data. AutoGluon computes. LLMs interpret.</p>
+      </div>
+      <div class="pillar-list" style="margin-top:20px">
+        <div class="pillar"><b>Ensemble architecture</b><span>AutoGluon trains LightGBM, CatBoost, XGBoost, and Random Forest in parallel, then stacks them across two levels with a weighted ensemble at the top. Current best: WeightedEnsemble_L3, RMSE 1.061 on a 0–10 outcome scale.</span></div>
+        <div class="pillar"><b>What it learns from</b><span>Protocol design features (landing frequency, Hz range, duration, movement type, series), YouTube engagement features (watch completion %, average duration), listener context features (entry zone, intensity level, adviser routing), and outcome scores from listener surveys.</span></div>
+        <div class="pillar"><b>Two outputs, one training run</b><span>autogluon.json powers the Adviser recommendation system — ranking protocols for all 81 listener state combinations. autogluon_context.json feeds the Sphere analysis pipeline — providing the quantitative layer that LLM analyzers reason from.</span></div>
+        <div class="pillar"><b>Training cadence</b><span>AutoGluon runs locally on demand — typically weekly. The model trains from scratch on all available data with no time limit, then saves to disk. The Sphere pipeline reads the most recent context file automatically on the next run.</span></div>
+      </div>
+    </div>
+
+    <!-- 6b: AutoGluon — Adviser Recommender -->
+    <div class="content-panel" id="panel-ag-adviser">
+      <div class="panel-eyebrow">AutoGluon Layer</div>
+      <h1 class="panel-title">Adviser Recommender</h1>
+      <div class="panel-body"><p>The Protocol Adviser uses AutoGluon to rank protocols for every combination of listener state, available time, and intensity. Three questions produce one of 81 possible contexts. AutoGluon scores all 30 protocols for that context and returns a ranked list.</p></div>
+      <div class="pillar-list" style="margin-top:20px">
+        <div class="pillar"><b>Primary recommendations</b><span>All protocols within the listener's zone are ranked by predicted outcome score. The top-ranked protocol is the primary recommendation. The second and third become alternatives shown below the result.</span></div>
+        <div class="pillar"><b>Cross-bucket recommendations</b><span>If any out-of-zone protocol scores within 15% of the top in-zone score, it appears as a "You might also explore" suggestion. These cross-bucket entries represent the model finding efficacy signals that cross categorical boundaries.</span></div>
+        <div class="pillar"><b>Graceful fallback</b><span>If autogluon.json is absent, the Adviser falls back to mean-score ranking from data.json. The user experience is identical.</span></div>
+        <div class="pillar"><b>Adviser-driven signal</b><span>When a listener reaches a survey via the Adviser, the URL carries src=adviser. AutoGluon has already identified that adviser-routed listeners report measurably better outcomes — confirming the value of the routing itself.</span></div>
+      </div>
+    </div>
+
+    <!-- 6c: AutoGluon — Sphere Analysis Feed -->
+    <div class="content-panel" id="panel-ag-sphere">
+      <div class="panel-eyebrow">AutoGluon Layer</div>
+      <h1 class="panel-title">Sphere Analysis Feed</h1>
+      <div class="panel-body">
+        <p>Before each Sphere MOE run, the pipeline loads autogluon_context.json and injects its contents as a structured quantitative block into the analyzer payload. This replaces passing only descriptive statistics as the primary quantitative input.</p>
+        <p>Descriptive statistics tell an analyzer what the distributions look like. AutoGluon output tells it what is causally driving outcomes.</p>
+      </div>
+      <div class="pillar-list" style="margin-top:20px">
+        <div class="pillar"><b>What the analyzers receive</b><span>Model performance (RMSE, full leaderboard), feature importance by category, key quantitative findings, predicted outcome scores by zone, cross-bucket routing anomalies, and zone efficacy ranking.</span></div>
+        <div class="pillar"><b>Convergence as signal</b><span>When AutoGluon quantitative findings and Sphere narrative observations point in the same direction, the synthesizer treats this as stronger signal. When they diverge, the tension is analytically meaningful and flagged explicitly.</span></div>
+        <div class="pillar"><b>Zero-signal features</b><span>AutoGluon currently reports zero predictive signal for listener context features because test data populates them uniformly. The pipeline explicitly flags this so analyzers do not misread absence of signal as absence of importance.</span></div>
+      </div>
+      <div class="api-note" style="margin-top:16px">The context block is stored in autogluon_context.json and loaded by moe_sphere_pipeline.py at step [3c/5]. If the file is absent, Sphere runs with a graceful fallback message.</div>
+    </div>
+
+    <!-- 6d: AutoGluon — Feature Importance -->
+    <div class="content-panel" id="panel-ag-features">
+      <div class="panel-eyebrow">AutoGluon Layer</div>
+      <h1 class="panel-title">Feature Importance</h1>
+      <div class="panel-body"><p>Feature importance is computed as mean absolute SHAP values across the ensemble. Higher values indicate stronger causal influence on predicted outcome scores.</p></div>
+      <div class="signal-grid" style="margin-top:20px">
+        <div class="signal-card" style="grid-column:1/-1">
+          <div class="signal-label">Current top features (live from autogluon.json)</div>
+          <div id="ag-feature-list"><p style="color:var(--color-text-tertiary);font-style:italic">Loading from autogluon.json...</p></div>
+        </div>
+      </div>
+      <div class="pillar-list" style="margin-top:20px">
+        <div class="pillar"><b>Watch completion</b><span>Currently the strongest single predictor. Listeners who complete more of a protocol report better outcomes — protocols that hold attention through their full entrainment arc are more effective.</span></div>
+        <div class="pillar"><b>Landing frequency (endHz)</b><span>The first protocol design signal to emerge — where a protocol arrives matters more than where it starts. An early but directionally important finding for Vol. 2 design.</span></div>
+        <div class="pillar"><b>Features awakening with real data</b><span>Listener context features currently show zero signal because test data populates them uniformly. As real listener data diversifies, these will activate and reveal which listener profiles respond best to which protocol types.</span></div>
+      </div>
+      <div class="api-note" style="margin-top:16px">Feature importance is stored in autogluon.json under <code>feature_importance</code>. The Adviser sidebar displays the top 5 features live from autogluon.json.</div>
+    </div>
+
+    <!-- 7a: Research Findings -->
     <div class="content-panel" id="panel-research-main">
       <div class="panel-eyebrow">Sphere · Research Layer</div>
       <div class="panel-badge">In development</div>
@@ -1035,7 +1154,7 @@ Return ONLY valid JSON — no markdown fences, no preamble, no postamble.</pre>
     <!-- 7a: Protocol Review -->
     <div class="content-panel" id="panel-protrev-main">
       <div class="panel-eyebrow">Sphere's Protocol Review</div>
-      <div class="panel-badge">API-generated</div>
+      <div class="panel-badge" data-api="true">API-generated</div>
       <h1 class="panel-title">Per-Protocol Analysis</h1>
       <div class="protocol-review-note">
         <strong>Protocol analysis content lives on each protocol's own page.</strong><br><br>
@@ -1139,31 +1258,17 @@ function showPanel(panelId, subEl) {
   if (contentArea) contentArea.scrollTop = 0;
 }
 
-// Inject Sphere badge (icon + date) into every non-intro panel.
-// Phase 1 — called on DOMContentLoaded: injects icon with empty date placeholder.
-// Phase 2 — called from hydrateAll() with real date: populates the date elements.
-function injectSphereBadges(analysisDate) {
-  document.querySelectorAll('.content-panel').forEach(panel => {
-    if (panel.id === 'panel-about-intro') return; // intro has its own badge
-    let wrapper = panel.querySelector('.sphere-badge-panel');
-    if (!wrapper) {
-      // First call — build the wrapper with a date placeholder span
-      wrapper = document.createElement('div');
-      wrapper.className = 'sphere-badge-panel';
-      wrapper.title = 'Sphere analysis';
-      wrapper.innerHTML =
-        '<div class="sphere-badge"><img src="SPHERE_ICON.jpg" alt="Sphere"></div>' +
-        '<div class="sphere-badge-date"></div>';
-      panel.appendChild(wrapper);
-    }
-    // Second call (or first if date already known) — populate the date
-    if (analysisDate) {
-      const dateEl = wrapper.querySelector('.sphere-badge-date');
-      if (dateEl) dateEl.textContent = `Pipeline run · ${analysisDate}`;
-    }
+function injectApiDates(analysisDate) {
+  if (!analysisDate) return;
+  document.querySelectorAll('.panel-badge[data-api="true"]').forEach(badge => {
+    const existing = badge.querySelector('.panel-badge-date');
+    if (existing) existing.remove();
+    const span = document.createElement('span');
+    span.className = 'panel-badge-date';
+    span.textContent = analysisDate;
+    badge.appendChild(span);
   });
 }
-document.addEventListener('DOMContentLoaded', () => injectSphereBadges(null));
 
 // Cross-link helper — opens the correct menu group and selects the panel
 function showPanelById(panelId) {
@@ -1175,6 +1280,7 @@ function showPanelById(panelId) {
     'rec-routing':'recs','rec-design':'recs','rec-depth':'recs','rec-series':'recs','rec-adviser':'recs','rec-longitudinal':'recs',
     'tech-how':'tech','tech-identity':'tech','tech-audience':'tech','tech-vp1':'tech','tech-vp2':'tech',
     'tech-sysprompt':'tech','tech-userprompt':'tech','tech-guardrails':'tech',
+    'ag-overview':'autogluon','ag-adviser':'autogluon','ag-sphere':'autogluon','ag-features':'autogluon',
     'research-main':'research','protrev-main':'protrev'
   };
   const group = groupMap[panelId];
@@ -1206,12 +1312,34 @@ const SERIES_COPY = {
   TRANSFORMING: { label:'Transforming', body:'The smallest response count and the most varied mean scores. The youngest series in terms of community exposure. Sphere recommends interpreting TRANSFORMING data with particular caution until response depth grows.' },
 };
 
-fetch('data.json')
-  .then(r => r.ok ? r.json() : Promise.reject(r.status))
-  .then(data => hydrateAll(data))
-  .catch(err => console.warn('sphere.html: data.json load failed —', err));
+(function loadSphereData() {
+  function tryLoad(url) {
+    return fetch(url + '?_=' + Date.now(), { cache: 'no-store' })
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => {
+        if (!data || !data.sphere_commentary || !data.sphere_commentary.overview) {
+          throw new Error('sphere_commentary missing');
+        }
+        return data;
+      });
+  }
+  tryLoad('data.json')
+    .catch(err => {
+      console.warn('sphere.html: data.json failed (' + err.message + ') — trying data_backup.json');
+      return tryLoad('data_backup.json');
+    })
+    .then(data => hydrateAll(data))
+    .catch(err => {
+      console.error('sphere.html: both data files failed —', err.message);
+      ['sigOverviewText','sigCrossText','sigAnomalyText','sigDevText'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<span style="color:var(--color-text-tertiary);font-style:italic">Data unavailable — please refresh.</span>';
+      });
+    });
+})();
 
 function hydrateAll(data) {
+  var _meta = data._meta || {};
   // Stat strip
   const statEl = document.getElementById('statProtocols'); if (statEl && data.protocols_with_data != null) statEl.textContent = data.protocols_with_data;
 
@@ -1220,7 +1348,7 @@ function hydrateAll(data) {
   // Render global signals as innerHTML so Sphere's bullet formatting displays
   function renderSignal(id, text) {
     const el = document.getElementById(id);
-    if (!el || !text) return;
+    if (!el || !text || !text.trim()) return;
     // Convert •-prefixed lines to styled bullets, preserve line breaks
     const html = text
       .split(/\n/)
@@ -1278,10 +1406,41 @@ function hydrateAll(data) {
       analysisDate = `${dateStr} · ${timeStr}`;
     } catch(e) { /* fallback to date-only */ }
   }
-  injectSphereBadges(analysisDate);
+  injectApiDates(analysisDate);
   window._ANALYSIS_DATE = analysisDate; // available to renderProtocolCards on any page
+
+  // Hydrate analyzer + synthesizer prompt panels from prompts.json
+  loadPromptPanels();
 }
 
+function loadPromptPanels() {
+  fetch('prompts.json?_=' + Date.now(), { cache: 'no-store' })
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(prompts) {
+      ['analyzer', 'synthesizer'].forEach(function(role) {
+        var roleData    = prompts[role] || {};
+        var activeVer   = roleData.active || 'v1';
+        var versionData = (roleData.versions || {})[activeVer] || {};
+        var text        = versionData.text        || 'No prompt text found.';
+        var description = versionData.description || '';
+        var activeFrom  = versionData.active_from || '';
+
+        var filenameEl = document.getElementById(role + '-prompt-filename');
+        var versionEl  = document.getElementById(role + '-prompt-version');
+        var textEl     = document.getElementById(role + '-prompt-text');
+
+        if (filenameEl) filenameEl.textContent = 'sphere_' + role + '_' + activeVer + '.md';
+        if (versionEl)  versionEl.textContent  = activeVer + (activeFrom ? '  ·  ' + activeFrom : '');
+        if (textEl)     textEl.textContent      = text;
+      });
+    })
+    .catch(function(err) {
+      ['analyzer', 'synthesizer'].forEach(function(role) {
+        var textEl = document.getElementById(role + '-prompt-text');
+        if (textEl) textEl.textContent = 'Could not load prompts.json (' + err.message + ').';
+      });
+    });
+}
 // ── renderProtocolCards — used by protocol.html + adviser.html ──
 function renderProtocolCards(protocols, containerId, analysisDate) {
   const container = document.getElementById(containerId || 'protocolGrid');
@@ -1355,6 +1514,51 @@ function filterProtos(series, btn) {
 
 
 <script>
+// ── AutoGluon feature importance for panel-ag-features ──
+(function loadAgFeatures() {
+  fetch('autogluon.json?_=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(ag => {
+      if (!ag || !ag.feature_importance) return;
+      var fi = ag.feature_importance;
+      var entries = Object.entries(fi).slice(0, 8);
+      var maxVal = entries.length ? entries[0][1] : 1;
+      var nameMap = {
+        avg_view_percentage: 'Watch completion', avg_view_duration: 'Watch duration',
+        level: 'Intensity level', endHz: 'Landing Hz', startHz: 'Starting Hz',
+        series: 'Protocol series', zone: 'Zone alignment', hz_abs: 'Hz range',
+        delta: 'Hz range (signed)', dur: 'Duration', entry: 'Entry match',
+        move: 'Movement type', adviser_driven: 'Adviser-routed',
+        listener_type: 'Listener type', activity: 'Activity',
+        listen_method: 'Listen method', settle_time: 'Settle time'
+      };
+      var el = document.getElementById('ag-feature-list');
+      if (!el) return;
+      el.innerHTML = entries.map(function(kv) {
+        var k = kv[0], v = kv[1];
+        var pct = Math.round((v / maxVal) * 100);
+        var label = nameMap[k] || k;
+        var flag = v === 0 ? ' <span style="font-size:10px;color:var(--color-text-tertiary)">(no signal yet)</span>' : '';
+        return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+          '<div style="width:130px;font-size:12px;color:var(--color-text-secondary);flex-shrink:0">' + label + '</div>' +
+          '<div style="flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden">' +
+            '<div style="width:' + pct + '%;height:100%;background:linear-gradient(90deg,var(--sphere-blue),var(--dp-healing-accent));border-radius:2px"></div>' +
+          '</div>' +
+          '<div style="width:40px;font-size:11px;color:var(--color-text-tertiary);text-align:right">' + v.toFixed(3) + '</div>' +
+          flag +
+        '</div>';
+      }).join('');
+      var meta = (ag._meta || {});
+      if (meta.n_training_rows) {
+        var metaDiv = document.createElement('div');
+        metaDiv.style.cssText = 'font-size:11px;color:var(--color-text-tertiary);margin-top:12px';
+        var rmse = (ag.leaderboard && ag.leaderboard[0]) ? Math.abs(ag.leaderboard[0].score_val).toFixed(3) : '—';
+        metaDiv.textContent = 'AutoGluon run: ' + (meta.run_date || '—') + '  ·  ' + meta.n_training_rows.toLocaleString() + ' training rows  ·  Best RMSE: ' + rmse;
+        el.appendChild(metaDiv);
+      }
+    });
+})();
+
 // ── Data transparency badge hydration ──
 (function(){
   fetch('data.json?_='+Date.now())
