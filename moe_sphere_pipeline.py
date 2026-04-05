@@ -1029,25 +1029,83 @@ def run_synthesizer_by_id(client, synthesizer_id: str, system_text: str,
 
 def parse_json_output(raw):
     text = raw.strip()
-    # Strip markdown fences
+    # Strip markdown fences (```json ... ``` or ``` ... ```)
     if text.startswith("```"):
         text = "\n".join(text.split("\n")[1:])
     if text.endswith("```"):
         text = "\n".join(text.split("\n")[:-1])
     text = text.strip()
     # Strip reasoning model thinking blocks: <think>...</think>
-    # These appear before the actual JSON in models like MiniMax, Qwen-Thinking etc.
     import re
     text = re.sub(r"<think>.*?</think>", "", text, flags=re.DOTALL).strip()
     # Find the first { to skip any preamble text before the JSON object
     brace = text.find("{")
     if brace > 0:
         text = text[brace:]
+    # Truncate anything after the last } to remove trailing commentary
+    last_brace = text.rfind("}")
+    if last_brace >= 0 and last_brace < len(text) - 1:
+        text = text[:last_brace + 1]
+
+    # First attempt — clean parse
     try:
         return json.loads(text)
     except json.JSONDecodeError as e:
-        print(f"  WARNING: Synthesizer returned invalid JSON ({e}). Saving raw.")
-        return {"raw": raw, "parse_error": str(e)}
+        first_error = e
+
+    # Repair attempt — fix the most common LLM JSON errors in order
+    repaired = text
+
+    # 1. Remove JavaScript-style // line comments
+    repaired = re.sub(r"//[^\n]*", "", repaired)
+
+    # 2. Remove /* block comments */
+    repaired = re.sub(r"/\*.*?\*/", "", repaired, flags=re.DOTALL)
+
+    # 3. Remove trailing commas before } or ] (e.g. {"a":1,})
+    repaired = re.sub(r",\s*([}\]])", r"\1", repaired)
+
+    # 4. Replace smart quotes with straight quotes
+    repaired = repaired.replace("\u201c", "\"").replace("\u201d", "\"")
+    repaired = repaired.replace("\u2018", "'").replace("\u2019", "'")
+
+    # 5. Escape unescaped newlines inside string values
+    #    (walk char by char is too slow — use a targeted regex for common case)
+    #    Handles literal newlines inside "..." that aren't already escaped
+    def escape_newlines_in_strings(s):
+        result = []
+        in_string = False
+        i = 0
+        while i < len(s):
+            c = s[i]
+            if c == "\\" and i + 1 < len(s):
+                result.append(c)
+                result.append(s[i+1])
+                i += 2
+                continue
+            if c == '"' :
+                in_string = not in_string
+                result.append(c)
+            elif c == "\n" and in_string:
+                result.append("\\n")
+            elif c == "\r" and in_string:
+                result.append("\\r")
+            elif c == "\t" and in_string:
+                result.append("\\t")
+            else:
+                result.append(c)
+            i += 1
+        return "".join(result)
+
+    repaired = escape_newlines_in_strings(repaired)
+
+    try:
+        parsed = json.loads(repaired)
+        print(f"  NOTE: Synthesizer JSON repaired successfully (original error: {first_error})")
+        return parsed
+    except json.JSONDecodeError as e2:
+        print(f"  WARNING: Synthesizer returned invalid JSON ({first_error}). Repair failed ({e2}). Saving raw.")
+        return {"raw": raw, "parse_error": str(first_error)}
 
 def call_sphere_moe(protocols_out, series_summary, total_n,
                     total_n_full=0, full_rows=None, youtube_data=None,
