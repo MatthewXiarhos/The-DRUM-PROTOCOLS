@@ -1,7 +1,9 @@
 name: Sphere MOE Pipeline
 
 on:
-  workflow_dispatch:          # manual trigger only
+  workflow_dispatch:          # manual trigger
+  schedule:
+    - cron: '50 6 * * *'      # 06:50 UTC = 01:50 AM EST (UTC-5) / 02:50 AM EDT (UTC-4)
 
 jobs:
   run-moe-sphere:
@@ -43,7 +45,7 @@ jobs:
           OPENAI_VECTOR_KEY:    ${{ secrets.OPENAI_VECTOR_KEY }}
         run: python moe_sphere_pipeline.py --output data.json
 
-      - name: Commit data.json
+      - name: Commit outputs
         run: |
           git config user.name  "Sphere MOE Pipeline"
           git config user.email "sphere@faces-of-dragonfly.bot"
