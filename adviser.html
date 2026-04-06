@@ -343,11 +343,11 @@ a { color: inherit; }
 .ag-tooltip-panel p { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); margin-bottom: 8px; }
 .ag-tooltip-panel p:last-child { margin-bottom: 0; }
 .ag-feature-bars { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
-.ag-feature-row { display: flex; align-items: center; gap: 8px; }
-.ag-feature-row-name { font-size: 11px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
-.ag-feature-row-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
-.ag-feature-row-bar { height: 100%; background: linear-gradient(90deg, #4a9eca, #52B788); border-radius: 2px; }
-.ag-feature-row-val { font-size: 10px; color: var(--color-text-tertiary); width: 36px; text-align: right; flex-shrink: 0; }
+.ag-feat-row { display: flex; align-items: center; gap: 8px; }
+.ag-feat-row-name { font-size: 11px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
+.ag-feat-row-bar-wrap { flex: 1; height: 3px; background: rgba(255,255,255,0.06); border-radius: 2px; overflow: hidden; }
+.ag-feat-row-bar { height: 100%; background: linear-gradient(90deg, #4a9eca, #52B788); border-radius: 2px; }
+.ag-feat-row-val { font-size: 10px; color: var(--color-text-tertiary); width: 36px; text-align: right; flex-shrink: 0; }
 .ag-tooltip-meta { font-size: 10px; color: var(--color-text-tertiary); margin-top: 12px; padding-top: 10px; border-top: 0.5px solid rgba(74,158,202,0.12); }
 .screen { display: none; }
 .screen.active { display: block; }
@@ -658,7 +658,7 @@ let AG_META={};         // autogluon.json _meta
 Promise.all([
   fetch('protocols.json').then(r=>{if(!r.ok)throw new Error('protocols.json not found');return r.json();}),
   fetch('data.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null),
-  fetch('autogluon.json').then(r=>{if(!r.ok)throw new Error();return r.json();}).catch(()=>null)
+  fetch('autogluon.json?_='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('autogluon.json: '+r.status);return r.json();}).catch(e=>{console.warn('adviser.html: autogluon.json failed —',e.message);return null;})
 ]).then(([pj, dj, ag])=>{
 
   // Build QUESTIONS from protocols.json questions[]
@@ -1069,10 +1069,10 @@ function hydrateAgTooltip(){
         + '<div class="ag-feature-bars">'
         + entries.map(([k,v])=>{
             const pct = Math.round((v/maxVal)*100);
-            return `<div class="ag-feature-row">
-              <div class="ag-feature-row-name">${nameMap[k]||k}</div>
-              <div class="ag-feature-row-bar-wrap"><div class="ag-feature-row-bar" style="width:${pct}%"></div></div>
-              <div class="ag-feature-row-val">${v.toFixed(3)}</div>
+            return `<div class="ag-feat-row">
+              <div class="ag-feat-row-name">${nameMap[k]||k}</div>
+              <div class="ag-feat-row-bar-wrap"><div class="ag-feat-row-bar" style="width:${pct}%"></div></div>
+              <div class="ag-feat-row-val">${v.toFixed(3)}</div>
             </div>`;
           }).join('')
         + '</div>';

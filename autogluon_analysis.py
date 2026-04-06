@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-autogluon_analysis.py — THE DRUM PROTOCOLS
+autogluon_recommender.py — THE DRUM PROTOCOLS
 ──────────────────────────────────────────────
-AutoGluon analysis, recommendations and Sphere context. Runs locally — not in GitHub Actions.
+AutoGluon-driven protocol recommender. Runs locally — not in GitHub Actions.
 
 Trains on:
   - survey_responses_short  (outcome_score, src, data_type)
@@ -11,21 +11,19 @@ Trains on:
   - protocols.json          (design features: delta, dur, startHz, endHz, move)
 
 Outputs:
-  - autogluon.json          -> repo root, fetched by adviser.html independently
-  - autogluon_context.json  -> repo root, loaded by moe_sphere_pipeline.py as
-                               {{INJECT:AUTOGLUON_CONTEXT}} for Sphere MOE analyzers
-  - autogluon_model/        -> saved AutoGluon predictor folder (local only, gitignored)
-  - autogluon_model_runs    -> Supabase table, model versioning / drift tracking
+  - autogluon.json          → repo root, fetched by adviser.html independently
+  - autogluon_model/        → saved AutoGluon predictor folder (local only, gitignored)
+  - autogluon_model_runs    → Supabase table, model versioning / drift tracking
 
 Intentionally decoupled from moe_sphere_pipeline.py and data.json.
 Each script owns its output. adviser.html fetches both files independently.
 
 Usage:
-  python autogluon_analysis.py                  # train + score + write autogluon.json
-  python autogluon_analysis.py --real-only      # filter to data_type='real' only
-  python autogluon_analysis.py --dry-run        # skip all writes, print summary
-  python autogluon_analysis.py --no-train       # load saved model, skip retraining
-  python autogluon_analysis.py --time-limit 300 # AutoGluon time budget in seconds
+  python autogluon_recommender.py               # train + score + write autogluon.json
+  python autogluon_recommender.py --real-only   # filter to data_type='real' only
+  python autogluon_recommender.py --dry-run     # skip all writes, print summary
+  python autogluon_recommender.py --no-train    # load saved model, skip retraining
+  python autogluon_recommender.py --time-limit 300  # AutoGluon time budget in seconds
 
 Requirements:
   pip install autogluon.tabular[lightgbm,catboost,xgboost] supabase python-dotenv
@@ -49,7 +47,9 @@ from supabase import create_client
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 PROTOCOLS_PATH = "protocols.json"
-MODEL_PATH     = "autogluon_model"        # folder, not a single file
+MODEL_PATH         = "autogluon_model"        # outcome_score model
+MODEL_PATH_CHANGE  = "autogluon_model_change"  # change_rating model
+MIN_TRAIN_ROWS_CHANGE = 10                     # lower threshold — 1-min survey has fewer rows
 OUTPUT_PATH    = "autogluon.json"
 MIN_TRAIN_ROWS = 20                        # below this, use fallback mean-based ranking
 DEFAULT_TIME_LIMIT = None                  # No limit — run until all models complete
@@ -173,47 +173,108 @@ def build_features(short, full, yt, proto_df):
     return df[available].copy()
 
 
+# ── Feature matrix builder — change_rating model ────────────────────────────
+
+# Ordinal mapping for change_rating text responses → 0-10 numeric scale
+CHANGE_RATING_MAP = {
+    "Significant improvement":      10.0,
+    "Noticeable improvement":        8.0,
+    "Moderate Improvement":          6.0,
+    "Slight improvement":            4.0,
+    "No effect":                     2.0,
+    "It actually made things worse": 0.0,
+}
+
+def build_features_change(full, yt, proto_df):
+    """
+    Build training DataFrame for the change_rating model.
+    Uses survey_responses_full as the primary source — these responses have
+    both listener context features AND change_rating (before/after delta).
+    change_rating is a categorical Tally response mapped to 0-10 numeric scale:
+        Significant improvement      → 10
+        Noticeable improvement       →  8
+        Moderate Improvement         →  6
+        Slight improvement           →  4
+        No effect                    →  2
+        It actually made things worse →  0
+    Joined with protocol design features and YouTube engagement.
+    Only rows with a mappable change_rating are included.
+    """
+    if full.empty:
+        return pd.DataFrame()
+
+    df = full.copy()
+    df["protocol_code"] = df["protocol_code"].str.strip()
+
+    # Map text responses to numeric — drop unmappable rows
+    df["change_rating"] = df["change_rating"].map(CHANGE_RATING_MAP)
+    df = df[df["change_rating"].notna()].copy()
+    if df.empty:
+        return pd.DataFrame()
+
+    df["adviser_driven"] = 0  # full survey doesn't carry src — default to 0
+
+    df = df.merge(proto_df, on="protocol_code", how="left")
+
+    if not yt.empty:
+        df = df.merge(yt, on="protocol_code", how="left")
+    else:
+        df["avg_view_percentage"] = None
+        df["avg_view_duration"]   = None
+
+    for col in CAT_COLS:
+        if col in df.columns:
+            df[col] = df[col].fillna("unknown")
+
+    available = [c for c in CAT_COLS + NUM_COLS if c in df.columns] + ["change_rating"]
+    return df[available].copy()
+
+
 # ── Train ─────────────────────────────────────────────────────────────────────
 
-def train_model(train_df, time_limit=DEFAULT_TIME_LIMIT):
+def train_model(train_df, time_limit=DEFAULT_TIME_LIMIT,
+               label="outcome_score", model_path=None):
     """
-    Train AutoGluon TabularPredictor on outcome_score.
-    Uses lightgbm, catboost, xgboost ensemble — no deep learning, no GPU needed.
-    Calls save_space() after fit to minimise the model folder size.
+    Train AutoGluon TabularPredictor on the given label.
+    Supports outcome_score (1-second survey) and change_rating (1-minute survey).
+    Uses lightgbm, catboost, xgboost, random forest ensemble.
     """
     from autogluon.tabular import TabularPredictor
 
-    # Cast outcome_score to float — prevents AutoGluon misdetecting 0-10 integers as multiclass
-    train_df = train_df.copy()
-    train_df["outcome_score"] = train_df["outcome_score"].astype(float)
+    path = model_path or MODEL_PATH
 
-    feature_cols = [c for c in train_df.columns if c != "outcome_score"]
+    train_df = train_df.copy()
+    train_df[label] = train_df[label].astype(float)
+
+    feature_cols = [c for c in train_df.columns if c != label]
+    print(f"  Label          : {label}")
     print(f"  Features       : {feature_cols}")
     print(f"  Time limit     : {time_limit}s" if time_limit else "  Time limit     : unlimited")
 
     predictor = TabularPredictor(
-        label        = "outcome_score",
-        path         = MODEL_PATH,
+        label        = label,
+        path         = path,
         eval_metric  = "rmse",
-        problem_type = "regression",   # explicit — prevents multiclass misdetection on 0-10 integers
+        problem_type = "regression",
         verbosity    = 2,
     ).fit(
         train_data            = train_df,
         **({"time_limit": time_limit} if time_limit is not None else {}),
         presets               = "best_quality",
-        dynamic_stacking      = False,     # skip DyStack — saves ~150s on small datasets
+        dynamic_stacking      = False,
         hyperparameters = {
-            "GBM":  {},   # LightGBM
-            "CAT":  {},   # CatBoost
-            "XGB":  {},   # XGBoost
-            "RF":   {},   # Random Forest (fast, good baseline)
+            "GBM":      {},   # LightGBM
+            "CAT":      {},   # CatBoost
+            "XGB":      {},   # XGBoost
+            "RF":       {},   # Random Forest
+            "NN_TORCH": {},   # Tabular neural network — AutoGluon weights it
+                              # automatically based on validation performance.
+                              # Downweighted when tree methods dominate;
+                              # upweighted when it finds patterns they miss.
         },
-
     )
 
-    # Shrink saved model — no impact on prediction accuracy
     predictor.save_space()
-
     return predictor
 
 
@@ -232,7 +293,8 @@ def get_feature_importance(predictor, train_df):
 
 # ── Score all 81 combos ───────────────────────────────────────────────────────
 
-def score_all_combos(predictor, proto_df, raw_json, train_df) -> dict:
+def score_all_combos(predictor, proto_df, raw_json, train_df,
+                     predictor_change=None, train_df_change=None) -> dict:
     """
     Score all 30 protocols for every zone × time × intensity combination.
     Returns a dict keyed by "{zone}__{time}__{intensity}" with:
@@ -290,7 +352,26 @@ def score_all_combos(predictor, proto_df, raw_json, train_df) -> dict:
                 feature_cols = [c for c in CAT_COLS + NUM_COLS if c in score_df.columns]
                 X_score      = score_df[feature_cols].fillna(0)
 
-                score_df["predicted_score"] = predictor.predict(X_score, as_pandas=False)
+                pred_a = predictor.predict(X_score, as_pandas=False)
+
+                # Blend with change_rating model if available
+                if predictor_change is not None:
+                    try:
+                        pred_b = predictor_change.predict(X_score, as_pandas=False)
+                        # Weight by proportion of total responses — no magic multipliers,
+                        # just the data speaking for itself. As 1-minute surveys grow,
+                        # their weight grows naturally.
+                        n_a    = len(train_df)
+                        n_b    = len(train_df_change) if train_df_change is not None else 0
+                        total  = n_a + n_b if (n_a + n_b) > 0 else 1
+                        w_a    = n_a / total
+                        w_b    = n_b / total
+                        score_df["predicted_score"] = pred_a * w_a + pred_b * w_b
+                    except Exception as e:
+                        print(f"  ⚠ change_rating predictor failed for {zone}/{intensity}: {e}")
+                        score_df["predicted_score"] = pred_a
+                else:
+                    score_df["predicted_score"] = pred_a
 
                 bucket_codes = routing.get(zone, [])
                 within  = (
@@ -371,236 +452,39 @@ def writeback_model_run(supabase, run_date, n_train, leaderboard_summary,
     print(f"  ✓ autogluon_model_runs logged")
 
 
-# ── Build Sphere context block ───────────────────────────────────────────────
-
-CONTEXT_PATH = "autogluon_context.json"
-
-def build_autogluon_context(feature_importance, leaderboard_summary,
-                             recommendations, proto_df, n_train,
-                             run_date, real_only):
-    """
-    Build a richly structured text block for injection into the Sphere MOE
-    prompt as {{INJECT:AUTOGLUON_CONTEXT}}.
-
-    Replaces numpy/scipy descriptive stats as the primary quantitative input
-    for the 5 Analyzer models. AutoGluon output is predictive — what drives
-    outcomes — not merely descriptive.
-    """
-    sep   = "=" * 70
-    lines = []
-    lines.append(sep)
-    lines.append("AUTOGLUON ENSEMBLE ANALYSIS")
-    mode_str = "real data only" if real_only else "all data (test + real)"
-    lines.append(f"Run date: {run_date}  |  Training rows: {n_train}  |  Mode: {mode_str}")
-    lines.append(sep)
-
-    # ── Model performance ──────────────────────────────────────────────────
-    lines.append("")
-    lines.append("MODEL PERFORMANCE — Weighted Ensemble (stacked, 2 levels)")
-    if leaderboard_summary:
-        best      = leaderboard_summary[0]
-        best_rmse = abs(best["score_val"])
-        lines.append(f"  Best model     : {best['model']}")
-        lines.append(f"  Validation RMSE: {best_rmse:.4f}  (outcome_score scale 0-10)")
-        lines.append(f"  Interpretation : On average, predictions are within "
-                     f"+/-{best_rmse:.2f} points of actual listener outcome scores")
-        lines.append("")
-        lines.append("  Full leaderboard:")
-        for row in leaderboard_summary:
-            rmse = abs(row["score_val"])
-            lines.append(f"    {row['model']:<40} RMSE={rmse:.4f}")
-
-    # ── Feature importance ─────────────────────────────────────────────────
-    lines.append("")
-    lines.append("FEATURE IMPORTANCE — Mean absolute SHAP values")
-    lines.append("  (Higher = stronger causal driver of outcome_score)")
-    lines.append("  Features with zero signal are flagged — likely insufficient data variance.")
-
-    if feature_importance:
-        max_val = max(feature_importance.values()) or 1
-
-        design_feats     = ["endHz", "startHz", "delta", "hz_abs", "dur",
-                            "level", "move", "series", "entry"]
-        engagement_feats = ["avg_view_percentage", "avg_view_duration"]
-        listener_feats   = ["listener_type", "activity", "listen_method",
-                            "settle_time", "zone", "adviser_driven"]
-
-        def fmt_group(label, keys):
-            items = sorted(
-                [(k, v) for k, v in feature_importance.items() if k in keys],
-                key=lambda x: x[1], reverse=True
-            )
-            if not items:
-                return
-            lines.append("")
-            lines.append(f"  {label}:")
-            for k, v in items:
-                bar  = chr(9608) * int((v / max_val) * 20)
-                flag = "  <- NO SIGNAL (test data uniform)" if v == 0 else ""
-                lines.append(f"    {k:<28} {v:.4f}  {bar}{flag}")
-
-        fmt_group("Protocol Design Features",       design_feats)
-        fmt_group("Engagement Features (YouTube)",  engagement_feats)
-        fmt_group("Listener Context Features",      listener_feats)
-
-    # ── Key findings ───────────────────────────────────────────────────────
-    lines.append("")
-    lines.append("KEY QUANTITATIVE FINDINGS")
-
-    if feature_importance:
-        top3 = list(feature_importance.items())[:3]
-        lines.append("")
-        lines.append("  Top 3 outcome drivers:")
-        for rank, (feat, val) in enumerate(top3, 1):
-            lines.append(f"    {rank}. {feat} (importance={val:.4f})")
-
-        design_signals = sorted(
-            [(k, v) for k, v in feature_importance.items()
-             if k in ["endHz", "startHz", "delta", "hz_abs", "dur", "level"]],
-            key=lambda x: x[1], reverse=True
-        )
-        if design_signals:
-            top_design = design_signals[0]
-            lines.append("")
-            lines.append("  Strongest protocol design signal:")
-            lines.append(f"    {top_design[0]} (importance={top_design[1]:.4f})")
-            if top_design[0] == "endHz":
-                lines.append("    -> Landing frequency is the dominant design variable.")
-                lines.append("       Where a protocol ARRIVES matters more than where it starts.")
-            elif top_design[0] == "delta":
-                lines.append("    -> Hz range (startHz - endHz) is the dominant design variable.")
-                lines.append("       The magnitude of frequency change drives efficacy.")
-            elif top_design[0] == "dur":
-                lines.append("    -> Protocol duration is the dominant design variable.")
-            elif top_design[0] == "startHz":
-                lines.append("    -> Starting frequency is the dominant design variable.")
-
-        zero_feats = [k for k, v in feature_importance.items() if v == 0]
-        if zero_feats:
-            lines.append("")
-            lines.append("  Features with no current signal (uniform in test data):")
-            lines.append(f"    {', '.join(zero_feats)}")
-            lines.append("    -> These will activate as real listener data diversifies.")
-
-    # ── Predicted scores by zone ───────────────────────────────────────────
-    lines.append("")
-    lines.append("PREDICTED OUTCOME SCORES BY ZONE (acute intensity)")
-    lines.append("  AutoGluon ensemble predictions, not observed means.")
-    lines.append("  Format: zone -> top protocol (predicted score) | cross-bucket")
-
-    seen_zones = set()
-    for key, rec in recommendations.items():
-        parts     = key.split("__")
-        zone      = parts[0]
-        intensity = parts[2] if len(parts) > 2 else ""
-        if zone in seen_zones or intensity != "acute":
-            continue
-        seen_zones.add(zone)
-        top_code  = rec["primary"][0] if rec["primary"] else "---"
-        top_score = rec["top_score"]  or "---"
-        cross     = ", ".join(rec["cross_bucket"]) if rec["cross_bucket"] else "none"
-        lines.append(f"  {zone:<16} -> {top_code:<12} score={top_score}  cross-bucket: {cross}")
-
-    # ── Cross-bucket anomalies ─────────────────────────────────────────────
-    lines.append("")
-    lines.append("CROSS-BUCKET ROUTING ANOMALIES")
-    lines.append("  Protocols recommended outside their design zone.")
-    lines.append("  Represent efficacy signals crossing categorical boundaries.")
-
-    cross_counts = {}
-    for rec in recommendations.values():
-        for code in rec.get("cross_bucket", []):
-            cross_counts[code] = cross_counts.get(code, 0) + 1
-
-    if cross_counts:
-        for code, count in sorted(cross_counts.items(),
-                                   key=lambda x: x[1], reverse=True):
-            match = proto_df[proto_df["protocol_code"] == code]
-            if not match.empty:
-                row = match.iloc[0]
-                lines.append(f"  {code:<12} ({row['series']} / {row['entry']}) "
-                             f"-- cross-recommended in {count}/81 combos")
-    else:
-        lines.append("  No cross-bucket anomalies detected.")
-
-    # ── Zone efficacy ranking ──────────────────────────────────────────────
-    lines.append("")
-    lines.append("ZONE EFFICACY RANKING (mean predicted top_score across intensities)")
-    zone_scores = {}
-    for key, rec in recommendations.items():
-        zone = key.split("__")[0]
-        if rec["top_score"]:
-            zone_scores.setdefault(zone, []).append(rec["top_score"])
-    zone_means = {z: round(sum(s) / len(s), 3) for z, s in zone_scores.items()}
-    for zone, mean in sorted(zone_means.items(), key=lambda x: x[1], reverse=True):
-        lines.append(f"  {zone:<16} mean predicted top score = {mean}")
-
-    lines.append("")
-    lines.append(sep)
-    lines.append("END AUTOGLUON CONTEXT")
-    lines.append(sep)
-
-    return "\n".join(lines)
-
-
-def write_context_file(context_block, feature_importance, leaderboard_summary,
-                       n_train, run_date, dry_run=False):
-    """
-    Write autogluon_context.json — consumed by moe_sphere_pipeline.py at [3c/5]
-    and injected as {{INJECT:AUTOGLUON_CONTEXT}} into the Sphere MOE prompt.
-    """
-    output = {
-        "_meta": {
-            "generated_iso":   datetime.datetime.now(timezone.utc).isoformat(),
-            "run_date":        run_date,
-            "n_training_rows": n_train,
-            "source":          "autogluon_analysis.py",
-            "consumed_by":     "moe_sphere_pipeline.py -> {{INJECT:AUTOGLUON_CONTEXT}}",
-        },
-        "context_block":      context_block,
-        "feature_importance": feature_importance,
-        "leaderboard":        leaderboard_summary,
-    }
-    json_str = json.dumps(output, indent=2, ensure_ascii=False)
-
-    if dry_run:
-        print("\n-- DRY RUN -- autogluon_context.json preview (first 50 lines) --")
-        for i, line in enumerate(context_block.splitlines()):
-            if i >= 50:
-                print("  ... (truncated)")
-                break
-            print(line)
-    else:
-        with open(CONTEXT_PATH, "w", encoding="utf-8") as f:
-            f.write(json_str)
-        size_kb = os.path.getsize(CONTEXT_PATH) / 1024
-        print(f"  -> Written to {CONTEXT_PATH}  ({size_kb:.1f} KB)")
-
-
 # ── Write autogluon.json ──────────────────────────────────────────────────────
 
 def write_output(recommendations, feature_importance, leaderboard_summary,
-                 n_train, run_date, dry_run=False):
+                 n_train, run_date, dry_run=False,
+                 feature_importance_change=None, leaderboard_summary_change=None,
+                 n_train_change=0, blend_active=False):
     """
     Write autogluon.json to repo root.
     Schema:
-      _meta          — run metadata
-      recommendations — { "zone__time__intensity": { primary, cross_bucket, top_score } }
-      feature_importance — { feature: shap_value, ... }
-      leaderboard    — top models from AutoGluon leaderboard
+      _meta                     — run metadata including dual-model info
+      recommendations           — { "zone__time__intensity": { primary, cross_bucket, top_score } }
+      feature_importance        — outcome_score model SHAP values
+      leaderboard               — outcome_score model leaderboard
+      feature_importance_change — change_rating model SHAP values (if trained)
+      leaderboard_change        — change_rating model leaderboard (if trained)
     """
     output = {
         "_meta": {
-            "generated_iso":   datetime.datetime.now(timezone.utc).isoformat(),
-            "run_date":        run_date,
-            "n_training_rows": n_train,
-            "model_path":      MODEL_PATH,
-            "source":          "autogluon_analysis.py",
-            "note":            "Decoupled from data.json. Fetched independently by adviser.html.",
+            "generated_iso":           datetime.datetime.now(timezone.utc).isoformat(),
+            "run_date":                run_date,
+            "n_training_rows":         n_train,
+            "n_training_rows_change":  n_train_change,
+            "model_path":              MODEL_PATH,
+            "model_path_change":       MODEL_PATH_CHANGE,
+            "blend_active":            blend_active,
+            "source":                  "autogluon_analysis.py",
+            "note":                    "Decoupled from data.json. Fetched independently by adviser.html.",
         },
-        "recommendations":   recommendations,
-        "feature_importance": feature_importance,
-        "leaderboard":        leaderboard_summary,
+        "recommendations":          recommendations,
+        "feature_importance":       feature_importance,
+        "leaderboard":              leaderboard_summary,
+        "feature_importance_change": feature_importance_change or {},
+        "leaderboard_change":        leaderboard_summary_change or [],
     }
 
     json_str = json.dumps(output, indent=2, ensure_ascii=False)
@@ -646,36 +530,80 @@ def run(real_only=False, dry_run=False, no_train=False,
     train_df = build_features(short, full, yt, proto_df)
 
     predictor          = None
+    predictor_change   = None
     feature_importance = {}
     leaderboard_summary= []
+    feature_importance_change = {}
+    leaderboard_summary_change= []
 
-    # ── Load saved model ──────────────────────────────────────────────────────
-    if no_train and os.path.exists(MODEL_PATH):
+    # ── Build change_rating feature matrix ────────────────────────────────────
+    train_df_change = build_features_change(full, yt, proto_df)
+    n_change = len(train_df_change)
+    print(f"  Change rating  : {n_change} rows with valid change_rating")
+
+    # ── Load saved models ─────────────────────────────────────────────────────
+    if no_train:
         from autogluon.tabular import TabularPredictor
-        print(f"  Loading saved model from {MODEL_PATH}/")
-        predictor = TabularPredictor.load(MODEL_PATH)
+        if os.path.exists(MODEL_PATH):
+            print(f"  Loading outcome_score model from {MODEL_PATH}/")
+            predictor           = TabularPredictor.load(MODEL_PATH)
+            feature_importance  = get_feature_importance(predictor, train_df)
+            lb                  = predictor.leaderboard(silent=True)
+            leaderboard_summary = lb[["model", "score_val", "pred_time_val"]].head(8).to_dict("records")
+            print(f"  Outcome model  : {len(leaderboard_summary)} models, RMSE {abs(leaderboard_summary[0]['score_val']):.3f}")
+        if os.path.exists(MODEL_PATH_CHANGE) and not train_df_change.empty:
+            print(f"  Loading change_rating model from {MODEL_PATH_CHANGE}/")
+            predictor_change           = TabularPredictor.load(MODEL_PATH_CHANGE)
+            feature_importance_change  = get_feature_importance(predictor_change, train_df_change)
+            lb_c                       = predictor_change.leaderboard(silent=True)
+            leaderboard_summary_change = lb_c[["model", "score_val", "pred_time_val"]].head(8).to_dict("records")
+            print(f"  Change model   : {len(leaderboard_summary_change)} models, RMSE {abs(leaderboard_summary_change[0]['score_val']):.3f}")
+        elif n_change >= MIN_TRAIN_ROWS_CHANGE:
+            print(f"  No change_rating model saved — training now on {n_change} rows...")
+            predictor_change           = train_model(train_df_change, time_limit=time_limit,
+                                                     label="change_rating", model_path=MODEL_PATH_CHANGE)
+            feature_importance_change  = get_feature_importance(predictor_change, train_df_change)
+            lb_c                       = predictor_change.leaderboard(silent=True)
+            leaderboard_summary_change = lb_c[["model", "score_val", "pred_time_val"]].head(8).to_dict("records")
+        else:
+            print(f"  ⚠ Only {n_change} change_rating rows (min={MIN_TRAIN_ROWS_CHANGE}) — change_rating model skipped")
 
     # ── Train ─────────────────────────────────────────────────────────────────
     elif len(train_df) >= MIN_TRAIN_ROWS:
-        print(f"  Training AutoGluon on {len(train_df)} rows  (time_limit={time_limit}s)...")
-        predictor          = train_model(train_df, time_limit=time_limit)
-        feature_importance = get_feature_importance(predictor, train_df)
-        lb                 = predictor.leaderboard(silent=True)
+        # Model A — outcome_score (1-second survey)
+        print(f"\n[A] Training outcome_score model on {len(train_df)} rows...")
+        predictor           = train_model(train_df, time_limit=time_limit,
+                                          label="outcome_score", model_path=MODEL_PATH)
+        feature_importance  = get_feature_importance(predictor, train_df)
+        lb                  = predictor.leaderboard(silent=True)
         leaderboard_summary = lb[["model", "score_val", "pred_time_val"]].head(8).to_dict("records")
-
-        print(f"\n  AutoGluon leaderboard (top models by val RMSE):")
+        print(f"\n  Outcome model leaderboard:")
         for row in leaderboard_summary:
             print(f"    {row['model']:<40} val_rmse={abs(row['score_val']):.3f}")
-
         print("\n  Feature importance (top 8):")
         for feat, val in list(feature_importance.items())[:8]:
             print(f"    {feat:<28} {val:.4f}")
+
+        # Model B — change_rating (1-minute survey)
+        if n_change >= MIN_TRAIN_ROWS_CHANGE:
+            print(f"\n[B] Training change_rating model on {n_change} rows...")
+            predictor_change           = train_model(train_df_change, time_limit=time_limit,
+                                                     label="change_rating", model_path=MODEL_PATH_CHANGE)
+            feature_importance_change  = get_feature_importance(predictor_change, train_df_change)
+            lb_c                       = predictor_change.leaderboard(silent=True)
+            leaderboard_summary_change = lb_c[["model", "score_val", "pred_time_val"]].head(8).to_dict("records")
+            print(f"\n  Change model leaderboard:")
+            for row in leaderboard_summary_change:
+                print(f"    {row['model']:<40} val_rmse={abs(row['score_val']):.3f}")
+        else:
+            print(f"  ⚠ Only {n_change} change_rating rows (min={MIN_TRAIN_ROWS_CHANGE}) — change_rating model skipped")
 
     # ── Fallback ──────────────────────────────────────────────────────────────
     else:
         print(f"  ⚠ Only {len(train_df)} rows (min={MIN_TRAIN_ROWS}) — using fallback mean ranking")
 
     # ── Score or fallback ─────────────────────────────────────────────────────
+    blend_active = predictor is not None and predictor_change is not None
     if predictor is None:
         metrics  = pd.DataFrame(
             supabase.table("protocol_metrics")
@@ -684,40 +612,38 @@ def run(real_only=False, dry_run=False, no_train=False,
         recommendations = fallback_recommendations(proto_df, raw_json, metrics)
         mode = "FALLBACK"
     else:
-        recommendations = score_all_combos(predictor, proto_df, raw_json, train_df)
-        mode = "AutoGluon" if len(train_df) >= MIN_TRAIN_ROWS else "AutoGluon (loaded)"
+        recommendations = score_all_combos(
+            predictor, proto_df, raw_json, train_df,
+            predictor_change=predictor_change,
+            train_df_change=train_df_change if blend_active else None,
+        )
+        if blend_active:
+            n_a   = len(train_df)
+            n_b   = len(train_df_change) if train_df_change is not None else 0
+            total = n_a + n_b if (n_a + n_b) > 0 else 1
+            pct_a = round(n_a / total * 100)
+            pct_b = round(n_b / total * 100)
+            mode = f"AutoGluon dual-model (outcome_score {pct_a}% + change_rating {pct_b}%)"
+        elif no_train:
+            mode = "AutoGluon outcome_score only (loaded)"
+        else:
+            mode = "AutoGluon outcome_score only"
 
     print(f"\n  Mode           : {mode}")
     print(f"  Combos scored  : {len(recommendations)}")
 
-    # ── Build Sphere context block ────────────────────────────────────────────
-    print("\n[5c] Building AutoGluon context block for Sphere MOE...")
-    ag_context = build_autogluon_context(
-        feature_importance  = feature_importance,
-        leaderboard_summary = leaderboard_summary,
-        recommendations     = recommendations,
-        proto_df            = proto_df,
-        n_train             = len(train_df),
-        run_date            = run_date,
-        real_only           = real_only,
-    )
-    write_context_file(
-        context_block       = ag_context,
-        feature_importance  = feature_importance,
-        leaderboard_summary = leaderboard_summary,
-        n_train             = len(train_df),
-        run_date            = run_date,
-        dry_run             = dry_run,
-    )
-
     # ── Write autogluon.json ──────────────────────────────────────────────────
     write_output(
-        recommendations    = recommendations,
-        feature_importance = feature_importance,
-        leaderboard_summary= leaderboard_summary,
-        n_train            = len(train_df),
-        run_date           = run_date,
-        dry_run            = dry_run,
+        recommendations             = recommendations,
+        feature_importance          = feature_importance,
+        leaderboard_summary         = leaderboard_summary,
+        n_train                     = len(train_df),
+        run_date                    = run_date,
+        dry_run                     = dry_run,
+        feature_importance_change   = feature_importance_change,
+        leaderboard_summary_change  = leaderboard_summary_change,
+        n_train_change              = len(train_df_change),
+        blend_active                = blend_active,
     )
 
     # ── Supabase write-back ───────────────────────────────────────────────────
@@ -741,14 +667,14 @@ def run(real_only=False, dry_run=False, no_train=False,
 
     print("\n  ✓ Done.")
     if not dry_run:
-        print(f"  Next step: git add {OUTPUT_PATH} {CONTEXT_PATH} && git commit && git push")
+        print(f"  Next step: git add {OUTPUT_PATH} && git commit && git push")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="THE DRUM PROTOCOLS — AutoGluon analysis (local only)"
+        description="THE DRUM PROTOCOLS — AutoGluon recommender (local only)"
     )
     parser.add_argument("--real-only",   action="store_true",
                         help="Filter to data_type='real' only")
