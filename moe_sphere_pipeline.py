@@ -150,6 +150,21 @@ EXCLUDE_SUBSTRINGS  = (
     "Instruct-fast",            # fast tier (caught by suffix too, belt-and-suspenders)
 )
 
+# Models with context windows too small for the full payload (~14k tokens after
+# AutoGluon context injection). Nebius models.list() does not expose context size,
+# so we exclude by known short-id. Add any model that throws a context_limit error.
+EXCLUDE_SMALL_CONTEXT = {
+    "gemma-2-2b-it",               # 8,192 token context — too small for full payload
+    "Meta-Llama-3.1-8B-Instruct",  # 8,192 token context
+    "Nemotron-Nano-V2-12b",        # small context variant
+}
+
+# Models excluded specifically from the synthesizer role (poor JSON reliability at
+# full payload length, even if acceptable as an analyzer).
+EXCLUDE_SYNTHESIZER = {
+    "gpt-oss-20b",    # produced malformed JSON at ~19k output tokens (2026-04-07)
+}
+
 # Note: reasoning/large models are excluded by price filter at runtime, not by name fragments.
 
 MAX_OUTPUT_PRICE_PER_1M = 2.50   # USD — models above this per million output tokens are excluded
@@ -213,6 +228,7 @@ def _org_of(model_id: str) -> str:
 
 def _is_chat_model(model_id: str) -> bool:
     """Return True if this model ID is a chat-capable type (non-embedding, non-image, etc).
+    Also excludes models with context windows too small for the full payload.
     Price filtering is applied separately using live pricing data."""
     for s in EXCLUDE_SUFFIXES:
         if model_id.endswith(s):
@@ -220,6 +236,10 @@ def _is_chat_model(model_id: str) -> bool:
     for s in EXCLUDE_SUBSTRINGS:
         if s in model_id:
             return False
+    # Exclude known small-context models (context window < ~16k tokens)
+    short_id = model_id.split("/")[-1]
+    if short_id in EXCLUDE_SMALL_CONTEXT:
+        return False
     return True
 
 
@@ -332,18 +352,27 @@ def select_diverse_panel(chat_models: list[str], n_analyzers: int = 5) -> tuple[
 
     analyzer_orgs = {_org_of(m) for m in analyzers}
 
-    # Synthesizer: prefer a preferred org not already in the analyzer panel
+    # Synthesizer: prefer a preferred org not already in the analyzer panel.
+    # Also exclude models in EXCLUDE_SYNTHESIZER (known poor JSON reliability at full length).
+    def _synth_eligible(m):
+        return m.split("/")[-1] not in EXCLUDE_SYNTHESIZER
+
     remaining_models = [m for m in chat_models if m not in analyzers]
     synth_candidates = [
         m for m in remaining_models
         if _org_of(m) in PREFERRED_SYNTHESIZER_ORGS
         and _org_of(m) not in analyzer_orgs
+        and _synth_eligible(m)
     ]
     if not synth_candidates:
-        # Broaden: any org not in analyzer panel
-        synth_candidates = [m for m in remaining_models if _org_of(m) not in analyzer_orgs]
+        # Broaden: any org not in analyzer panel, still excluding poor synthesizers
+        synth_candidates = [m for m in remaining_models
+                            if _org_of(m) not in analyzer_orgs and _synth_eligible(m)]
     if not synth_candidates:
-        # Last resort: anything remaining
+        # Broaden further: any remaining eligible model
+        synth_candidates = [m for m in remaining_models if _synth_eligible(m)]
+    if not synth_candidates:
+        # Last resort: anything remaining (ignores exclusion list)
         synth_candidates = remaining_models
     if not synth_candidates:
         print("ERROR: Not enough models for a synthesizer after analyzer selection.")
@@ -365,7 +394,10 @@ def combination_string_from_ids(analyzer_ids: list[str], synthesizer_id: str) ->
 
 N_ANALYZERS            = 5
 ANALYZER_MAX_TOKENS    = 4000
-SYNTHESIZER_MAX_TOKENS = 16000
+SYNTHESIZER_MAX_TOKENS = 20000   # Raised from 16,000 — at 30 protocols output is ~8-10k
+                                  # tokens; 20k gives headroom as the library grows.
+                                  # When running per-volume (Vol 1 + Vol 2 as separate
+                                  # runs), each run stays well within this limit.
 
 
 # ── PROMPT LOADING — prompts.json runtime store ───────────────────────────────────────
@@ -652,6 +684,39 @@ def compute_series_summary(protocols_out, short_by_protocol):
     return result
 
 
+def compute_volume_stats(short_by_protocol: dict) -> dict:
+    """
+    Compute per-volume stats for every protocol that has responses.
+    Returns { protocol_code: { vol_code: { n, mean, std, dist, pct_positive, confidence } } }
+    Used to populate protocols[code].volumes in data.json.
+    """
+    result = {}
+    for code, rows in short_by_protocol.items():
+        by_vol = {}
+        for r in rows:
+            vol = r.get("volume_code") or "unknown"
+            by_vol.setdefault(vol, []).append(r)
+        vol_stats = {}
+        for vol, vol_rows in sorted(by_vol.items()):
+            if vol == "unknown":
+                continue
+            scores = [r["outcome_score"] for r in vol_rows if r["outcome_score"] is not None]
+            s = compute_protocol_stats(scores)
+            vol_stats[vol] = {
+                "n":            s["n"],
+                "mean":         s["mean"],
+                "std":          s["std"],
+                "dist":         s["dist"],
+                "pct_positive": s["pct_positive"],
+                "confidence":   s["confidence"],
+                "bimodal_flag": s["bimodal_flag"],
+            }
+        if vol_stats:
+            result[code] = vol_stats
+    return result
+
+
+
 # ── CONTEXT BUILDERS ─────────────────────────────────────────────────────────────────
 
 def build_full_survey_context(full_rows, protocols_out):
@@ -818,7 +883,8 @@ def fetch_embedding_context(supabase, protocols_out: dict) -> str:
 
 def build_data_payload(protocols_out, series_summary, total_n,
                        total_n_full=0, full_rows=None,
-                       youtube_data=None, embedding_context=""):
+                       youtube_data=None, embedding_context="",
+                       autogluon_context=""):
     """Renders user prompt with all {{INJECT:*}} placeholders."""
     template, _, _ = load_prompt(PROMPT_SCOPE_USER)
 
@@ -846,6 +912,14 @@ def build_data_payload(protocols_out, series_summary, total_n,
         proto_lines.append(f"  dist: {p['dist']}")
         if src_str: proto_lines.append(f"  src: {src_str}")
         if vol_str: proto_lines.append(f"  vol: {vol_str}")
+        # Per-volume breakdown — shown when more than one volume has data
+        vol_stats = p.get("volumes", {})
+        if len(vol_stats) > 1:
+            for vol_code, vs in sorted(vol_stats.items()):
+                proto_lines.append(
+                    f"  {vol_code}: n={vs['n']} mean={vs['mean']} "
+                    f"std={vs['std']} confidence={vs['confidence']}"
+                )
 
     rendered = template
     rendered = rendered.replace("{{INJECT:TODAY}}",               datetime.date.today().isoformat())
@@ -856,6 +930,7 @@ def build_data_payload(protocols_out, series_summary, total_n,
     rendered = rendered.replace("{{INJECT:YOUTUBE_CONTEXT}}",     build_youtube_context_block(youtube_data or {}, protocols_out))
     rendered = rendered.replace("{{INJECT:FULL_SURVEY_CONTEXT}}",  build_full_survey_context(full_rows or [], protocols_out))
     rendered = rendered.replace("{{INJECT:EMBEDDING_CONTEXT}}",   embedding_context or "Not available for this run.")
+    rendered = rendered.replace("{{INJECT:AUTOGLUON_CONTEXT}}",   autogluon_context or "AutoGluon context not available for this run.")
     return rendered
 
 
@@ -1109,7 +1184,7 @@ def parse_json_output(raw):
 
 def call_sphere_moe(protocols_out, series_summary, total_n,
                     total_n_full=0, full_rows=None, youtube_data=None,
-                    embedding_context=""):
+                    embedding_context="", autogluon_context=""):
     """
     Full MOE pipeline: draw panel → 5 parallel analyzers → 1 synthesizer.
     Returns (commentary_dict, usage_dict, prompt_versions_info,
@@ -1165,6 +1240,7 @@ def call_sphere_moe(protocols_out, series_summary, total_n,
         protocols_out, series_summary, total_n, total_n_full,
         full_rows=full_rows, youtube_data=youtube_data,
         embedding_context=embedding_context,
+        autogluon_context=autogluon_context,
     )
 
     analyzer_ids, synthesizer_id = select_diverse_panel(chat_models, N_ANALYZERS)
@@ -1373,6 +1449,32 @@ def writeback_llm_outputs(supabase, protocols_out, sphere_commentary,
             "embedding":          None,
             "created_at":         now,
         })
+    # Per-volume commentary rows (present when multiple volumes have data)
+    by_protocol_volumes = sphere_commentary.get("by_protocol_volumes", {})
+    for code, vol_texts in by_protocol_volumes.items():
+        p = protocols_out.get(code, {})
+        for vol_code, text in vol_texts.items():
+            if not text:
+                continue
+            pvid = f"{code}-{vol_code}"
+            rows.append({
+                "id":                 f"{run_date}-vol-{pvid}",
+                "pvid":               pvid,
+                "protocol_code":      code,
+                "volume_code":        vol_code,
+                "analysis_scope":     "by_protocol_volume",
+                "run_date":           run_date,
+                "model_used":         model_used,
+                "prompt_version":     prompt_version,
+                "output_text":        text,
+                "outcome_score_mean": float(p.get("volumes", {}).get(vol_code, {}).get("mean", 0) or 0) or None,
+                "confidence_level":   p.get("volumes", {}).get(vol_code, {}).get("confidence"),
+                "sphere_signal":      text[:500],
+                "anomaly_flagged":    False,
+                "embedding":          None,
+                "created_at":         now,
+            })
+
     if rows:
         generate_embeddings(rows)
         supabase.table("llm_outputs").upsert(rows, on_conflict="id").execute()
@@ -1585,6 +1687,17 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
     embedding_context = fetch_embedding_context(supabase, {})
     print(f"  Embedding context: {embedding_context.count(chr(10)) + 1} lines")
 
+    print("\n[3c/5] Loading AutoGluon context...")
+    autogluon_context = ""
+    if os.path.exists("autogluon_context.json"):
+        with open("autogluon_context.json", encoding="utf-8") as f:
+            ag_ctx = json.load(f)
+        autogluon_context = ag_ctx.get("context_block", "")
+        ag_date = ag_ctx.get("_meta", {}).get("run_date", "unknown")
+        print(f"  AutoGluon context loaded  ({len(autogluon_context)} chars, run={ag_date})")
+    else:
+        print("  ⚠ autogluon_context.json not found — {{INJECT:AUTOGLUON_CONTEXT}} will be empty")
+
     # ── 5. Stats ───────────────────────────────────────────────────────────
     print("\n[4/5] Computing protocol statistics...")
     protocols_out = {}
@@ -1619,7 +1732,12 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         }
 
     series_summary = compute_series_summary(protocols_out, short_by_protocol)
+    volume_stats   = compute_volume_stats(short_by_protocol)
     total_n        = sum(p["n"] for p in protocols_out.values())
+
+    # Attach per-volume stats to each protocol entry
+    for code in protocols_out:
+        protocols_out[code]["volumes"] = volume_stats.get(code, {})
 
     # ── 6. MOE commentary ──────────────────────────────────────────────────
     print()
@@ -1631,8 +1749,9 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             "overview": "[MOE commentary not generated — run without --no-sphere]",
             "cross_series": "", "anomalies": "", "development_signals": "",
             "embedding_analysis": "",
-            "by_protocol":       {code: "" for code in protocols_out},
-            "by_protocol_plain": {code: "" for code in protocols_out},
+            "by_protocol":         {code: "" for code in protocols_out},
+            "by_protocol_plain":   {code: "" for code in protocols_out},
+            "by_protocol_volumes": {},
         }
         analyzer_results   = []
         synthesizer_result = {}
@@ -1644,6 +1763,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
             protocols_out, series_summary, total_n, total_n_full=len(full_rows),
             full_rows=full_rows, youtube_data=youtube_data,
             embedding_context=embedding_context,
+            autogluon_context=autogluon_context,
         )
         by_protocol       = sphere_commentary.get("by_protocol", {})
         by_protocol_plain = sphere_commentary.get("by_protocol_plain", {})
@@ -1670,6 +1790,7 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
     test_pct    = round(total_test / total_all * 100, 1) if total_all else 0.0
 
     def public_protocol(p):
+        # Strip internal-only fields. volumes and all stats are included.
         return {k: v for k, v in p.items()
                 if k not in ("src_counts", "vol_counts", "bimodality_coefficient")}
 
@@ -1697,15 +1818,19 @@ def run_pipeline(real_only=False, skip_sphere=False, dry_run=False, output_path=
         "protocols":           {code: public_protocol(p) for code, p in protocols_out.items()},
         "series_summary":      series_summary,
         "sphere_commentary": {
-            "run_date":            today,           # sphere.html date stamp reads this
-            "overview":            sphere_commentary.get("overview", ""),
-            "cross_series":        sphere_commentary.get("cross_series", ""),
-            "anomalies":           sphere_commentary.get("anomalies", ""),
-            "development_signals": sphere_commentary.get("development_signals", ""),
-            "embedding_analysis":  sphere_commentary.get("embedding_analysis", ""),
-            "combo_string":        sphere_commentary.get("_combo", ""),
-            "by_protocol":         sphere_commentary.get("by_protocol",       {code: "" for code in protocols_out}),
-            "by_protocol_plain":   sphere_commentary.get("by_protocol_plain", {code: "" for code in protocols_out}),
+            "run_date":              today,           # sphere.html date stamp reads this
+            "overview":              sphere_commentary.get("overview", ""),
+            "cross_series":          sphere_commentary.get("cross_series", ""),
+            "anomalies":             sphere_commentary.get("anomalies", ""),
+            "development_signals":   sphere_commentary.get("development_signals", ""),
+            "embedding_analysis":    sphere_commentary.get("embedding_analysis", ""),
+            "combo_string":          sphere_commentary.get("_combo", ""),
+            # Cross-volume commentary (one entry per protocol_code, synthesises all volumes)
+            "by_protocol":           sphere_commentary.get("by_protocol",         {code: "" for code in protocols_out}),
+            "by_protocol_plain":     sphere_commentary.get("by_protocol_plain",   {code: "" for code in protocols_out}),
+            # Per-volume commentary (keyed by [protocol_code][volume_code])
+            # Populated when multiple volumes are present; empty dict when single volume.
+            "by_protocol_volumes":   sphere_commentary.get("by_protocol_volumes", {}),
         },
     }
 

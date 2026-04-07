@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-autogluon_recommender.py — THE DRUM PROTOCOLS
+autogluon_analysis.py — THE DRUM PROTOCOLS
 ──────────────────────────────────────────────
 AutoGluon-driven protocol recommender. Runs locally — not in GitHub Actions.
 
@@ -12,6 +12,8 @@ Trains on:
 
 Outputs:
   - autogluon.json          → repo root, fetched by adviser.html independently
+  - autogluon_context.json  → repo root, injected into MOE pipeline prompt
+                               via {{INJECT:AUTOGLUON_CONTEXT}}
   - autogluon_model/        → saved AutoGluon predictor folder (local only, gitignored)
   - autogluon_model_runs    → Supabase table, model versioning / drift tracking
 
@@ -19,11 +21,11 @@ Intentionally decoupled from moe_sphere_pipeline.py and data.json.
 Each script owns its output. adviser.html fetches both files independently.
 
 Usage:
-  python autogluon_recommender.py               # train + score + write autogluon.json
-  python autogluon_recommender.py --real-only   # filter to data_type='real' only
-  python autogluon_recommender.py --dry-run     # skip all writes, print summary
-  python autogluon_recommender.py --no-train    # load saved model, skip retraining
-  python autogluon_recommender.py --time-limit 300  # AutoGluon time budget in seconds
+  py -3.11 autogluon_analysis.py               # train + score + write both JSON files
+  py -3.11 autogluon_analysis.py --real-only   # filter to data_type='real' only
+  py -3.11 autogluon_analysis.py --dry-run     # skip all writes, print summary
+  py -3.11 autogluon_analysis.py --no-train    # load saved model, skip retraining
+  py -3.11 autogluon_analysis.py --time-limit 300  # AutoGluon time budget in seconds
 
 Requirements:
   pip install autogluon.tabular[lightgbm,catboost,xgboost] supabase python-dotenv
@@ -46,13 +48,14 @@ from supabase import create_client
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-PROTOCOLS_PATH = "protocols.json"
+PROTOCOLS_PATH     = "protocols.json"
 MODEL_PATH         = "autogluon_model"        # outcome_score model
 MODEL_PATH_CHANGE  = "autogluon_model_change"  # change_rating model
 MIN_TRAIN_ROWS_CHANGE = 10                     # lower threshold — 1-min survey has fewer rows
-OUTPUT_PATH    = "autogluon.json"
-MIN_TRAIN_ROWS = 20                        # below this, use fallback mean-based ranking
-DEFAULT_TIME_LIMIT = None                  # No limit — run until all models complete
+OUTPUT_PATH        = "autogluon.json"
+CONTEXT_PATH       = "autogluon_context.json"  # MOE pipeline injection source
+MIN_TRAIN_ROWS     = 20                        # below this, use fallback mean-based ranking
+DEFAULT_TIME_LIMIT = None                      # No limit — run until all models complete
 
 CAT_COLS = [
     "series", "entry", "move", "zone",
@@ -267,10 +270,7 @@ def train_model(train_df, time_limit=DEFAULT_TIME_LIMIT,
             "CAT":      {},   # CatBoost
             "XGB":      {},   # XGBoost
             "RF":       {},   # Random Forest
-            "NN_TORCH": {},   # Tabular neural network — AutoGluon weights it
-                              # automatically based on validation performance.
-                              # Downweighted when tree methods dominate;
-                              # upweighted when it finds patterns they miss.
+            "NN_TORCH": {},   # Tabular neural network
         },
     )
 
@@ -358,9 +358,6 @@ def score_all_combos(predictor, proto_df, raw_json, train_df,
                 if predictor_change is not None:
                     try:
                         pred_b = predictor_change.predict(X_score, as_pandas=False)
-                        # Weight by proportion of total responses — no magic multipliers,
-                        # just the data speaking for itself. As 1-minute surveys grow,
-                        # their weight grows naturally.
                         n_a    = len(train_df)
                         n_b    = len(train_df_change) if train_df_change is not None else 0
                         total  = n_a + n_b if (n_a + n_b) > 0 else 1
@@ -434,22 +431,28 @@ def fallback_recommendations(proto_df, raw_json, metrics_df) -> dict:
 # ── Supabase write-back ───────────────────────────────────────────────────────
 
 def writeback_model_run(supabase, run_date, n_train, leaderboard_summary,
-                        top_features, real_only):
+                        top_features, real_only,
+                        leaderboard_summary_change=None,
+                        n_train_change=0,
+                        blend_active=False):
     """Log model run metadata to autogluon_model_runs for drift tracking."""
     supabase.table("autogluon_model_runs").upsert(
         {
-            "id":                  f"{run_date}-{'real' if real_only else 'all'}",
-            "run_date":            run_date,
-            "n_training_rows":     n_train,
-            "leaderboard_summary": leaderboard_summary,
-            "top_features":        list(top_features.keys())[:5] if top_features else [],
-            "model_path":          MODEL_PATH,
-            "real_only":           real_only,
-            "created_at":          datetime.datetime.now(timezone.utc).isoformat(),
+            "id":                          f"{run_date}-{'real' if real_only else 'all'}",
+            "run_date":                    run_date,
+            "n_training_rows":             n_train,
+            "n_training_rows_change":      n_train_change,
+            "leaderboard_summary":         leaderboard_summary,
+            "leaderboard_summary_change":  leaderboard_summary_change or [],
+            "top_features":                list(top_features.keys())[:5] if top_features else [],
+            "model_path":                  MODEL_PATH,
+            "real_only":                   real_only,
+            "blend_active":                blend_active,
+            "created_at":                  datetime.datetime.now(timezone.utc).isoformat(),
         },
         on_conflict="id",
     ).execute()
-    print(f"  ✓ autogluon_model_runs logged")
+    print(f"  ✓ autogluon_model_runs logged  (blend_active={blend_active})")
 
 
 # ── Write autogluon.json ──────────────────────────────────────────────────────
@@ -480,9 +483,9 @@ def write_output(recommendations, feature_importance, leaderboard_summary,
             "source":                  "autogluon_analysis.py",
             "note":                    "Decoupled from data.json. Fetched independently by adviser.html.",
         },
-        "recommendations":          recommendations,
-        "feature_importance":       feature_importance,
-        "leaderboard":              leaderboard_summary,
+        "recommendations":           recommendations,
+        "feature_importance":        feature_importance,
+        "leaderboard":               leaderboard_summary,
         "feature_importance_change": feature_importance_change or {},
         "leaderboard_change":        leaderboard_summary_change or [],
     }
@@ -501,6 +504,90 @@ def write_output(recommendations, feature_importance, leaderboard_summary,
             f.write(json_str)
         size_kb = os.path.getsize(OUTPUT_PATH) / 1024
         print(f"  ✓ Written to {OUTPUT_PATH}  ({size_kb:.1f} KB)")
+
+
+# ── Write autogluon_context.json ──────────────────────────────────────────────
+
+def write_context_block(feature_importance, leaderboard_summary,
+                        recommendations, n_train, run_date, dry_run=False):
+    """
+    Write autogluon_context.json — pre-formatted text block for injection
+    into moe_sphere_pipeline.py via {{INJECT:AUTOGLUON_CONTEXT}}.
+
+    Called after write_output() on every successful run. The context_block
+    field contains a plain-text summary ready to drop into the Sphere user
+    prompt so all 5 analyzer models receive the current AutoGluon findings.
+    """
+    # Top 5 models from leaderboard
+    lb_lines = []
+    for row in leaderboard_summary[:5]:
+        lb_lines.append(
+            f"  {row['model']:<40} val_rmse={abs(row['score_val']):.3f}"
+        )
+
+    # Feature importance ranked highest → lowest
+    fi_lines = []
+    for feat, val in sorted(feature_importance.items(),
+                            key=lambda x: x[1], reverse=True):
+        fi_lines.append(f"  {feat:<28} {val:.4f}")
+
+    # Zone predictions — one row per zone (acute intensity only, first seen)
+    seen_zones = set()
+    zone_lines = []
+    for key, rec in recommendations.items():
+        zone = key.split("__")[0]
+        if zone in seen_zones:
+            continue
+        seen_zones.add(zone)
+        top  = rec["primary"][0] if rec["primary"] else "n/a"
+        cb   = ", ".join(rec.get("cross_bucket", []))
+        line = f"  {zone:<16} -> {top:<12} score={rec['top_score']:.3f}"
+        if cb:
+            line += f"  cross-bucket: {cb}"
+        zone_lines.append(line)
+
+    sep   = "=" * 70
+    block = "\n".join([
+        sep,
+        "AUTOGLUON ENSEMBLE ANALYSIS",
+        f"Run date: {run_date}  |  Training rows: {n_train}",
+        sep,
+        "",
+        "MODEL PERFORMANCE — Top models (val RMSE, lower is better):",
+        *lb_lines,
+        "",
+        "FEATURE IMPORTANCE — Mean absolute SHAP values",
+        "  (Higher = stronger predictor of outcome_score)",
+        *fi_lines,
+        "",
+        "PREDICTED OUTCOME SCORES BY ZONE (acute intensity):",
+        "  AutoGluon ensemble predictions, not observed means.",
+        *zone_lines,
+        "",
+        sep,
+        "END AUTOGLUON CONTEXT",
+        sep,
+    ])
+
+    output = {
+        "_meta": {
+            "generated_iso":   datetime.datetime.now(timezone.utc).isoformat(),
+            "run_date":        run_date,
+            "n_training_rows": n_train,
+            "source":          "autogluon_analysis.py",
+            "consumed_by":     "moe_sphere_pipeline.py -> {{INJECT:AUTOGLUON_CONTEXT}}",
+        },
+        "context_block": block,
+    }
+
+    if dry_run:
+        print("\n── DRY RUN — autogluon_context.json preview ─────────────────")
+        print(block[:800])
+        print("  ... (truncated)")
+    else:
+        with open(CONTEXT_PATH, "w", encoding="utf-8") as f:
+            json.dump(output, f, indent=2, ensure_ascii=False)
+        print(f"  ✓ Written to {CONTEXT_PATH}  ({len(block)} chars)")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -646,12 +733,25 @@ def run(real_only=False, dry_run=False, no_train=False,
         blend_active                = blend_active,
     )
 
+    # ── Write autogluon_context.json ──────────────────────────────────────────
+    write_context_block(
+        feature_importance  = feature_importance,
+        leaderboard_summary = leaderboard_summary,
+        recommendations     = recommendations,
+        n_train             = len(train_df),
+        run_date            = run_date,
+        dry_run             = dry_run,
+    )
+
     # ── Supabase write-back ───────────────────────────────────────────────────
     if not dry_run and predictor is not None and len(train_df) >= MIN_TRAIN_ROWS:
         try:
             writeback_model_run(
                 supabase, run_date, len(train_df),
                 leaderboard_summary, feature_importance, real_only,
+                leaderboard_summary_change = leaderboard_summary_change,
+                n_train_change             = len(train_df_change) if train_df_change is not None else 0,
+                blend_active               = blend_active,
             )
         except Exception as e:
             print(f"  ⚠ Supabase write-back failed: {e}")
@@ -667,7 +767,7 @@ def run(real_only=False, dry_run=False, no_train=False,
 
     print("\n  ✓ Done.")
     if not dry_run:
-        print(f"  Next step: git add {OUTPUT_PATH} && git commit && git push")
+        print(f"  Next step: git add {OUTPUT_PATH} {CONTEXT_PATH} && git commit && git push")
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
