@@ -59,7 +59,7 @@ a { color: inherit; }
 .nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 32px; height: 32px; cursor: pointer; background: none; border: none; padding: 4px; flex-shrink: 0; }
 .nav-hamburger span { display: block; height: 2px; width: 100%; background: rgba(255,255,255,0.55); }
 .nav-hamburger:hover span { background: #fff; }
-@media (max-width: 640px) { .site-nav { padding: 0 16px; } .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid); flex-direction: column; gap: 0; z-index: 199; } .nav-links.open { display: flex; } .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; } .nav-link:last-child { border-bottom: none; } .nav-hamburger { display: flex; } }
+@media (max-width: 860px) { .site-nav { padding: 0 16px; } .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid); flex-direction: column; gap: 0; z-index: 199; } .nav-links.open { display: flex; } .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; } .nav-link:last-child { border-bottom: none; } .nav-hamburger { display: flex; } }
 .page-header { background: var(--dp-slate-dark); position: relative; overflow: hidden; }
 .page-header::before { content: ''; position: absolute; right: -80px; top: -80px; width: 360px; height: 360px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.12); pointer-events: none; }
 .page-header::after { content: ''; position: absolute; right: -20px; top: -20px; width: 200px; height: 200px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.08); pointer-events: none; }
@@ -328,20 +328,94 @@ a { color: inherit; }
 .ag-feature-val { font-size: 10px; color: var(--color-text-tertiary); width: 32px; text-align: right; flex-shrink: 0; }
 .ag-powered-badge { display: inline-flex; align-items: center; gap: 5px; margin-top: 10px; font-size: 10px; color: rgba(74,158,202,0.7); letter-spacing: 0.06em; }
 .ag-powered-badge::before { content: ''; display: block; width: 6px; height: 6px; border-radius: 50%; background: #4a9eca; box-shadow: 0 0 6px rgba(74,158,202,0.8); }
-/* ── AG PANEL IDENTITY STRIP (on result screen) ── */
-.ag-result-strip { display: none; align-items: center; gap: 10px; padding: 10px 18px; background: rgba(74,158,202,0.06); border-bottom: 0.5px solid rgba(74,158,202,0.18); flex-wrap: wrap; }
-.ag-result-strip.visible { display: flex; }
+/* ── SIDEBAR AG TABS ── */
+.ag-sidebar-tabs { display: flex; border-bottom: 0.5px solid rgba(74,158,202,0.2); margin: 10px -20px 0; padding: 0 14px; }
+.ag-sidebar-tab { font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase; padding: 7px 10px 8px; cursor: pointer; color: rgba(74,158,202,0.45); border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; white-space: nowrap; }
+.ag-sidebar-tab:hover { color: rgba(74,158,202,0.8); }
+.ag-sidebar-tab.active { color: #4a9eca; border-bottom-color: #4a9eca; }
+.ag-sidebar-pane { display: none; padding-top: 12px; }
+.ag-sidebar-pane.active { display: block; }
+/* ── AG INFORMED REC LINE (above result header) ── */
+.ag-informed-line {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 7px 18px 7px 14px;
+  background: rgba(74,158,202,0.06);
+  border-bottom: 0.5px solid rgba(74,158,202,0.18);
+  gap: 10px;
+}
+.ag-informed-label {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(74,158,202,0.85); font-weight: 500;
+}
+.ag-informed-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+  background: #4a9eca; box-shadow: 0 0 6px rgba(74,158,202,0.8);
+}
+.ag-informed-trigger {
+  font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+  color: rgba(74,158,202,0.65); background: none;
+  border: 0.5px solid rgba(74,158,202,0.35); border-radius: 999px;
+  padding: 3px 11px; cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap;
+}
+.ag-informed-trigger:hover { color: #4a9eca; border-color: rgba(74,158,202,0.6); }
+/* Hide mobile trigger on desktop */
+@media (min-width: 861px) { .ag-informed-trigger { display: none; } }
+
+/* ── AG MOBILE PANEL (toggled by informed-trigger, mobile only) ── */
+.ag-mobile-panel {
+  display: none;
+  background: rgba(74,158,202,0.05);
+  border-bottom: 0.5px solid rgba(74,158,202,0.18);
+}
+.ag-mobile-panel.open { display: block; }
+@media (min-width: 861px) { .ag-mobile-panel { display: none !important; } }
+
+/* ── AG PANEL IDENTITY STRIP ── */
+.ag-result-strip { display: none; background: rgba(74,158,202,0.06); border-bottom: 0.5px solid rgba(74,158,202,0.18); }
+.ag-result-strip.visible { display: block; }
+.ag-result-strip-row { display: flex; align-items: center; gap: 10px; padding: 10px 18px; flex-wrap: wrap; }
 .ag-result-logo { width: 24px; height: 24px; border-radius: 50%; overflow: hidden; border: 1px solid rgba(74,158,202,0.4); flex-shrink: 0; }
 .ag-result-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ag-result-text { font-size: 11px; color: rgba(74,158,202,0.9); letter-spacing: 0.06em; flex: 1; }
 .ag-result-text strong { color: #4a9eca; font-weight: 600; }
-.ag-tooltip-btn { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(74,158,202,0.65); background: none; border: 0.5px solid rgba(74,158,202,0.3); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-family: inherit; transition: all 0.15s; white-space: nowrap; }
-.ag-tooltip-btn:hover { color: #4a9eca; border-color: rgba(74,158,202,0.65); }
-.ag-tooltip-panel { display: none; width: 100%; padding: 14px 18px 16px; border-top: 0.5px solid rgba(74,158,202,0.15); background: rgba(74,158,202,0.04); }
-.ag-tooltip-panel.open { display: block; animation: fadeIn .18s ease; }
-.ag-tooltip-panel h4 { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #4a9eca; margin-bottom: 10px; }
-.ag-tooltip-panel p { font-size: 13px; line-height: 1.75; color: var(--color-text-secondary); margin-bottom: 8px; }
-.ag-tooltip-panel p:last-child { margin-bottom: 0; }
+
+/* ── AG TABBED PANEL (desktop: always shown; mobile: hidden — use ag-mobile-panel instead) ── */
+.ag-tabbed-panel {
+  background: rgba(74,158,202,0.03);
+  border-bottom: 0.5px solid rgba(74,158,202,0.14);
+}
+@media (max-width: 860px) { .ag-tabbed-panel { display: none; } }
+
+/* ── SHARED TAB CHROME ── */
+.ag-panel-tabs { display: flex; border-bottom: 0.5px solid rgba(74,158,202,0.18); padding: 0 14px; }
+.ag-panel-tab {
+  font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
+  padding: 8px 12px 9px; cursor: pointer;
+  color: rgba(74,158,202,0.5); border-bottom: 2px solid transparent;
+  margin-bottom: -1px; transition: color .15s, border-color .15s;
+  background: none; border-top: none; border-left: none; border-right: none;
+  font-family: inherit; white-space: nowrap;
+}
+.ag-panel-tab:hover { color: rgba(74,158,202,0.8); }
+.ag-panel-tab.active { color: #4a9eca; border-bottom-color: #4a9eca; }
+.ag-panel-pane { display: none; padding: 14px 18px 16px; }
+.ag-panel-pane.active { display: block; }
+.ag-pane-desc { font-size: 12px; line-height: 1.65; color: var(--color-text-secondary); margin-bottom: 10px; }
+.ag-loading { font-size: 11px; color: var(--color-text-tertiary); font-style: italic; }
+
+/* ── AG TOP-MODELS LIST ── */
+.ag-models-list { display: flex; flex-direction: column; gap: 5px; margin-top: 4px; }
+.ag-model-row { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: var(--radius-sm); background: rgba(0,0,0,0.15); border: 0.5px solid rgba(74,158,202,0.10); }
+.ag-model-rank { font-size: 9px; color: rgba(74,158,202,0.45); width: 14px; flex-shrink: 0; text-align: center; }
+.ag-model-name { font-size: 11px; color: var(--color-text-secondary); flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ag-model-rmse { font-family: 'Cormorant Garamond', serif; font-size: 14px; color: #4a9eca; flex-shrink: 0; }
+.ag-model-row.top-model { background: rgba(74,158,202,0.07); border-color: rgba(74,158,202,0.25); }
+.ag-model-row.top-model .ag-model-name { color: var(--color-text-primary); }
+.ag-model-row.top-model .ag-model-rmse { color: #52B788; }
+
+/* ── AG FEATURE BARS ── */
 .ag-feature-bars { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
 .ag-feat-row { display: flex; align-items: center; gap: 8px; }
 .ag-feat-row-name { font-size: 11px; color: var(--color-text-secondary); width: 120px; flex-shrink: 0; }
@@ -349,6 +423,7 @@ a { color: inherit; }
 .ag-feat-row-bar { height: 100%; background: linear-gradient(90deg, #4a9eca, #52B788); border-radius: 2px; }
 .ag-feat-row-val { font-size: 10px; color: var(--color-text-tertiary); width: 36px; text-align: right; flex-shrink: 0; }
 .ag-tooltip-meta { font-size: 10px; color: var(--color-text-tertiary); margin-top: 12px; padding-top: 10px; border-top: 0.5px solid rgba(74,158,202,0.12); }
+@media (max-width: 720px) { .ag-feat-row-name { width: 100px; } }
 .screen { display: none; }
 .screen.active { display: block; }
 .page-footer { background: var(--dp-slate-deeper); padding: 28px 24px 34px; text-align: center; border-top: 1px solid var(--color-border); }
@@ -388,11 +463,11 @@ a { color: inherit; }
   border:5px solid transparent;border-top-color:rgba(184,134,11,.35);
 }
 .data-badge-tooltip-wrap:hover .data-badge-tooltip{display:block}
-@media(max-width:640px){.data-badge-tooltip{right:auto;left:0;width:200px}}
+@media(max-width:860px){.data-badge-tooltip{right:auto;left:0;width:200px}}
 /* Nav tooltip opens downward and stays right-aligned on mobile */
 .site-nav .data-badge-tooltip{bottom:auto;top:calc(100% + 8px)}
 .site-nav .data-badge-tooltip::after{top:auto;bottom:100%;border-top-color:transparent;border-bottom-color:rgba(184,134,11,.35)}
-@media(max-width:640px){.site-nav .data-badge-tooltip{left:auto;right:0}}
+@media(max-width:860px){.site-nav .data-badge-tooltip{left:auto;right:0}}
 
 </style>
 </head>
@@ -474,17 +549,52 @@ a { color: inherit; }
         </div>
       </div>
       <div id="screen-result" class="screen">
-        <!-- AutoGluon identity strip — shown when AG_RECS is driving the recommendation -->
-        <div class="ag-result-strip" id="ag-result-strip">
-          <div class="ag-result-logo"><img src="AG.png" alt="AutoGluon"></div>
-          <div class="ag-result-text"><strong>AutoGluon</strong> · Ensemble ML recommendation · <span id="ag-model-count">5</span> models</div>
-          <button class="ag-tooltip-btn" onclick="toggleAgTooltip()" id="ag-tooltip-btn">What is AutoGluon?</button>
-          <div class="ag-tooltip-panel" id="ag-tooltip-panel">
-            <h4>AutoGluon · Ensemble AutoML</h4>
-            <p>This recommendation is powered by AutoGluon — an ensemble ML model trained on listener outcome data. It combines LightGBM, CatBoost, XGBoost, and Random Forest models, stacked across two levels, to predict which protocol is most likely to work for your current state.</p>
-            <p>Unlike a fixed rule system, AutoGluon learns from real listener outcomes. The more data it trains on, the more precisely it can match listener states to protocols that have genuinely helped people in similar situations.</p>
-            <div id="ag-tooltip-features"></div>
+        <!-- AutoGluon block -->
+        <!-- Strip: identity row — shown when AG_RECS loads -->
+        <div id="ag-result-strip" class="ag-result-strip">
+          <div class="ag-result-strip-row">
+            <div class="ag-result-logo"><img src="AG.png" alt="AutoGluon"></div>
+            <div class="ag-result-text"><strong>AutoGluon</strong> · Ensemble ML · <span id="ag-model-count">5</span> models</div>
+          </div>
+        </div>
+        <!-- Desktop tabbed panel — always rendered on desktop (independent of strip visibility) -->
+        <div class="ag-tabbed-panel" id="ag-tabbed-panel">
+          <div class="ag-panel-tabs">
+            <button class="ag-panel-tab active" onclick="switchAgTab('features',this)">Top Features</button>
+            <button class="ag-panel-tab" onclick="switchAgTab('models',this)">Top Models</button>
+          </div>
+          <div class="ag-panel-pane active" id="ag-pane-features">
+            <p class="ag-pane-desc">AutoGluon SHAP feature importance — what most predicts listener outcome scores. Higher = stronger signal.</p>
+            <div id="ag-tooltip-features"><span class="ag-loading">Loading…</span></div>
             <div class="ag-tooltip-meta" id="ag-tooltip-meta"></div>
+          </div>
+          <div class="ag-panel-pane" id="ag-pane-models">
+            <p class="ag-pane-desc">Val RMSE — lower is better. Ensemble stacks LightGBM, CatBoost, XGBoost, Random Forest &amp; neural nets.</p>
+            <div class="ag-models-list" id="ag-tooltip-models"><span class="ag-loading">Loading…</span></div>
+          </div>
+        </div>
+        <!-- AG Informed Recommendation line — always shown on result screen -->
+        <div class="ag-informed-line" id="ag-informed-line">
+          <div class="ag-informed-label">
+            <span class="ag-informed-dot"></span>
+            AutoGluon Informed Recommendation
+          </div>
+          <button class="ag-informed-trigger" onclick="toggleAgMobilePanel()" id="ag-informed-trigger">AutoGluon ↑</button>
+        </div>
+        <!-- Mobile slide-down panel (toggled by informed-trigger) -->
+        <div class="ag-mobile-panel" id="ag-mobile-panel">
+          <div class="ag-panel-tabs">
+            <button class="ag-panel-tab active" onclick="switchAgMobileTab('features',this)">Top Features</button>
+            <button class="ag-panel-tab" onclick="switchAgMobileTab('models',this)">Top Models</button>
+          </div>
+          <div class="ag-panel-pane active" id="ag-mobile-pane-features">
+            <p class="ag-pane-desc">AutoGluon SHAP feature importance — what most predicts listener outcome scores.</p>
+            <div id="ag-mobile-features"><span class="ag-loading">Loading…</span></div>
+            <div class="ag-tooltip-meta" id="ag-mobile-meta"></div>
+          </div>
+          <div class="ag-panel-pane" id="ag-mobile-pane-models">
+            <p class="ag-pane-desc">Val RMSE — lower is better.</p>
+            <div class="ag-models-list" id="ag-mobile-models"><span class="ag-loading">Loading…</span></div>
           </div>
         </div>
         <div class="result-header" id="result-header">
@@ -595,9 +705,16 @@ a { color: inherit; }
           <div class="ag-stat"><div class="ag-stat-val" id="ag-n-models">—</div><div class="ag-stat-label">Models</div></div>
           <div class="ag-stat"><div class="ag-stat-val" id="ag-combos">81</div><div class="ag-stat-label">Combos scored</div></div>
         </div>
-        <div class="sidebar-card-label" style="margin:8px 0 6px">Top signal features</div>
-        <div class="ag-feature-row" id="ag-feature-row">
-          <div class="ag-feature"><div class="ag-feature-name" style="color:var(--color-text-tertiary);font-style:italic">Loading…</div></div>
+        <div class="ag-sidebar-tabs">
+          <button class="ag-sidebar-tab active" onclick="switchSidebarTab('features',this)">Top Features</button>
+          <button class="ag-sidebar-tab" onclick="switchSidebarTab('models',this)">Top Models</button>
+        </div>
+        <div class="ag-sidebar-pane active" id="ag-sidebar-pane-features">
+          <div id="ag-feature-row"><span style="font-size:11px;color:var(--color-text-tertiary);font-style:italic">Loading…</span></div>
+          <div class="ag-tooltip-meta" id="ag-sidebar-meta"></div>
+        </div>
+        <div class="ag-sidebar-pane" id="ag-sidebar-pane-models">
+          <div class="ag-models-list" id="ag-sidebar-models"><span style="font-size:11px;color:var(--color-text-tertiary);font-style:italic">Loading…</span></div>
         </div>
         <div class="ag-powered-badge">Retrained weekly on listener data</div>
       </div>
@@ -724,8 +841,11 @@ Promise.all([
       ...(ag._meta || {}),
       feature_importance: ag.feature_importance || {},
       best_rmse: ag.leaderboard && ag.leaderboard[0] ? Math.abs(ag.leaderboard[0].score_val).toFixed(3) : null,
+      _leaderboard: ag.leaderboard || [],
     };
     hydrateAgSidebar(ag);
+    // Hydrate desktop panel immediately (it's always visible on desktop)
+    hydrateAgPanels();
   }
 
   // Start the adviser UI.
@@ -985,11 +1105,10 @@ function populateResult(p,sk){
   if(agStrip){
     const hasAG=Object.keys(AG_RECS).length>0;
     agStrip.classList.toggle('visible',hasAG);
-    if(hasAG&&AG_META.leaderboard_summary){
-      document.getElementById('ag-model-count').textContent=AG_META.leaderboard_summary.length||'—';
-    }
   }
   drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
+  // Ensure AG panels are hydrated (may not have run at bootstrap if AG loaded late)
+  hydrateAgPanels();
 }
 
 function showResult(){
@@ -1015,73 +1134,113 @@ function restart(){
 function hydrateAgSidebar(ag){
   if(!ag) return;
   const meta=ag._meta||{};
-  // Training rows
   const nEl=document.getElementById('ag-n-train');
   if(nEl&&meta.n_training_rows) nEl.textContent=meta.n_training_rows.toLocaleString();
-  // Model count from leaderboard
   const mEl=document.getElementById('ag-n-models');
   if(mEl&&ag.leaderboard&&ag.leaderboard.length) mEl.textContent=ag.leaderboard.length;
-  // Feature importance bars
-  const fi=ag.feature_importance;
-  const featureRow=document.getElementById('ag-feature-row');
-  if(fi&&featureRow&&Object.keys(fi).length){
-    const entries=Object.entries(fi).slice(0,5);
-    const maxVal=entries[0][1]||1;
-    // Friendly display names
-    const nameMap={entry:'Entry match',avg_view_percentage:'Watch completion',adviser_driven:'Adviser-routed',avg_view_duration:'Watch duration',zone:'Zone alignment',endHz:'Landing Hz',delta:'Hz range',dur:'Duration',level:'Intensity level',series:'Protocol series',move:'Movement type',listener_type:'Listener type',settle_time:'Settle time',activity:'Activity',listen_method:'Listen method'};
-    featureRow.innerHTML=entries.map(([k,v])=>{
-      const pct=Math.round((v/maxVal)*100);
-      const label=nameMap[k]||k;
-      return `<div class="ag-feature"><div class="ag-feature-name">${label}</div><div class="ag-feature-bar-wrap"><div class="ag-feature-bar" style="width:${pct}%"></div></div><div class="ag-feature-val">${v.toFixed(3)}</div></div>`;
-    }).join('');
-  }
+  // Feature bars and model list are handled by hydrateAgPanels()
 }
 
-// ── AUTOGLUON TOOLTIP TOGGLE ─────────────────────────────────────────────────
-function toggleAgTooltip(){
-  const panel = document.getElementById('ag-tooltip-panel');
-  const btn   = document.getElementById('ag-tooltip-btn');
+// ── AUTOGLUON PANEL FUNCTIONS ─────────────────────────────────────────────────
+
+// Mobile: toggle the ag-mobile-panel open/closed from the informed line
+function toggleAgMobilePanel(){
+  const panel   = document.getElementById('ag-mobile-panel');
+  const trigger = document.getElementById('ag-informed-trigger');
   if(!panel) return;
   const isOpen = panel.classList.toggle('open');
-  if(btn) btn.textContent = isOpen ? 'Close ✕' : 'What is AutoGluon?';
-  // Hydrate feature bars from AG_META on first open
-  if(isOpen && Object.keys(AG_META).length){
-    hydrateAgTooltip();
-  }
+  if(trigger) trigger.textContent = isOpen ? 'Close ✕' : 'AutoGluon ↑';
+  if(isOpen) hydrateAgPanels();
 }
 
-function hydrateAgTooltip(){
-  const featEl = document.getElementById('ag-tooltip-features');
-  const metaEl = document.getElementById('ag-tooltip-meta');
-  if(featEl && featEl.children.length === 0 && AG_META.feature_importance){
-    const fi      = AG_META.feature_importance || {};
-    const entries = Object.entries(fi).slice(0,6);
-    const maxVal  = entries[0] ? entries[0][1] : 1;
-    const nameMap = {
-      avg_view_percentage:'Watch completion', avg_view_duration:'Watch duration',
-      level:'Intensity level', endHz:'Landing Hz', startHz:'Starting Hz',
-      series:'Protocol series', zone:'Zone alignment', hz_abs:'Hz range',
-      delta:'Hz range (signed)', dur:'Duration', entry:'Entry match',
-      move:'Movement type', adviser_driven:'Adviser-routed'
-    };
-    if(entries.length){
-      featEl.innerHTML = '<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(74,158,202,.65);margin:10px 0 6px">Top outcome predictors</div>'
-        + '<div class="ag-feature-bars">'
-        + entries.map(([k,v])=>{
-            const pct = Math.round((v/maxVal)*100);
-            return `<div class="ag-feat-row">
-              <div class="ag-feat-row-name">${nameMap[k]||k}</div>
-              <div class="ag-feat-row-bar-wrap"><div class="ag-feat-row-bar" style="width:${pct}%"></div></div>
-              <div class="ag-feat-row-val">${v.toFixed(3)}</div>
-            </div>`;
-          }).join('')
-        + '</div>';
-    }
-  }
-  if(metaEl && !metaEl.textContent && AG_META.run_date){
-    const rmse = AG_META.best_rmse ? ` · RMSE ${AG_META.best_rmse}` : '';
-    metaEl.textContent = `Trained ${AG_META.run_date} · ${(AG_META.n_training_rows||0).toLocaleString()} listener responses${rmse}`;
-  }
+// Tab switching — takes a scope prefix ('ag-pane' or 'ag-mobile-pane') + parent container id
+function switchSidebarTab(tab, btn){
+  const card = btn.closest('.ag-card');
+  card.querySelectorAll('.ag-sidebar-tab').forEach(t=>t.classList.remove('active'));
+  card.querySelectorAll('.ag-sidebar-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ag-sidebar-pane-'+tab).classList.add('active');
+}
+
+function switchAgTab(tab, btn){
+  const container = document.getElementById('ag-tabbed-panel');
+  container.querySelectorAll('.ag-panel-tab').forEach(t=>t.classList.remove('active'));
+  container.querySelectorAll('.ag-panel-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ag-pane-'+tab).classList.add('active');
+}
+
+function switchAgMobileTab(tab, btn){
+  const container = document.getElementById('ag-mobile-panel');
+  container.querySelectorAll('.ag-panel-tab').forEach(t=>t.classList.remove('active'));
+  container.querySelectorAll('.ag-panel-pane').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ag-mobile-pane-'+tab).classList.add('active');
+}
+
+function buildFeatureBars(container, fi, limit){
+  if(!fi||!container) return;
+  const entries = Object.entries(fi).slice(0, limit||6);
+  if(!entries.length) return;
+  const maxVal  = entries[0] ? entries[0][1] : 1;
+  const nameMap = {
+    avg_view_percentage:'Watch completion', avg_view_duration:'Watch duration',
+    level:'Intensity level', endHz:'Landing Hz', startHz:'Starting Hz',
+    series:'Protocol series', zone:'Zone alignment', hz_abs:'Hz range',
+    delta:'Hz range (signed)', dur:'Duration', entry:'Entry match',
+    move:'Movement type', adviser_driven:'Adviser-routed'
+  };
+  container.innerHTML = '<div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(74,158,202,.65);margin:0 0 8px">Top outcome predictors</div>'
+    + '<div class="ag-feature-bars">'
+    + entries.map(([k,v])=>{
+        const pct = Math.round((v/maxVal)*100);
+        return `<div class="ag-feat-row">
+          <div class="ag-feat-row-name">${nameMap[k]||k}</div>
+          <div class="ag-feat-row-bar-wrap"><div class="ag-feat-row-bar" style="width:${pct}%"></div></div>
+          <div class="ag-feat-row-val">${v.toFixed(3)}</div>
+        </div>`;
+      }).join('')
+    + '</div>';
+}
+
+function buildModelList(container, leaderboard, limit){
+  if(!leaderboard||!container) return;
+  container.innerHTML = leaderboard.slice(0, limit||8).map((m,i)=>{
+    const rmse = Math.abs(m.score_val).toFixed(3);
+    return `<div class="ag-model-row${i===0?' top-model':''}">
+      <div class="ag-model-rank">${i+1}</div>
+      <div class="ag-model-name" title="${m.model}">${m.model}</div>
+      <div class="ag-model-rmse">${rmse}</div>
+    </div>`;
+  }).join('');
+}
+
+function hydrateAgPanels(){
+  if(!Object.keys(AG_META).length) return;
+  const fi  = AG_META.feature_importance || {};
+  const lb  = AG_META._leaderboard || [];
+  const rmse = AG_META.best_rmse ? ` · RMSE ${AG_META.best_rmse}` : '';
+  const metaText = AG_META.run_date
+    ? `Trained ${AG_META.run_date} · ${(AG_META.n_training_rows||0).toLocaleString()} responses${rmse}`
+    : '';
+
+  // Desktop panel (ag-tabbed-panel, inside screen-result)
+  buildFeatureBars(document.getElementById('ag-tooltip-features'), fi, 6);
+  buildModelList(document.getElementById('ag-tooltip-models'), lb, 8);
+  const m1 = document.getElementById('ag-tooltip-meta');
+  if(m1) m1.textContent = metaText;
+
+  // Sidebar tabs (always visible on desktop)
+  buildFeatureBars(document.getElementById('ag-feature-row'), fi, 6);
+  buildModelList(document.getElementById('ag-sidebar-models'), lb, 8);
+  const ms = document.getElementById('ag-sidebar-meta');
+  if(ms) ms.textContent = metaText;
+
+  // Mobile panel (ag-mobile-panel)
+  buildFeatureBars(document.getElementById('ag-mobile-features'), fi, 6);
+  buildModelList(document.getElementById('ag-mobile-models'), lb, 8);
+  const m2 = document.getElementById('ag-mobile-meta');
+  if(m2) m2.textContent = metaText;
 }
 
 // ── PREVIOUS RECOMMENDATION CARD ─────────────────────────────────────────────
