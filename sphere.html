@@ -1085,10 +1085,11 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         <p>AutoGluon is an open-source AutoML framework developed by AWS. In The Drum Protocols system it provides the quantitative statistical foundation that LLMs are not suited for — rigorous, reproducible ensemble ML prediction trained directly on listener outcome data. AutoGluon computes. LLMs interpret.</p>
       </div>
       <div class="pillar-list" style="margin-top:20px">
-        <div class="pillar"><b>Ensemble architecture</b><span>AutoGluon trains LightGBM, CatBoost, XGBoost, and Random Forest in parallel, then stacks them across two levels with a weighted ensemble at the top. Current best: WeightedEnsemble_L3, RMSE 1.061 on a 0–10 outcome scale.</span></div>
-        <div class="pillar"><b>What it learns from</b><span>Protocol design features (landing frequency, Hz range, duration, movement type, series), YouTube engagement features (watch completion %, average duration), listener context features (entry zone, intensity level, adviser routing), and outcome scores from listener surveys.</span></div>
-        <div class="pillar"><b>Two outputs, one training run</b><span>autogluon.json powers the Adviser recommendation system — ranking protocols for all 81 listener state combinations. autogluon_context.json feeds the Sphere analysis pipeline — providing the quantitative layer that LLM analyzers reason from.</span></div>
-        <div class="pillar"><b>Training cadence</b><span>AutoGluon runs locally on demand — typically weekly. The model trains from scratch on all available data with no time limit, then saves to disk. The Sphere pipeline reads the most recent context file automatically on the next run.</span></div>
+        <div class="pillar"><b>Dual-model architecture</b><span>Two parallel models train on different survey signals and their predictions are blended proportionally by response count. Model A trains on 1-second outcome scores. Model B trains on 1-minute change ratings — a richer before/after signal with fewer but higher-quality responses. As each survey type accumulates data, its share of the final prediction grows automatically.</span></div>
+        <div class="pillar"><b>Ensemble per model</b><span>Each model runs LightGBM, CatBoost, XGBoost, Random Forest, and a tabular neural network (NeuralNetTorch) in parallel, then stacks them across two levels with a weighted ensemble at the top. AutoGluon assigns weights based on validation RMSE — better models get more influence automatically.</span></div>
+        <div class="pillar"><b>What it learns from</b><span>Protocol design features (landing frequency, Hz range, duration, movement type, series), YouTube engagement features (watch completion %, average duration), listener context features (entry zone, intensity level, adviser routing), and outcome data from both survey types.</span></div>
+        <div class="pillar"><b>Two outputs per run</b><span>autogluon.json powers the Adviser — ranking protocols for all 81 listener state combinations using the blended dual-model score. autogluon_context.json feeds the Sphere analysis pipeline with the quantitative layer that LLM analyzers reason from.</span></div>
+        <div class="pillar"><b>Training cadence</b><span>AutoGluon runs locally on demand — typically weekly. Both models train from scratch on all available data with no time limit, then save to disk. Use --no-train to reload saved models and rescore without retraining.</span></div>
       </div>
     </div>
 
@@ -1096,12 +1097,13 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <div class="content-panel" id="panel-ag-adviser">
       <div class="panel-eyebrow">AutoGluon Layer</div>
       <h1 class="panel-title">Adviser Recommender</h1>
-      <div class="panel-body"><p>The Protocol Adviser uses AutoGluon to rank protocols for every combination of listener state, available time, and intensity. Three questions produce one of 81 possible contexts. AutoGluon scores all 30 protocols for that context and returns a ranked list.</p></div>
+      <div class="panel-body"><p>The Protocol Adviser uses AutoGluon to rank protocols for every combination of listener state, available time, and intensity. Three questions produce one of 81 possible contexts. AutoGluon scores all 30 protocols for that context using a blended dual-model prediction and returns a ranked list.</p></div>
       <div class="pillar-list" style="margin-top:20px">
-        <div class="pillar"><b>Primary recommendations</b><span>All protocols within the listener's zone are ranked by predicted outcome score. The top-ranked protocol is the primary recommendation. The second and third become alternatives shown below the result.</span></div>
-        <div class="pillar"><b>Cross-bucket recommendations</b><span>If any out-of-zone protocol scores within 15% of the top in-zone score, it appears as a "You might also explore" suggestion. These cross-bucket entries represent the model finding efficacy signals that cross categorical boundaries.</span></div>
-        <div class="pillar"><b>Graceful fallback</b><span>If autogluon.json is absent, the Adviser falls back to mean-score ranking from data.json. The user experience is identical.</span></div>
-        <div class="pillar"><b>Adviser-driven signal</b><span>When a listener reaches a survey via the Adviser, the URL carries src=adviser. AutoGluon has already identified that adviser-routed listeners report measurably better outcomes — confirming the value of the routing itself.</span></div>
+        <div class="pillar"><b>Blended scoring</b><span>Each protocol receives a predicted score from Model A (outcome_score) and Model B (change_rating). These are combined proportionally by response count — the survey type with more responses carries more weight. The blend adjusts automatically as data grows.</span></div>
+        <div class="pillar"><b>Primary recommendations</b><span>All protocols within the listener's zone are ranked by blended predicted score. The top-ranked protocol is the primary recommendation. The second and third become alternatives shown below the result.</span></div>
+        <div class="pillar"><b>Cross-bucket recommendations</b><span>If any out-of-zone protocol scores within 15% of the top in-zone score, it appears as a "You might also explore" suggestion — the model finding efficacy signals that cross categorical boundaries.</span></div>
+        <div class="pillar"><b>Graceful fallback</b><span>If autogluon.json is absent, the Adviser falls back to mean-score ranking from data.json. The user experience is identical. If only Model A is available, the blend falls back to outcome_score only.</span></div>
+        <div class="pillar"><b>Adviser-driven signal</b><span>When a listener reaches a survey via the Adviser, the URL carries src=adviser. AutoGluon has identified that adviser-routed listeners report measurably better outcomes — confirming that better matching produces better results.</span></div>
       </div>
     </div>
 
@@ -1110,34 +1112,36 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       <div class="panel-eyebrow">AutoGluon Layer</div>
       <h1 class="panel-title">Sphere Analysis Feed</h1>
       <div class="panel-body">
-        <p>Before each Sphere MOE run, the pipeline loads autogluon_context.json and injects its contents as a structured quantitative block into the analyzer payload. This replaces passing only descriptive statistics as the primary quantitative input.</p>
-        <p>Descriptive statistics tell an analyzer what the distributions look like. AutoGluon output tells it what is causally driving outcomes.</p>
+        <p>Before each Sphere MOE run, the pipeline loads autogluon_context.json and injects its contents as a structured quantitative block into every analyzer's payload. This gives each LLM analyzer a predictive ML foundation rather than descriptive statistics alone.</p>
+        <p>Descriptive statistics tell an analyzer what the distributions look like. AutoGluon output tells it what is causally driving outcomes — and from which survey signal that finding originates.</p>
       </div>
       <div class="pillar-list" style="margin-top:20px">
-        <div class="pillar"><b>What the analyzers receive</b><span>Model performance (RMSE, full leaderboard), feature importance by category, key quantitative findings, predicted outcome scores by zone, cross-bucket routing anomalies, and zone efficacy ranking.</span></div>
-        <div class="pillar"><b>Convergence as signal</b><span>When AutoGluon quantitative findings and Sphere narrative observations point in the same direction, the synthesizer treats this as stronger signal. When they diverge, the tension is analytically meaningful and flagged explicitly.</span></div>
-        <div class="pillar"><b>Zero-signal features</b><span>AutoGluon currently reports zero predictive signal for listener context features because test data populates them uniformly. The pipeline explicitly flags this so analyzers do not misread absence of signal as absence of importance.</span></div>
+        <div class="pillar"><b>What the analyzers receive</b><span>Both model leaderboards and RMSEs, feature importance from the outcome_score model, key quantitative findings, predicted scores by zone, cross-bucket routing anomalies, zone efficacy ranking, and the current blend weighting between models.</span></div>
+        <div class="pillar"><b>Convergence as signal</b><span>When AutoGluon quantitative findings and Sphere narrative observations point in the same direction, the synthesizer treats this as stronger signal. Where they diverge, the tension is analytically meaningful and flagged explicitly.</span></div>
+        <div class="pillar"><b>Zero-signal features</b><span>Listener context features (listener_type, activity, listen_method, settle_time) currently show zero predictive signal because test data populates them uniformly. The pipeline flags this explicitly — absence of signal is not absence of importance. These features will activate as real listener diversity grows.</span></div>
+        <div class="pillar"><b>Future tier</b><span>When sufficient data exists across both survey types, a third meta-model will learn the optimal blend weight directly from the data — replacing the proportional formula with a trained estimate of which model to trust more for each context.</span></div>
       </div>
-      <div class="api-note" style="margin-top:16px">The context block is stored in autogluon_context.json and loaded by moe_sphere_pipeline.py at step [3c/5]. If the file is absent, Sphere runs with a graceful fallback message.</div>
+      <div class="api-note" style="margin-top:16px">The context block is stored in autogluon_context.json and loaded by moe_sphere_pipeline.py. If the file is absent, Sphere runs with a graceful fallback message.</div>
     </div>
 
     <!-- 6d: AutoGluon — Feature Importance -->
     <div class="content-panel" id="panel-ag-features">
       <div class="panel-eyebrow">AutoGluon Layer</div>
       <h1 class="panel-title">Feature Importance</h1>
-      <div class="panel-body"><p>Feature importance is computed as mean absolute SHAP values across the ensemble. Higher values indicate stronger causal influence on predicted outcome scores.</p></div>
+      <div class="panel-body"><p>Feature importance is computed as mean absolute SHAP values across the outcome_score ensemble. Higher values indicate stronger causal influence on predicted outcome scores. The change_rating model produces its own feature importance, stored separately in autogluon.json under <code style="font-size:11px;background:rgba(255,255,255,.06);border-radius:3px;padding:1px 5px;color:var(--dp-gold-light)">feature_importance_change</code>.</p></div>
       <div class="signal-grid" style="margin-top:20px">
         <div class="signal-card" style="grid-column:1/-1">
-          <div class="signal-label">Current top features (live from autogluon.json)</div>
+          <div class="signal-label">Current top features — outcome_score model (live from autogluon.json)</div>
           <div id="ag-feature-list"><p style="color:var(--color-text-tertiary);font-style:italic">Loading from autogluon.json...</p></div>
         </div>
       </div>
       <div class="pillar-list" style="margin-top:20px">
-        <div class="pillar"><b>Watch completion</b><span>Currently the strongest single predictor. Listeners who complete more of a protocol report better outcomes — protocols that hold attention through their full entrainment arc are more effective.</span></div>
-        <div class="pillar"><b>Landing frequency (endHz)</b><span>The first protocol design signal to emerge — where a protocol arrives matters more than where it starts. An early but directionally important finding for Vol. 2 design.</span></div>
-        <div class="pillar"><b>Features awakening with real data</b><span>Listener context features currently show zero signal because test data populates them uniformly. As real listener data diversifies, these will activate and reveal which listener profiles respond best to which protocol types.</span></div>
+        <div class="pillar"><b>Watch completion</b><span>Currently the strongest single predictor in the outcome_score model. Listeners who watch more of a protocol report better outcomes — protocols that hold attention through their full entrainment arc are more effective. This is a YouTube engagement signal, not a design feature.</span></div>
+        <div class="pillar"><b>Landing frequency (endHz)</b><span>The strongest protocol design signal to emerge — where a protocol arrives matters more than where it starts. An early but directionally important finding for Vol. 2 design decisions.</span></div>
+        <div class="pillar"><b>Neural network contribution</b><span>NeuralNetTorch earned 32% weight in the outcome_score final ensemble alongside LightGBM at 32% — the neural net found patterns the tree methods alone missed. This is why it was added: AutoGluon's ensemble weighting surfaces its value automatically.</span></div>
+        <div class="pillar"><b>Features awakening with real data</b><span>Listener context features (listener_type, activity, listen_method, settle_time) show zero signal because test data fills them uniformly with "unknown". As real listener diversity grows, these will activate and reveal which listener profiles respond best to which protocol types.</span></div>
       </div>
-      <div class="api-note" style="margin-top:16px">Feature importance is stored in autogluon.json under <code>feature_importance</code>. The Adviser sidebar displays the top 5 features live from autogluon.json.</div>
+      <div class="api-note" style="margin-top:16px">Feature importance is stored in autogluon.json under <code>feature_importance</code> (outcome_score model) and <code>feature_importance_change</code> (change_rating model). The Adviser sidebar displays the top 5 outcome_score features live.</div>
     </div>
 
     <!-- 7a: Research Findings -->
