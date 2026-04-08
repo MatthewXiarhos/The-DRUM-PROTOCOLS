@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Answer a few questions and get matched to the right rhythmic protocol for your nervous system state. Free, anonymous, and grounded in psychophysiological research.">
-<meta name="keywords" content="nervous system regulation, rhythmic protocol adviser, anxiety relief audio, sleep protocol, focus music, drum protocols quiz">
+<title>Find Your Protocol | The Drum Protocols Adviser</title>
+<meta name="description" content="Answer three questions and get matched to the right rhythmic protocol for your current nervous system state. Free, anonymous, and ML-powered.">
+<meta name="keywords" content="protocol adviser, nervous system quiz, rhythm protocol match, anxiety audio tool, sleep protocol finder, AutoGluon recommendation">
 <meta name="author" content="The Drum Protocols">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://thedrumprotocols.org/adviser.html">
@@ -12,16 +13,16 @@
 <!-- Open Graph -->
 <meta property="og:type"        content="website">
 <meta property="og:site_name"   content="The Drum Protocols">
-<meta property="og:title"       content="Find Your Protocol · The Drum Protocols">
-<meta property="og:description" content="A guided adviser that matches you to one of 30 rhythmic audio protocols based on your current state — anxiety, sleep, focus, crisis, energy.">
+<meta property="og:title"       content="Find Your Protocol | The Drum Protocols Adviser">
+<meta property="og:description" content="A guided adviser that matches your current state to the most appropriate rhythmic protocol — for anxiety, sleep, focus, crisis, activation, and more.">
 <meta property="og:url"         content="https://thedrumprotocols.org/adviser.html">
-<meta property="og:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta property="og:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Twitter Card -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="AutoGluon Protocol Adviser · The Drum Protocols">
-<meta name="twitter:description" content="A guided adviser that matches you to one of 30 rhythmic audio protocols based on your current state — anxiety, sleep, focus, crisis, energy.">
-<meta name="twitter:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta name="twitter:title"       content="Find Your Protocol | The Drum Protocols Adviser">
+<meta name="twitter:description" content="Three questions. One matched protocol. Free and anonymous.">
+<meta name="twitter:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Favicons -->
 <link rel="apple-touch-icon"       sizes="180x180" href="apple-touch-icon.png">
@@ -29,7 +30,6 @@
 <link rel="icon" type="image/png"  sizes="16x16"   href="favicon-16x16.png">
 <link rel="manifest"               href="site.webmanifest">
 <meta name="theme-color"           content="#0d1720">
-<title>AutoGluon Protocol Adviser · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -59,6 +59,7 @@ a { color: inherit; }
 .nav-hamburger { display: none; flex-direction: column; justify-content: center; gap: 5px; width: 32px; height: 32px; cursor: pointer; background: none; border: none; padding: 4px; flex-shrink: 0; }
 .nav-hamburger span { display: block; height: 2px; width: 100%; background: rgba(255,255,255,0.55); }
 .nav-hamburger:hover span { background: #fff; }
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1320px;margin:0 auto;}@media(max-width:860px){.nav-inner{max-width:100%}}
 @media (max-width: 860px) { .site-nav { padding: 0 16px; } .nav-links { display: none; position: fixed; top: 52px; left: 0; right: 0; background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid); flex-direction: column; gap: 0; z-index: 199; } .nav-links.open { display: flex; } .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; } .nav-link:last-child { border-bottom: none; } .nav-hamburger { display: flex; } }
 .page-header { background: var(--dp-slate-dark); position: relative; overflow: hidden; }
 .page-header::before { content: ''; position: absolute; right: -80px; top: -80px; width: 360px; height: 360px; border-radius: 50%; border: 1px solid rgba(184,134,11,0.12); pointer-events: none; }
@@ -360,8 +361,7 @@ a { color: inherit; }
   transition: all 0.15s; white-space: nowrap;
 }
 .ag-informed-trigger:hover { color: #4a9eca; border-color: rgba(74,158,202,0.6); }
-/* Hide mobile trigger on desktop */
-@media (min-width: 861px) { .ag-informed-trigger { display: none; } }
+/* Trigger visible on both desktop and mobile */
 
 /* ── AG MOBILE PANEL (toggled by informed-trigger, mobile only) ── */
 .ag-mobile-panel {
@@ -381,12 +381,14 @@ a { color: inherit; }
 .ag-result-text { font-size: 11px; color: rgba(74,158,202,0.9); letter-spacing: 0.06em; flex: 1; }
 .ag-result-text strong { color: #4a9eca; font-weight: 600; }
 
-/* ── AG TABBED PANEL (desktop: always shown; mobile: hidden — use ag-mobile-panel instead) ── */
+/* ── AG TABBED PANEL (collapsed by default on both desktop and mobile) ── */
 .ag-tabbed-panel {
   background: rgba(74,158,202,0.03);
   border-bottom: 0.5px solid rgba(74,158,202,0.14);
+  display: none;
 }
-@media (max-width: 860px) { .ag-tabbed-panel { display: none; } }
+.ag-tabbed-panel.open { display: block; }
+@media (max-width: 860px) { .ag-tabbed-panel { display: none !important; } }
 
 /* ── SHARED TAB CHROME ── */
 .ag-panel-tabs { display: flex; border-bottom: 0.5px solid rgba(74,158,202,0.18); padding: 0 14px; }
@@ -438,17 +440,18 @@ a { color: inherit; }
 /* ── DATA TRANSPARENCY BADGE ── */
 .data-badge-wrap{display:inline-flex;align-items:center;gap:6px;cursor:default}
 .data-badge{
-  display:inline-flex;flex-direction:column;align-items:center;
+  display:inline-flex;flex-direction:row;align-items:center;gap:5px;
   font-size:9px;letter-spacing:.08em;text-transform:uppercase;
   background:rgba(184,134,11,.08);border:.5px solid rgba(184,134,11,.3);
-  border-radius:6px;padding:4px 8px;line-height:1.35;
-  color:rgba(184,134,11,.75);white-space:nowrap;position:relative;
+  border-radius:999px;padding:3px 10px 3px 8px;
+  color:rgba(184,134,11,.75);white-space:nowrap;cursor:help;
 }
-.data-badge strong{font-size:11px;letter-spacing:.04em;color:var(--dp-gold-light);font-weight:600}
-.data-badge-help{
-  font-size:9px;color:rgba(184,134,11,.5);border-bottom:.5px dashed rgba(184,134,11,.35);
-  cursor:help;margin-left:2px;
+.data-badge::before{
+  content:'';display:block;width:5px;height:5px;border-radius:50%;
+  background:var(--dp-gold-light);opacity:.8;flex-shrink:0;
 }
+.data-badge strong{font-size:9px;letter-spacing:.06em;color:var(--dp-gold-light);font-weight:600}
+.data-badge-help{display:none}
 /* Tooltip */
 .data-badge-tooltip-wrap{position:relative;display:inline-flex;align-items:center}
 .data-badge-tooltip{
@@ -473,6 +476,7 @@ a { color: inherit; }
 </head>
 <body>
 <nav class="site-nav">
+  <div class="nav-inner">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
     <span></span><span></span><span></span>
@@ -488,13 +492,13 @@ a { color: inherit; }
     <a class="nav-link" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
-  <div class="data-badge-tooltip-wrap" style="margin-left:16px">
+  <div class="data-badge-tooltip-wrap" style="margin-left:12px">
     <div class="data-badge">
-      <span>Testing Data</span>
+      <span>Testing</span>
       <strong id="nav-test-pct">—%</strong>
-      <span class="data-badge-help">what's this?</span>
     </div>
     <div class="data-badge-tooltip">We are making sure all of the complex statistics and ML models are working while our user base grows. Help us get real!</div>
+  </div>
   </div>
 </nav>
 <header class="page-header">
@@ -573,13 +577,13 @@ a { color: inherit; }
             <div class="ag-models-list" id="ag-tooltip-models"><span class="ag-loading">Loading…</span></div>
           </div>
         </div>
-        <!-- AG Informed Recommendation line — always shown on result screen -->
+        <!-- AG Informed Recommendation line — collapsed header on both desktop and mobile -->
         <div class="ag-informed-line" id="ag-informed-line">
           <div class="ag-informed-label">
             <span class="ag-informed-dot"></span>
             AutoGluon Informed Recommendation
           </div>
-          <button class="ag-informed-trigger" onclick="toggleAgMobilePanel()" id="ag-informed-trigger">AutoGluon ↑</button>
+          <button class="ag-informed-trigger" onclick="toggleAgPanel()" id="ag-informed-trigger">AutoGluon ↓</button>
         </div>
         <!-- Mobile slide-down panel (toggled by informed-trigger) -->
         <div class="ag-mobile-panel" id="ag-mobile-panel">
@@ -1125,6 +1129,13 @@ function restart(){
   answers={};currentQ=0;
   // Clear the stored recommendation when user explicitly starts over
   try { sessionStorage.removeItem('dp-adviser-rec'); } catch(e) {}
+  // Collapse AG panels
+  const desktop = document.getElementById('ag-tabbed-panel');
+  const mobile  = document.getElementById('ag-mobile-panel');
+  const trigger = document.getElementById('ag-informed-trigger');
+  if(desktop) desktop.classList.remove('open');
+  if(mobile)  mobile.classList.remove('open');
+  if(trigger) trigger.textContent = 'AutoGluon ↓';
   document.getElementById('screen-result').classList.remove('active');
   document.getElementById('screen-adviser').classList.add('active');
   renderQuestion();scrollToPanel();
@@ -1144,14 +1155,26 @@ function hydrateAgSidebar(ag){
 // ── AUTOGLUON PANEL FUNCTIONS ─────────────────────────────────────────────────
 
 // Mobile: toggle the ag-mobile-panel open/closed from the informed line
-function toggleAgMobilePanel(){
-  const panel   = document.getElementById('ag-mobile-panel');
-  const trigger = document.getElementById('ag-informed-trigger');
-  if(!panel) return;
-  const isOpen = panel.classList.toggle('open');
-  if(trigger) trigger.textContent = isOpen ? 'Close ✕' : 'AutoGluon ↑';
-  if(isOpen) hydrateAgPanels();
+function toggleAgPanel(){
+  const trigger  = document.getElementById('ag-informed-trigger');
+  const desktop  = document.getElementById('ag-tabbed-panel');
+  const mobile   = document.getElementById('ag-mobile-panel');
+  const isDesktop = window.innerWidth > 860;
+
+  if(isDesktop){
+    const isOpen = desktop.classList.toggle('open');
+    if(trigger) trigger.textContent = isOpen ? 'Close ✕' : 'AutoGluon ↓';
+    if(isOpen) hydrateAgPanels();
+  } else {
+    const isOpen = mobile.classList.toggle('open');
+    if(trigger) trigger.textContent = isOpen ? 'Close ✕' : 'AutoGluon ↓';
+    if(isOpen) hydrateAgPanels();
+  }
 }
+
+// Keep old name as alias for any other callers
+function toggleAgMobilePanel(){ toggleAgPanel(); }
+
 
 // Tab switching — takes a scope prefix ('ag-pane' or 'ag-mobile-pane') + parent container id
 function switchSidebarTab(tab, btn){

@@ -3,25 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Sphere is The Drum Protocols' AI-powered statistical inference engine. Explore per-protocol ML commentary, anomaly detection, and development signals.">
+<title>Sphere Data Lab | AI Protocol Analysis | The Drum Protocols</title>
+<meta name="description" content="Sphere is the AI-powered analysis layer for The Drum Protocols. Explore protocol commentary, development signals, anomaly detection, and outcome summaries.">
 <meta name="keywords" content="AI data analysis, protocol research ML, Sphere inference engine, drum protocols statistics, bimodal distribution analysis, open research platform">
 <meta name="author" content="The Drum Protocols">
 <meta name="robots" content="index, follow">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Sphere Data Lab",
+  "url": "https://thedrumprotocols.org/sphere.html",
+  "description": "AI-powered statistical interpretation layer for The Drum Protocols outcome data.",
+  "applicationCategory": "DataVisualization",
+  "isAccessibleForFree": true
+}
+</script>
 <link rel="canonical" href="https://thedrumprotocols.org/sphere.html">
 
 <!-- Open Graph -->
 <meta property="og:type"        content="website">
 <meta property="og:site_name"   content="The Drum Protocols">
-<meta property="og:title"       content="Sphere's Data Lab · The Drum Protocols">
-<meta property="og:description" content="An AI analytical layer that reads outcome data across 30 protocols, flags bimodal distributions, and generates probabilistic development signals.">
+<meta property="og:title"       content="Sphere Data Lab | The Drum Protocols">
+<meta property="og:description" content="An AI analytical layer that reads outcome data across the protocol library and generates structured statistical commentary.">
 <meta property="og:url"         content="https://thedrumprotocols.org/sphere.html">
-<meta property="og:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta property="og:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Twitter Card -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="Sphere's Data Lab · The Drum Protocols">
-<meta name="twitter:description" content="An AI analytical layer that reads outcome data across 30 protocols, flags bimodal distributions, and generates probabilistic development signals.">
-<meta name="twitter:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta name="twitter:title"       content="Sphere Data Lab | The Drum Protocols">
+<meta name="twitter:description" content="AI-powered statistical commentary, development signals, and protocol-level data interpretation.">
+<meta name="twitter:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Favicons -->
 <link rel="apple-touch-icon"       sizes="180x180" href="apple-touch-icon.png">
@@ -29,7 +41,6 @@
 <link rel="icon" type="image/png"  sizes="16x16"   href="favicon-16x16.png">
 <link rel="manifest"               href="site.webmanifest">
 <meta name="theme-color"           content="#0d1720">
-<title>Sphere's Data Lab · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -60,6 +71,7 @@ a{color:inherit;text-decoration:none}
 .nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
 .nav-hamburger span{display:block;height:2px;width:100%;background:rgba(255,255,255,0.55)}
 .nav-hamburger:hover span{background:#fff}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1320px;margin:0 auto;}@media(max-width:860px){.nav-inner{max-width:100%}}
 @media(max-width:640px){.site-nav{padding:0 16px}.nav-links{display:none;position:fixed;top:52px;left:0;right:0;background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);flex-direction:column;gap:0;z-index:199}.nav-links.open{display:flex}.nav-link{padding:14px 20px;border-bottom:1px solid var(--color-border);font-size:12px}.nav-link:last-child{border-bottom:none}.nav-hamburger{display:flex}}
 
 /* ── PAGE HEADER ── */
@@ -408,17 +420,18 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 /* ── DATA TRANSPARENCY BADGE ── */
 .data-badge-wrap{display:inline-flex;align-items:center;gap:6px;cursor:default}
 .data-badge{
-  display:inline-flex;flex-direction:column;align-items:center;
+  display:inline-flex;flex-direction:row;align-items:center;gap:5px;
   font-size:9px;letter-spacing:.08em;text-transform:uppercase;
   background:rgba(184,134,11,.08);border:.5px solid rgba(184,134,11,.3);
-  border-radius:6px;padding:4px 8px;line-height:1.35;
-  color:rgba(184,134,11,.75);white-space:nowrap;position:relative;
+  border-radius:999px;padding:3px 10px 3px 8px;
+  color:rgba(184,134,11,.75);white-space:nowrap;cursor:help;
 }
-.data-badge strong{font-size:11px;letter-spacing:.04em;color:var(--dp-gold-light);font-weight:600}
-.data-badge-help{
-  font-size:9px;color:rgba(184,134,11,.5);border-bottom:.5px dashed rgba(184,134,11,.35);
-  cursor:help;margin-left:2px;
+.data-badge::before{
+  content:'';display:block;width:5px;height:5px;border-radius:50%;
+  background:var(--dp-gold-light);opacity:.8;flex-shrink:0;
 }
+.data-badge strong{font-size:9px;letter-spacing:.06em;color:var(--dp-gold-light);font-weight:600}
+.data-badge-help{display:none}
 /* Tooltip */
 .data-badge-tooltip-wrap{position:relative;display:inline-flex;align-items:center}
 .data-badge-tooltip{
@@ -445,6 +458,7 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
 
 <!-- ── SITE NAV ── -->
 <nav class="site-nav">
+  <div class="nav-inner">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
     <span></span><span></span><span></span>
@@ -460,13 +474,13 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
     <a class="nav-link" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
-  <div class="data-badge-tooltip-wrap" style="margin-left:16px">
+  <div class="data-badge-tooltip-wrap" style="margin-left:12px">
     <div class="data-badge">
-      <span>Testing Data</span>
+      <span>Testing</span>
       <strong id="nav-test-pct">—%</strong>
-      <span class="data-badge-help">what's this?</span>
     </div>
     <div class="data-badge-tooltip">We are making sure all of the complex statistics and ML models are working while our user base grows. Help us get real!</div>
+  </div>
   </div>
 </nav>
 
@@ -635,6 +649,9 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
         </div>
         <div class="menu-sub-item" onclick="showPanel('ag-features',this)">
           <span class="menu-sub-alpha">d</span>Feature Importance
+        </div>
+        <div class="menu-sub-item" onclick="showPanel('ag-models',this)">
+          <span class="menu-sub-alpha">e</span>Model Leaderboard
         </div>
       </div>
     </div>
@@ -1144,6 +1161,61 @@ pre{margin-top:14px;padding:16px;white-space:pre-wrap;word-break:break-word;bord
       <div class="api-note" style="margin-top:16px">Feature importance is stored in autogluon.json under <code>feature_importance</code> (outcome_score model) and <code>feature_importance_change</code> (change_rating model). The Adviser sidebar displays the top 5 outcome_score features live.</div>
     </div>
 
+    <!-- 6e: AutoGluon — Model Leaderboard -->
+    <div class="content-panel" id="panel-ag-models">
+      <div class="panel-eyebrow">AutoGluon Layer</div>
+      <h1 class="panel-title">Model Leaderboard</h1>
+      <div class="panel-body">
+        <p>AutoGluon trains multiple model types simultaneously on the same dataset, then evaluates each on a held-out validation set. The leaderboard below ranks every model by validation RMSE — lower is better. The final ensemble does not simply pick the winner; it stacks and weights all models, assigning influence based on their individual validation performance. A model with a weak standalone score can still contribute meaningfully to the ensemble if its errors are uncorrelated with the others.</p>
+      </div>
+
+      <!-- Live leaderboard hydrated from autogluon.json -->
+      <div class="signal-grid" style="margin-top:20px">
+        <div class="signal-card" style="grid-column:1/-1">
+          <div class="signal-label">Current model leaderboard — outcome_score model (live from autogluon.json)</div>
+          <div id="ag-model-leaderboard-list"><p style="color:var(--color-text-tertiary);font-style:italic">Loading from autogluon.json…</p></div>
+        </div>
+      </div>
+
+      <!-- Per-model explanations -->
+      <div class="pillar-list" style="margin-top:24px">
+
+        <div class="pillar">
+          <b>LightGBM — Light Gradient Boosting Machine</b>
+          <span>LightGBM is a gradient boosted decision tree framework developed by Microsoft, optimised for speed and memory efficiency on tabular data. It builds trees leaf-wise rather than level-wise, which means it converges faster on patterns with high predictive value and ignores splits that add little. For The Drum Protocols it handles the structured tabular inputs well — protocol code features, listener state zone, intensity level, and Hz values are all the kind of clean numerical and categorical columns where gradient boosting consistently outperforms other approaches. Its weakness is that it can overfit on small datasets with many low-cardinality categorical features, and it has no built-in mechanism for detecting non-linear interaction patterns that aren't expressible as tree splits. As the dataset grows and listener context features activate, LightGBM will likely become stronger — it benefits more from data volume than most tree methods.</span>
+        </div>
+
+        <div class="pillar">
+          <b>CatBoost — Categorical Boosting</b>
+          <span>CatBoost is a gradient boosted tree framework developed by Yandex, built specifically to handle categorical features without preprocessing. Most boosting frameworks require one-hot encoding or label encoding of categories before training — CatBoost encodes them internally using an ordered target statistic, which reduces overfitting on high-cardinality categoricals and avoids target leakage. For The Drum Protocols, features like series (Healing / Thriving / Transforming), zone, and movement type are categorical, and CatBoost handles these natively and often more accurately than LightGBM or XGBoost on those columns. Its relative weakness is training speed — it is typically slower than LightGBM — and it can underperform on purely numerical data where tree structure matters more than categorical handling. In this ensemble CatBoost often earns moderate weight, contributing a complementary perspective on the categorical protocol design features.</span>
+        </div>
+
+        <div class="pillar">
+          <b>XGBoost — Extreme Gradient Boosting</b>
+          <span>XGBoost is the original high-performance gradient boosting framework, developed by Tianqi Chen and widely used in competitive machine learning. It builds trees level-wise with second-order gradient information, which makes it stable and well-regularised but somewhat slower than LightGBM on large datasets. For The Drum Protocols its strength is robustness — it rarely produces extreme predictions, and its regularisation terms (L1 and L2) help prevent overfitting when training rows are limited. Its weakness in this context is that it treats categorical variables as numerical unless explicitly encoded, which means it may learn less from features like series and zone than CatBoost does. XGBoost typically earns a supporting role in the TDP ensemble — its predictions are conservative and reliable, which is valuable when the dataset is still growing and overfitting risk is real.</span>
+        </div>
+
+        <div class="pillar">
+          <b>Random Forest</b>
+          <span>Random Forest is a bagging ensemble of independent decision trees, each trained on a random subset of features and rows. Unlike boosting methods, Random Forest trees are built in parallel with no communication between them — each tree votes independently and the final prediction is the mean. This makes Random Forest highly resistant to overfitting and very stable across data splits, but it also means it cannot correct its own errors iteratively the way boosting can. For The Drum Protocols, Random Forest serves as an important stability anchor in the ensemble — its predictions are less precise than the boosting models at the individual protocol level, but its variance is low and its errors are structurally different from the gradient boosted methods. When AutoGluon stacks the ensemble, Random Forest often earns a small but non-zero weight precisely because it decorrelates prediction errors from the other models.</span>
+        </div>
+
+        <div class="pillar">
+          <b>NeuralNetTorch — Tabular Neural Network</b>
+          <span>NeuralNetTorch is AutoGluon's PyTorch-based tabular neural network — a multi-layer perceptron with embedding layers for categorical features and batch normalisation between layers. Unlike the tree-based models, the neural network learns continuous representations of categorical variables and can capture smooth non-linear interactions across all features simultaneously. For The Drum Protocols this is significant: the neural net can model relationships like "the combination of high Hz landing frequency and long duration predicts strong outcomes for the Thriving series" in ways that tree splits may miss. Its weakness is that tabular neural networks need more data than tree methods to reliably outperform them, and they are sensitive to hyperparameter choices. In the current TDP ensemble, NeuralNetTorch has earned 32% weight in the outcome_score model — equal to LightGBM — indicating that it has found genuine signal the tree methods alone do not capture. As listener data grows this contribution is expected to increase.</span>
+        </div>
+
+      </div>
+
+      <!-- Ensembling explanation -->
+      <div class="panel-body" style="margin-top:28px;padding-top:20px;border-top:.5px solid var(--color-border)">
+        <p>The reason AutoGluon uses an ensemble rather than simply picking the best single model is that no model type is universally superior across all patterns in a dataset. LightGBM may find the sharpest split on intensity level. CatBoost may handle the series categorical most accurately. The neural network may detect a smooth interaction between Hz landing frequency and protocol duration that no tree can express. When these models disagree, that disagreement itself carries information — it signals that the pattern is complex, context-dependent, or sits at a decision boundary. AutoGluon's stacking layer learns the optimal combination of all model outputs using a second-level model trained on out-of-fold predictions, assigning weights that minimise validation RMSE across the full dataset.</p>
+        <p>For The Drum Protocols specifically, ensembling is especially important because the dataset is still growing and individual model behaviour is not yet stable. A single model that performs well at 1,000 rows may degrade or change character as the dataset reaches 5,000 or 10,000 rows. The ensemble is more robust to this shift — as new models begin to outperform older ones on fresh data, AutoGluon's reweighting adjusts the blend automatically. The validation RMSE reported in the leaderboard above is the best available honest estimate of how well the current ensemble will generalise to new listener outcomes it has not seen before.</p>
+      </div>
+
+      <div class="api-note" style="margin-top:16px">Model leaderboard data is stored in autogluon.json under <code>leaderboard</code> (outcome_score model). Each entry includes the model name and validation RMSE (<code>score_val</code>, stored as negative — lower absolute value is better). The ensemble weights are not stored explicitly but are reflected in the relative RMSE rankings.</div>
+    </div>
+
     <!-- 7a: Research Findings -->
     <div class="content-panel" id="panel-research-main">
       <div class="panel-eyebrow">Sphere · Research Layer</div>
@@ -1284,7 +1356,7 @@ function showPanelById(panelId) {
     'rec-routing':'recs','rec-design':'recs','rec-depth':'recs','rec-series':'recs','rec-adviser':'recs','rec-longitudinal':'recs',
     'tech-how':'tech','tech-identity':'tech','tech-audience':'tech','tech-vp1':'tech','tech-vp2':'tech',
     'tech-sysprompt':'tech','tech-userprompt':'tech','tech-guardrails':'tech',
-    'ag-overview':'autogluon','ag-adviser':'autogluon','ag-sphere':'autogluon','ag-features':'autogluon',
+    'ag-overview':'autogluon','ag-adviser':'autogluon','ag-sphere':'autogluon','ag-features':'autogluon','ag-models':'autogluon',
     'research-main':'research','protrev-main':'protrev'
   };
   const group = groupMap[panelId];
@@ -1563,7 +1635,55 @@ function filterProtos(series, btn) {
     });
 })();
 
-// ── Data transparency badge hydration ──
+// ── AutoGluon model leaderboard for panel-ag-models ──
+(function loadAgModels() {
+  fetch('autogluon.json?_=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.ok ? r.json() : null).catch(() => null)
+    .then(ag => {
+      var el = document.getElementById('ag-model-leaderboard-list');
+      if (!el) return;
+      if (!ag || !ag.leaderboard || !ag.leaderboard.length) {
+        el.innerHTML = '<p style="color:var(--color-text-tertiary);font-style:italic">No leaderboard data available.</p>';
+        return;
+      }
+      var lb = ag.leaderboard;
+      var bestRmse = Math.abs(lb[0].score_val);
+      var html = '<div style="display:flex;flex-direction:column;gap:6px;margin-top:8px">';
+      lb.forEach(function(m, i) {
+        var rmse = Math.abs(m.score_val);
+        var pct  = Math.round((bestRmse / rmse) * 100); // best = 100%, worse = lower
+        var isTop = i === 0;
+        var isEnsemble = m.model.toLowerCase().includes('ensemble') || m.model.toLowerCase().includes('weighted');
+        var barColor = isEnsemble
+          ? 'linear-gradient(90deg,var(--dp-gold-light),var(--dp-gold))'
+          : isTop
+            ? 'linear-gradient(90deg,var(--sphere-blue),var(--dp-healing-accent))'
+            : 'linear-gradient(90deg,rgba(74,158,202,.55),rgba(82,183,136,.45))';
+        html +=
+          '<div style="display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:6px;' +
+            'background:' + (isEnsemble ? 'rgba(184,134,11,.06)' : isTop ? 'rgba(74,158,202,.08)' : 'rgba(255,255,255,.02)') + ';' +
+            'border:.5px solid ' + (isEnsemble ? 'rgba(184,134,11,.25)' : isTop ? 'rgba(74,158,202,.3)' : 'rgba(255,255,255,.06)') + '">' +
+            '<div style="width:18px;font-size:9px;color:' + (isTop ? 'var(--sphere-blue)' : 'var(--color-text-tertiary)') + ';text-align:center;flex-shrink:0">' + (i+1) + '</div>' +
+            '<div style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:' + (isTop || isEnsemble ? 'var(--color-text-primary)' : 'var(--color-text-secondary)') + '">' + m.model + '</div>' +
+            '<div style="width:100px;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;flex-shrink:0">' +
+              '<div style="width:' + pct + '%;height:100%;background:' + barColor + ';border-radius:2px"></div>' +
+            '</div>' +
+            '<div style="width:44px;font-size:12px;font-family:\'Cormorant Garamond\',serif;color:' + (isEnsemble ? 'var(--dp-gold-light)' : isTop ? 'var(--dp-healing-accent)' : 'var(--sphere-blue)') + ';text-align:right;flex-shrink:0">' + rmse.toFixed(3) + '</div>' +
+          '</div>';
+      });
+      html += '</div>';
+      var meta = ag._meta || {};
+      if (meta.run_date) {
+        html += '<div style="font-size:11px;color:var(--color-text-tertiary);margin-top:12px">' +
+          'AutoGluon run: ' + meta.run_date +
+          (meta.n_training_rows ? '  ·  ' + meta.n_training_rows.toLocaleString() + ' training rows' : '') +
+          '  ·  Best RMSE: ' + bestRmse.toFixed(3) +
+          '</div>';
+      }
+      el.innerHTML = html;
+    });
+})();
+
 (function(){
   fetch('data.json?_='+Date.now())
     .then(r=>r.ok?r.json():null).then(d=>{

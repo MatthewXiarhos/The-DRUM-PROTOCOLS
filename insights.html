@@ -3,25 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Live research data from The Drum Protocols — outcome scores, series comparisons, and protocol rankings updated by the Sphere pipeline weekly.">
+<title>Research Insights | Listener Outcomes | The Drum Protocols</title>
+<meta name="description" content="Explore anonymized listener outcome data, series comparisons, and protocol-level performance across The Drum Protocols. Updated by the Sphere analysis pipeline.">
 <meta name="keywords" content="drum protocols research data, rhythmic entrainment outcomes, nervous system research, protocol efficacy, open data mental health audio">
 <meta name="author" content="The Drum Protocols">
 <meta name="robots" content="index, follow">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "The Drum Protocols Listener Outcome Data",
+  "url": "https://thedrumprotocols.org/insights.html",
+  "description": "Anonymized listener outcome data, series comparisons, and protocol-level performance across The Drum Protocols.",
+  "creator": { "@type": "Organization", "name": "The Drum Protocols", "url": "https://thedrumprotocols.org" },
+  "license": "https://thedrumprotocols.org/safety.html"
+}
+</script>
 <link rel="canonical" href="https://thedrumprotocols.org/insights.html">
 
 <!-- Open Graph -->
 <meta property="og:type"        content="website">
 <meta property="og:site_name"   content="The Drum Protocols">
-<meta property="og:title"       content="Research Insights · The Drum Protocols">
-<meta property="og:description" content="Explore anonymised listener outcome data across 30 rhythmic audio protocols. Real-time statistics powered by the Sphere ML pipeline.">
+<meta property="og:title"       content="Research Insights | The Drum Protocols">
+<meta property="og:description" content="Live outcome summaries, protocol comparisons, and anonymized listener data across the rhythmic entrainment library.">
 <meta property="og:url"         content="https://thedrumprotocols.org/insights.html">
-<meta property="og:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta property="og:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Twitter Card -->
 <meta name="twitter:card"        content="summary_large_image">
-<meta name="twitter:title"       content="Research Insights · The Drum Protocols">
-<meta name="twitter:description" content="Explore anonymised listener outcome data across 30 rhythmic audio protocols. Real-time statistics powered by the Sphere ML pipeline.">
-<meta name="twitter:image"       content="https://thedrumprotocols.org/android-chrome-512x512.png">
+<meta name="twitter:title"       content="Research Insights | The Drum Protocols">
+<meta name="twitter:description" content="Explore anonymized listener outcome data and protocol trends.">
+<meta name="twitter:image"       content="https://thedrumprotocols.org/og-preview.jpg">
 
 <!-- Favicons -->
 <link rel="apple-touch-icon"       sizes="180x180" href="apple-touch-icon.png">
@@ -29,7 +41,6 @@
 <link rel="icon" type="image/png"  sizes="16x16"   href="favicon-16x16.png">
 <link rel="manifest"               href="site.webmanifest">
 <meta name="theme-color"           content="#0d1720">
-<title>Data Insights · The Drum Protocols</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -59,6 +70,7 @@ a{color:inherit;text-decoration:none}
 .nav-hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:32px;height:32px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0}
 .nav-hamburger span{display:block;height:2px;width:100%;background:rgba(255,255,255,0.55)}
 .nav-hamburger:hover span{background:#fff}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:1320px;margin:0 auto;}@media(max-width:860px){.nav-inner{max-width:100%}}
 @media(max-width:640px){.site-nav{padding:0 16px}.nav-links{display:none;position:fixed;top:52px;left:0;right:0;background:var(--dp-slate-deeper);border-bottom:1px solid var(--color-border-mid);flex-direction:column;gap:0;z-index:199}.nav-links.open{display:flex}.nav-link{padding:14px 20px;border-bottom:1px solid var(--color-border);font-size:12px}.nav-link:last-child{border-bottom:none}.nav-hamburger{display:flex}}
 
 /* ── PAGE HEADER ── */
@@ -226,17 +238,18 @@ a{color:inherit;text-decoration:none}
 /* ── DATA TRANSPARENCY BADGE ── */
 .data-badge-wrap{display:inline-flex;align-items:center;gap:6px;cursor:default}
 .data-badge{
-  display:inline-flex;flex-direction:column;align-items:center;
+  display:inline-flex;flex-direction:row;align-items:center;gap:5px;
   font-size:9px;letter-spacing:.08em;text-transform:uppercase;
   background:rgba(184,134,11,.08);border:.5px solid rgba(184,134,11,.3);
-  border-radius:6px;padding:4px 8px;line-height:1.35;
-  color:rgba(184,134,11,.75);white-space:nowrap;position:relative;
+  border-radius:999px;padding:3px 10px 3px 8px;
+  color:rgba(184,134,11,.75);white-space:nowrap;cursor:help;
 }
-.data-badge strong{font-size:11px;letter-spacing:.04em;color:var(--dp-gold-light);font-weight:600}
-.data-badge-help{
-  font-size:9px;color:rgba(184,134,11,.5);border-bottom:.5px dashed rgba(184,134,11,.35);
-  cursor:help;margin-left:2px;
+.data-badge::before{
+  content:'';display:block;width:5px;height:5px;border-radius:50%;
+  background:var(--dp-gold-light);opacity:.8;flex-shrink:0;
 }
+.data-badge strong{font-size:9px;letter-spacing:.06em;color:var(--dp-gold-light);font-weight:600}
+.data-badge-help{display:none}
 /* Tooltip */
 .data-badge-tooltip-wrap{position:relative;display:inline-flex;align-items:center}
 .data-badge-tooltip{
@@ -263,6 +276,7 @@ a{color:inherit;text-decoration:none}
 
 <!-- ── NAV ── -->
 <nav class="site-nav">
+  <div class="nav-inner">
   <a class="nav-brand" href="index.html">The Drum Protocols</a>
   <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false" onclick="toggleNav(this)">
     <span></span><span></span><span></span>
@@ -278,13 +292,13 @@ a{color:inherit;text-decoration:none}
     <a class="nav-link" href="about.html">About Me</a>
     <a class="nav-link" href="safety.html">Safety</a>
   </div>
-  <div class="data-badge-tooltip-wrap" style="margin-left:16px">
+  <div class="data-badge-tooltip-wrap" style="margin-left:12px">
     <div class="data-badge">
-      <span>Testing Data</span>
+      <span>Testing</span>
       <strong id="nav-test-pct">—%</strong>
-      <span class="data-badge-help">what's this?</span>
     </div>
     <div class="data-badge-tooltip">We are making sure all of the complex statistics and ML models are working while our user base grows. Help us get real!</div>
+  </div>
   </div>
 </nav>
 
