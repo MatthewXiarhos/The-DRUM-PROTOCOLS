@@ -1162,6 +1162,10 @@ a{color:inherit;text-decoration:none}
   <!-- ══ ENTRAINMENT SIGNAL ══ -->
   <div class="panel" id="panel-signal">
     <div class="panel-eyebrow">The Architecture · Signal Design</div>
+    <h1 class="panel-title">Entrainment Signal</h1>
+    <div class="panel-intro">
+      <p>The entrainment signal in The Drum Protocols is not a separate tone added to the drum recording. It is extracted from the entire length of the drum groove.</p>
+    </div>
 
     <!-- Single SVG: PNG + diagram in one coordinate system for perfect alignment -->
     <div class="graphic-zone" style="margin-bottom:36px;border-radius:var(--radius-lg);padding:24px 36px 20px;background:#111">
@@ -1180,26 +1184,19 @@ a{color:inherit;text-decoration:none}
             <stop offset="60%"  stop-color="#D4A017" stop-opacity=".1"/>
             <stop offset="100%" stop-color="#D4A017" stop-opacity="0"/>
           </linearGradient>
-          <!-- Clip to keep PNG inside its zone -->
-          
         </defs>
 
         <!-- ── UPPER: spectral PNG embedded directly ── -->
-        <!-- x=30 to x=790 matches the axis below exactly — same coordinate system -->
         <image href="4096_FFT_Spectral_Extraction.png"
                x="57" y="4" width="760" height="106"
                preserveAspectRatio="none"/>
 
-        <!-- Thin divider between PNG and diagram -->
         <line x1="30" y1="112" x2="790" y2="112" stroke="rgba(255,255,255,.08)" stroke-width="1"/>
 
-        <!-- ── LOWER: frequency diagram (y offset +120 from top) ── -->
-        <!-- Axes: y-axis x=30, x-axis y=295 -->
+        <!-- ── LOWER: frequency diagram ── -->
         <line x1="30"  y1="130" x2="30"  y2="295" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
         <line x1="30"  y1="295" x2="790" y2="295" stroke="rgba(255,255,255,.15)" stroke-width="1"/>
 
-        <!-- Frequency labels — x positions match PNG exactly -->
-        <!-- Log scale: 500Hz=x30, 800Hz=x85, 1.95kHz=x175, 2.5kHz=x240, 5kHz=x380, 10kHz=x570, 20kHz=x790 -->
         <text x="30"  y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.32)">500 Hz</text>
         <text x="85"  y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(184,134,11,.8)">800 Hz</text>
         <text x="175" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(212,160,23,1)">1.95 kHz</text>
@@ -1208,51 +1205,55 @@ a{color:inherit;text-decoration:none}
         <text x="570" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)">10 kHz</text>
         <text x="790" y="312" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.28)">20 kHz</text>
 
-        <!-- Vertical alignment guides — drop from PNG through to diagram -->
-        <!-- 800Hz at x=85 -->
         <line x1="85"  y1="4" x2="85"  y2="295" stroke="rgba(184,134,11,.22)" stroke-width=".8" stroke-dasharray="4,3"/>
-        <!-- 1.95kHz at x=175 -->
         <line x1="175" y1="4" x2="175" y2="295" stroke="rgba(212,160,23,.32)" stroke-width=".8" stroke-dasharray="3,2"/>
-        <!-- 2.5kHz at x=240 -->
         <line x1="240" y1="4" x2="240" y2="295" stroke="rgba(184,134,11,.22)" stroke-width=".8" stroke-dasharray="4,3"/>
 
-        <!-- Entrainment band shading in diagram zone -->
         <rect x="85" y="130" width="155" height="165" fill="rgba(184,134,11,.05)" rx="0"/>
 
-        <!-- Bell-curve EQ response — single mountain peak at x=175 -->
         <path d="M30,293 C50,292 65,288 80,280 C95,270 115,248 135,212 C150,183 165,158 175,152 C185,158 200,179 218,212 C238,248 260,272 295,283 C335,290 395,293 470,294 C560,295 680,295 790,295"
               fill="url(#specFill3)" opacity=".95"/>
         <path d="M30,293 C50,292 65,288 80,280 C95,270 115,248 135,212 C150,183 165,158 175,152 C185,158 200,179 218,212 C238,248 260,272 295,283 C335,290 395,293 470,294 C560,295 680,295 790,295"
               fill="none" stroke="url(#specGrad3)" stroke-width="2.5"/>
 
-        <!-- Peak dot -->
         <circle cx="175" cy="152" r="6" fill="none" stroke="#D4A017" stroke-width="2"/>
         <circle cx="175" cy="152" r="2.5" fill="#D4A017"/>
 
-        <!-- Peak label — above dot, dark background -->
         <rect x="130" y="133" width="90" height="16" rx="3" fill="rgba(10,18,28,.92)"/>
         <text x="175" y="144" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="rgba(212,160,23,.95)">Peak: 1.95 kHz</text>
 
-        <!-- Band label — in clear space inside the band, below peak shoulder -->
         <rect x="82" y="222" width="166" height="16" rx="3" fill="rgba(10,18,28,.85)" stroke="rgba(184,134,11,.22)" stroke-width=".7"/>
         <text x="165" y="233" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9.5" fill="rgba(212,160,23,.85)">Entrainment band &#xB7; 800 &#x2013; 2.5 kHz</text>
 
-        <!-- Subcortical note — right side, clear of curve -->
         <rect x="460" y="158" width="310" height="44" rx="6" fill="rgba(74,158,202,.07)" stroke="rgba(74,158,202,.2)" stroke-width=".8"/>
         <text x="615" y="178" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10.5" fill="rgba(74,158,202,.85)">Subcortical pathway</text>
         <text x="615" y="194" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.42)">No headphones required &#xB7; Brainstem reception</text>
 
-        <!-- Axis labels -->
         <text x="410" y="332" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.28)">Frequency &#x2192;</text>
         <text x="16"  y="215" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="11" fill="rgba(255,255,255,.28)" transform="rotate(-90,16,215)">Amplitude</text>
         <text x="410" y="355" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="12" font-style="italic" fill="rgba(184,134,11,.4)">Scale: 500 Hz &#x2013; 20 kHz &#xB7; Peak entrainment response at 1.95 kHz</text>
       </svg>
     </div>
+
     <div class="body-text">
-      <p>The entrainment signal in The Drum Protocols is not a separate tone added to the drum recording. It is extracted from the entire length of the drum groove. A real drum performance is analysed using a 4096-point Fast Fourier Transform, and a shaped EQ curve isolates the spectral content between 800 Hz and 2.5 kHz — the band where entrainment response is strongest, with peak effectiveness at approximately 1.95 kHz.</p>
+      <h4>Spectral Extraction</h4>
+      <p>A real drum performance is analysed using a 4096-point Fast Fourier Transform, and a shaped EQ curve isolates the spectral content between <strong>800 Hz and 2.5 kHz</strong> — the band where entrainment response is strongest, with peak effectiveness at approximately <strong>1.95 kHz</strong>.</p>
       <p>This distinguishes the system from binaural beats and isochronic tones. Binaural beats require headphones and depend on cortical processing. The Drum Protocols entrainment signal is carried across the full harmonic content of every drum strike — the auditory brainstem receives timing information from multiple frequency channels simultaneously. The pathway is subcortical. Headphones are not required.</p>
-      <h4>What you hear</h4>
+
+      <h4>What You Hear</h4>
       <p>The spectral clock is not heard as a separate signal. It is heard as the drum. The entrainment information is woven into the sound that carries it — which is precisely the point. The experience is listening to drums. What is actually happening is considerably more precise.</p>
+
+      <div class="panel-divider"></div>
+
+      <h4>Phi-Derived Loudness Relationship</h4>
+      <p>The system contains only two functional sound sources: (1) the drum bus (fed by three sequencer instances), and (2) the SPECTRAL entrainment signal.</p>
+      <p>Because no other competing sources are present, the drum bus serves as the sole perceptual reference layer. The entrainment signal is calibrated directly against this reference.</p>
+      <p>The entrainment layer is set to approximately <strong>38.2% of the perceived loudness</strong> of the drum bus (the reciprocal complement of Phi). For a drum bus at <strong>−20 LUFS</strong>, this yields a target of approximately <strong>−33.9 LUFS</strong> for the entrainment signal.</p>
+      <p>This relationship is implemented as an <strong>architectural design constant</strong> across the entire system. Just as the entrainment curves themselves are Phi-derived, the relative loudness between the drum bus and the entrainment layer is held to the same proportional rule. This ensures <strong>consistency across tracks and across volumes</strong> (sets of 30 protocols), so that the perceptual balance of the signal remains stable regardless of protocol, duration, or sequence.</p>
+
+      <div class="phi-callout">
+        <strong>Phi Relationship:</strong> The entrainment signal is defined by its proportional relationship to the drum bus, not by an arbitrary absolute level. This Phi-derived constraint is applied uniformly across the system, ensuring consistent perceptual balance between layers across all protocols and volumes.
+      </div>
     </div>
   </div>
 
