@@ -75,18 +75,48 @@
   --radius-md: 10px;
   --radius-lg: 16px;
 }
+html {
+  background: var(--dp-slate-deepest);
+}
 body {
   font-family: 'DM Sans', sans-serif;
   background: var(--dp-slate-deepest);
   color: var(--color-text-primary);
   min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(rgba(7,12,18,0.62), rgba(7,12,18,0.78)),
+    url('og-background.jpg') center top / cover no-repeat;
+  opacity: 0.58;
+  filter: saturate(1.04) brightness(0.94);
+  pointer-events: none;
+  z-index: -3;
+  transform: scale(1.03);
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 8%, rgba(255,255,255,0.07), transparent 26%),
+    radial-gradient(circle at 50% 16%, rgba(74,158,202,0.08), transparent 30%),
+    radial-gradient(circle at 50% 55%, rgba(255,255,255,0.025), transparent 36%),
+    linear-gradient(to bottom, rgba(13,23,32,0.14), rgba(13,23,32,0.38) 42%, rgba(13,23,32,0.56));
+  pointer-events: none;
+  z-index: -2;
 }
 a { color: inherit; text-decoration: none; }
 
 /* ── NAV ── */
 .site-nav {
-  background: rgba(13,23,32,0.96);
-  backdrop-filter: blur(8px);
+  background: rgba(13,23,32,0.90);
+  backdrop-filter: blur(10px);
   padding: 0 32px;
   display: flex; align-items: center; justify-content: space-between;
   height: 52px;
@@ -116,8 +146,9 @@ a { color: inherit; text-decoration: none; }
   .site-nav { padding: 0 16px; }
   .nav-links {
     display: none; position: fixed; top: 52px; left: 0; right: 0;
-    background: var(--dp-slate-deeper); border-bottom: 1px solid var(--color-border-mid);
+    background: rgba(19,30,40,0.96); border-bottom: 1px solid var(--color-border-mid);
     flex-direction: column; gap: 0; z-index: 199;
+    backdrop-filter: blur(10px);
   }
   .nav-links.open { display: flex; }
   .nav-link { padding: 14px 20px; border-bottom: 1px solid var(--color-border); font-size: 12px; }
@@ -129,10 +160,14 @@ a { color: inherit; text-decoration: none; }
 .hero {
   min-height: 100vh;
   padding-top: 52px;
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: relative;
   overflow: hidden;
-  background: var(--dp-slate-deepest);
+  background:
+    linear-gradient(rgba(7,12,18,0.42), rgba(7,12,18,0.58)),
+    url('og-background.jpg') center center / cover no-repeat;
 }
 
 /* Atmospheric background */
@@ -140,7 +175,7 @@ a { color: inherit; text-decoration: none; }
   content: '';
   position: absolute; inset: 0;
   background:
-    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,134,11,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 50% at 50% 40%, rgba(184,134,11,0.07) 0%, transparent 70%),
     radial-gradient(ellipse 80% 60% at 20% 80%, rgba(82,183,136,0.04) 0%, transparent 60%),
     radial-gradient(ellipse 60% 40% at 80% 20%, rgba(176,106,176,0.04) 0%, transparent 60%);
   pointer-events: none;
@@ -159,17 +194,24 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ── LEFT: COPY + CTA ── */
-.hero-copy {}
-
 .hero-eyebrow {
-  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
-  color: var(--dp-gold-light); margin-bottom: 18px;
-  display: flex; align-items: center; gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(212,175,55,0.95);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-shadow: 0 0 6px rgba(212,175,55,0.25);
 }
 .hero-eyebrow::before {
   content: '';
-  display: block; width: 28px; height: 1px;
-  background: var(--dp-gold-light); flex-shrink: 0;
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: rgba(212,175,55,0.85);
+  flex-shrink: 0;
 }
 
 .hero-title {
@@ -193,7 +235,7 @@ a { color: inherit; text-decoration: none; }
   max-width: 440px;
 }
 
-/* Triage CTA — gold, prominent */
+/* Triage CTA */
 .cta-triage {
   display: inline-flex; align-items: center; justify-content: center; gap: 10px;
   background: var(--dp-gold);
@@ -257,9 +299,11 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.3;
 }
 .cta-note {
-  font-size: 11px; color: rgba(255,255,255,0.28);
+  font-size: 12px;
+  color: rgba(255,255,255,0.62);
   letter-spacing: 0.04em;
   margin-top: 14px;
+  text-shadow: 0 0 4px rgba(0,0,0,0.35);
 }
 
 /* ── RIGHT: GROOVE VISUAL ── */
@@ -267,11 +311,12 @@ a { color: inherit; text-decoration: none; }
   display: flex; flex-direction: column; gap: 0;
 }
 .groove-card {
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.54);
   border: 1px solid var(--color-border-mid);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 16px 48px rgba(0,0,0,0.45);
+  backdrop-filter: blur(8px);
 }
 .groove-label-bar {
   padding: 12px 18px 8px;
@@ -288,9 +333,8 @@ a { color: inherit; text-decoration: none; }
 }
 .groove-svg-wrap {
   padding: 8px 4px 4px;
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.54);
 }
-
 .groove-caption {
   padding: 14px 18px;
   font-size: 12px; line-height: 1.7;
@@ -302,18 +346,12 @@ a { color: inherit; text-decoration: none; }
   font-weight: 500;
 }
 
-/* ── DIVIDER ── */
-.section-divider {
-  max-width: 1100px; margin: 0 auto;
-  padding: 0 32px;
-  border-top: 1px solid var(--color-border);
-}
-
 /* ── TRUST BAR ── */
 .trust-bar {
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.52);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(7px);
 }
 .trust-bar-inner {
   max-width: 1100px; margin: 0 auto;
@@ -327,6 +365,98 @@ a { color: inherit; text-decoration: none; }
 }
 .trust-item svg { flex-shrink: 0; opacity: 0.6; }
 
+/* ── COMMUNITY LOOP SECTION ── */
+.loop-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 32px 28px;
+}
+.loop-card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.015)),
+    rgba(19,30,40,0.82);
+  border: 1px solid var(--color-border-mid);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.28);
+  backdrop-filter: blur(8px);
+}
+.loop-top {
+  display: block;
+}
+.loop-copy {
+  padding: 34px 34px 18px;
+}
+.loop-eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--dp-gold-light);
+  margin-bottom: 14px;
+}
+.loop-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.12;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 18px;
+  max-width: 700px;
+}
+.loop-body p {
+  font-size: 14px;
+  line-height: 1.9;
+  color: rgba(255,255,255,0.56);
+  margin-bottom: 15px;
+  max-width: 720px;
+}
+.loop-body p:last-child { margin-bottom: 0; }
+.loop-body strong {
+  color: rgba(255,255,255,0.80);
+  font-weight: 500;
+}
+.loop-image-wrap {
+  padding: 10px 24px 12px;
+}
+.loop-image-frame {
+  background: rgba(8,14,22,0.70);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 18px 54px rgba(0,0,0,0.34);
+}
+.loop-image {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.loop-bottom {
+  border-top: 1px solid rgba(255,255,255,0.05);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.loop-stat {
+  padding: 18px 22px 20px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+}
+.loop-stat:last-child { border-right: none; }
+.loop-stat-kicker {
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dp-gold-light);
+  margin-bottom: 7px;
+}
+.loop-stat-text {
+  font-size: 12px;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.46);
+}
+.loop-stat-text strong {
+  color: rgba(255,255,255,0.74);
+  font-weight: 500;
+}
+
 /* ── STORY SECTION ── */
 .story-section {
   max-width: 1100px; margin: 0 auto;
@@ -336,7 +466,6 @@ a { color: inherit; text-decoration: none; }
   gap: 64px;
   align-items: start;
 }
-.story-copy {}
 .story-eyebrow {
   font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
   color: var(--dp-gold-light); margin-bottom: 18px;
@@ -363,12 +492,13 @@ a { color: inherit; text-decoration: none; }
   padding-top: 4px;
 }
 .pillar {
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.48);
   border: 1px solid var(--color-border-mid);
   border-radius: var(--radius-md);
   padding: 20px 22px;
   border-left: 3px solid var(--dp-gold);
   transition: border-left-color 0.15s;
+  backdrop-filter: blur(7px);
 }
 .pillar:hover { border-left-color: var(--dp-gold-light); }
 .pillar-head {
@@ -382,9 +512,10 @@ a { color: inherit; text-decoration: none; }
 
 /* ── SERIES SECTION ── */
 .series-section {
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.54);
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
+  backdrop-filter: blur(8px);
 }
 .series-inner {
   max-width: 1100px; margin: 0 auto;
@@ -508,10 +639,11 @@ a { color: inherit; text-decoration: none; }
 
 /* ── FOOTER ── */
 .page-footer {
-  background: var(--dp-slate-deeper);
+  background: rgba(19,30,40,0.58);
   padding: 28px 24px 34px;
   text-align: center;
   border-top: 1px solid var(--color-border);
+  backdrop-filter: blur(8px);
 }
 .footer-brand {
   font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
@@ -534,6 +666,10 @@ a { color: inherit; text-decoration: none; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 920px) {
+  body::before {
+    background-position: center top;
+    opacity: 0.28;
+  }
   .hero-inner {
     grid-template-columns: 1fr;
     gap: 36px;
@@ -541,14 +677,35 @@ a { color: inherit; text-decoration: none; }
   }
   .hero-copy { order: 1; }
   .hero-visual { order: 2; }
+  .loop-bottom {
+    grid-template-columns: 1fr;
+  }
+  .loop-stat {
+    border-right: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .loop-stat:first-child { border-top: none; }
   .story-section { grid-template-columns: 1fr; gap: 40px; padding: 52px 24px 48px; }
   .series-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
+  body::before {
+    opacity: 0.22;
+    background-position: center 0;
+    background-size: cover;
+  }
+  body::after {
+    background:
+      radial-gradient(circle at 50% 10%, rgba(255,255,255,0.05), transparent 22%),
+      linear-gradient(to bottom, rgba(13,23,32,0.20), rgba(13,23,32,0.62));
+  }
   .hero-inner { padding: 32px 18px 36px; }
   .cta-triage { max-width: 100%; }
   .trust-bar-inner { gap: 20px; padding: 18px 20px; }
   .trust-item span { display: none; }
+  .loop-section { padding: 40px 18px 12px; }
+  .loop-copy { padding: 24px 20px 14px; }
+  .loop-image-wrap { padding: 8px 14px 10px; }
   .series-inner { padding: 48px 18px 52px; }
   .bottom-cta { padding: 52px 18px 64px; }
 }
@@ -590,17 +747,14 @@ a { color: inherit; text-decoration: none; }
         <em>guided back.</em>
       </h1>
       <p class="hero-sub">
-        Rhythmic audio protocols, built on mathematics, tested by a community. 
+        Rhythmic audio protocols, built on mathematics, tested by a community.
         Designed for people who are dysregulated, neurodivergent, or simply running on empty.
       </p>
       <p class="hero-free">Free. Always.</p>
 
-      <!-- Pre-CTA hook -->
       <div class="cta-method">Precision-engineered rhythmic entrainment</div>
       <p class="cta-hook">Something you've never experienced before.</p>
 
-
-      <!-- Primary CTA — triage path -->
       <a class="cta-triage" href="adviser.html">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="8" r="7" stroke="rgba(255,255,255,0.6)" stroke-width="1.2"/>
@@ -638,23 +792,18 @@ a { color: inherit; text-decoration: none; }
               </linearGradient>
             </defs>
 
-            <!-- Labels -->
             <text x="24" y="32" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(220,100,60,.75)">NERVOUS SYSTEM — dysregulated · non-periodic</text>
             <text x="24" y="178" font-family="DM Sans,sans-serif" font-size="10" letter-spacing="1.5" fill="rgba(212,160,23,.75)">ENTRAINMENT SIGNAL — steady · periodic · subcortical</text>
 
-            <!-- Time axis -->
             <text x="400" y="295" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="10" fill="rgba(255,255,255,.22)" letter-spacing="1">TIME →</text>
             <text x="56"  y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(255,255,255,.18)">Begins</text>
             <text x="744" y="295" font-family="DM Sans,sans-serif" font-size="9" fill="rgba(82,183,136,.4)">Entrained</text>
 
-            <!-- Divider -->
             <line x1="24" y1="150" x2="776" y2="150" stroke="rgba(255,255,255,.06)" stroke-width="1"/>
 
-            <!-- Nervous system: chaotic left section (static) -->
             <path d="M24,88 C32,66 38,108 46,78 C54,48 58,100 66,72 C74,44 80,96 90,60 C100,24 106,90 116,68 C126,46 130,94 140,64 C150,34 158,88 168,58 C178,28 184,86 196,62 C206,38 210,90 222,60"
               fill="none" stroke="#e05a2b" stroke-width="2" opacity=".85"/>
 
-            <!-- Animated middle: morphs chaos → order -->
             <path d="M222,60 C234,32 242,85 256,64 C270,43 276,84 290,66 C304,48 312,80 328,68 C344,56 350,76 368,68 C384,60 390,72 408,68 C422,64 428,70 444,68 C456,66 462,70 476,68"
               fill="none" stroke="url(#nsGradL)" stroke-width="2" opacity=".85">
               <animate attributeName="d" dur="4s" repeatCount="indefinite"
@@ -666,17 +815,14 @@ a { color: inherit; text-decoration: none; }
                 calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
             </path>
 
-            <!-- Ordered right: clean sine -->
             <path d="M476,68 C490,50 504,86 518,68 C532,50 546,86 560,68 C574,50 588,86 602,68 C616,50 630,86 644,68 C658,50 672,86 686,68 C700,50 714,86 728,68 C742,50 756,84 770,68"
               fill="none" stroke="#52B788" stroke-width="2.2" opacity=".9"/>
 
             <text x="720" y="56" text-anchor="middle" font-family="Cormorant Garamond,serif" font-size="13" font-style="italic" fill="rgba(82,183,136,.7)">Synchronised</text>
 
-            <!-- Entrainment signal: steady gold sine -->
             <path d="M24,218 C42,196 60,240 78,218 C96,196 114,240 132,218 C150,196 168,240 186,218 C204,196 222,240 240,218 C258,196 276,240 294,218 C312,196 330,240 348,218 C366,196 384,240 402,218 C420,196 438,240 456,218 C474,196 492,240 510,218 C528,196 546,240 564,218 C582,196 600,240 618,218 C636,196 654,240 672,218 C690,196 708,240 726,218 C744,196 762,238 776,218"
               fill="none" stroke="#D4A017" stroke-width="2.5" opacity=".8"/>
 
-            <!-- BPM ticks -->
             <line x1="78"  y1="238" x2="78"  y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
             <line x1="186" y1="238" x2="186" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
             <line x1="294" y1="238" x2="294" y2="244" stroke="rgba(212,160,23,.4)" stroke-width="1"/>
@@ -734,6 +880,56 @@ a { color: inherit; text-decoration: none; }
     </div>
   </div>
 </div>
+
+<!-- ── COMMUNITY LOOP SECTION ── -->
+<section class="loop-section">
+  <div class="loop-card">
+    <div class="loop-top">
+      <div class="loop-copy">
+        <div class="loop-eyebrow">Community Efficacy Loop</div>
+        <h2 class="loop-title">This system gets better because people use it.</h2>
+        <div class="loop-body">
+          <p>
+            <strong>The model is only as good as the data that shapes it.</strong> Every listener who reports an outcome — a state shift, a rating, a context note — contributes a signal that helps refine what comes next.
+          </p>
+          <p>
+            This is not passive listening. It is participation in a shared learning process. Each anonymous response helps reveal which rhythms help, which contexts matter, and where the design should evolve.
+          </p>
+          <p>
+            The result is a protocol library that becomes more effective over time — shaped not by the intuitions of a single designer alone, but by the collective experience of everyone who uses it.
+          </p>
+        </div>
+      </div>
+
+      <div class="loop-image-wrap">
+        <div class="loop-image-frame">
+          <img class="loop-image" src="tdp-feedback.jpg" alt="Community feedback loop showing that experiences are reported, outcomes are analyzed, designs are refined, and new protocols are generated.">
+        </div>
+      </div>
+    </div>
+
+    <div class="loop-bottom">
+      <div class="loop-stat">
+        <div class="loop-stat-kicker">Not Static</div>
+        <div class="loop-stat-text">
+          These are not fixed tracks living in isolation. They sit inside a system that can learn from patterns in real listener outcomes.
+        </div>
+      </div>
+      <div class="loop-stat">
+        <div class="loop-stat-kicker">Anonymous by Design</div>
+        <div class="loop-stat-text">
+          No account is required. What matters is the signal: the shift, the rating, the context, and what it teaches the next round of analysis.
+        </div>
+      </div>
+      <div class="loop-stat">
+        <div class="loop-stat-kicker">Collective Signal</div>
+        <div class="loop-stat-text">
+          The goal is not to preserve one person’s theory. It is to let <strong>the data shape the design</strong> and make the library more useful over time.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ── STORY SECTION ── -->
 <section class="story-section">
