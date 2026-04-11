@@ -677,6 +677,7 @@ Promise.all([
   // Build PROTOCOLS from protocols.json protocols[]
   pj.protocols.forEach(p=>{
     PROTOCOLS[p.code] = {
+      code:    p.code,
       name:    p.name,
       series:  p.seriesLower || p.series.toLowerCase(),
       entry:   p.entry,
