@@ -237,7 +237,14 @@ a { color: inherit; }
 .yt-play-icon { font-size: 36px; opacity: 0.3; }
 .yt-coming-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); }
 .youtube-embed { width: 100%; aspect-ratio: 16/9; border-radius: var(--radius-md); border: none; display: block; }
-.panel-section.listen-section { padding-bottom: 0; }
+.vol-selector{padding:10px 12px;background:rgba(0,0,0,.4);border-top-left-radius:var(--radius-md);border-top-right-radius:var(--radius-md)}
+.vol-selector select{width:100%;padding:10px 14px;background:rgba(255,255,255,.06);color:#fff;border:.5px solid rgba(255,255,255,.18);border-radius:var(--radius-sm);font-size:13px;font-family:inherit;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+.vol-selector select:focus{outline:none;border-color:var(--dp-gold-light)}
+.vol-selector select option{background:var(--dp-slate-deeper);color:#fff}
+.result-video-top{padding:0;border-bottom:.5px solid var(--color-border)}
+.result-video-top .section-label{padding:18px 28px 12px;margin-bottom:0}
+.result-video-top #youtube-container-top{margin:0 -28px -18px}
+.panel-section.listen-section { padding-bottom: 0; display:none; }
 .panel-section.listen-section .survey-reminder { margin-bottom: 12px; }
 .panel-section.listen-section #youtube-container { margin: 0 -28px -18px; }
 .panel-section.listen-section .youtube-embed { border-radius: 0; }
@@ -607,6 +614,10 @@ a { color: inherit; }
           <div class="result-name" id="result-name">&mdash;</div>
           <div class="result-meta" id="result-meta"></div>
         </div>
+        <div class="panel-section result-video-top">
+          <div class="section-label">Listen</div>
+          <div id="youtube-container-top"></div>
+        </div>
         <div class="panel-section curve-about-split">
           <div class="curve-col">
             <div class="section-label">Entrainment curve</div>
@@ -770,6 +781,10 @@ a { color: inherit; }
 // ── DATA (populated from protocols.json + data.json) ─────────────────────────
 let QUESTIONS    = [];
 let ALL_PROTOCOLS= {};  // flat: { code: protocol }
+let VOLUMES      = {};
+let DEFAULT_VOL  = '001';
+let CURRENT_RESULT_CODE = '';
+let CURRENT_RESULT_VOL  = '001';
 let ROUTING_POOLS= {};  // { zoneKey: [code, ...] }
 let STATS={}, DATA_DATE='';
 let AG_RECS={};         // autogluon.json: { "zone__time__intensity": { primary, cross_bucket, top_score } }
@@ -789,12 +804,14 @@ Promise.all([
     options: q.options.map(o=>({icon:o.icon||'', text:o.text, sub:o.sub||'', key:o.key}))
   }));
 
+  // Build VOLUMES from protocols.json volumes[]
+  (pj.volumes || []).forEach(v=>{
+    VOLUMES[v.num] = { label: v.label, groove: v.groove, yt: v.yt || '#' };
+  });
+  DEFAULT_VOL = (pj.volumes && pj.volumes[0] && pj.volumes[0].num) ? pj.volumes[0].num : '001';
+
   // Build ALL_PROTOCOLS flat lookup from protocols.json protocols[]
   pj.protocols.forEach(p=>{
-    const vol1 = pj.volumes[0] ? pj.volumes[0].num : '001';
-    const ytObj = p.yt || {};
-    const ytVol1 = typeof ytObj === 'object' ? (ytObj[vol1] || '#') : (ytObj || '#');
-    const surveys1 = p.surveys && p.surveys[vol1];
     ALL_PROTOCOLS[p.code] = {
       name:     p.name,
       code:     p.code,
@@ -805,10 +822,9 @@ Promise.all([
       start:    p.startHz,
       end:      p.endHz,
       dur:      p.dur,
-      desc:     p.descAdviser || p.descPage || '',
-      yt:       ytVol1,
-      survey1s: surveys1 ? surveys1.survey1s.replace('src=site','src=adviser') : '#',
-      survey1m: surveys1 ? surveys1.survey1m.replace('src=site','src=adviser') : '#'
+      desc:     p.descPage || p.descAdviser || '',
+      yt:       p.yt || {},
+      surveys:  p.surveys || {}
     };
   });
 
@@ -858,7 +874,7 @@ Promise.all([
   if(returnId && ALL_PROTOCOLS[returnId]){
     document.getElementById('screen-adviser').classList.remove('active');
     document.getElementById('screen-result').classList.add('active');
-    populateResult(ALL_PROTOCOLS[returnId], null);
+    populateResult(ALL_PROTOCOLS[returnId], null, DEFAULT_VOL);
   } else {
     renderPrevRec();
     renderQuestion();
@@ -873,6 +889,21 @@ Promise.all([
 let answers={}, currentQ=0;
 
 function scrollToPanel(){const p=document.getElementById('adviser-panel');const top=p.getBoundingClientRect().top+window.scrollY-64;window.scrollTo({top,behavior:'smooth'});}
+
+function getVolumeData(volCode){
+  return VOLUMES[volCode] || VOLUMES[DEFAULT_VOL] || {label:'Volume', groove:'', yt:'#'};
+}
+
+function getYoutubeForVolume(p, volCode){
+  if(!p || !p.yt) return '#';
+  return (typeof p.yt === 'object') ? (p.yt[volCode] || '#') : (p.yt || '#');
+}
+
+function getSurveyForVolume(p, volCode){
+  if(!p || !p.surveys) return null;
+  return p.surveys[volCode] || null;
+}
+
 
 function renderQuestion(){
   if(!QUESTIONS.length) return;
@@ -1020,13 +1051,40 @@ function renderStats(code){
   }
 }
 
-function renderYoutube(p){
-  const c=document.getElementById('youtube-container');
-  if(p.yt&&p.yt!=='#'){
-    const m=p.yt.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
-    c.innerHTML=m?`<iframe class="youtube-embed" src="https://www.youtube.com/embed/${m[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`:`<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video available — open on YouTube</div></div>`;
-  }else{c.innerHTML=`<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video coming soon</div></div>`;}
+function renderYoutube(p, volCode){
+  const c=document.getElementById('youtube-container-top');
+  if(!c) return;
+  const volKeys=Object.keys(VOLUMES);
+  const selectedVol=(volCode && VOLUMES[volCode]) ? volCode : DEFAULT_VOL;
+  const dropdownHTML=volKeys.length>1
+    ? `<div class="vol-selector"><select id="vol-select" onchange="switchVolume(this.value,'${p.code}')">${volKeys.map(v=>`<option value="${v}"${v===selectedVol?' selected':''}>${VOLUMES[v].label} — ${VOLUMES[v].groove}</option>`).join('')}</select></div>`
+    : '';
+  const ytUrl=getYoutubeForVolume(p, selectedVol);
+  if(ytUrl && ytUrl !== '#'){
+    const m=ytUrl.match(/(?:v=|youtu\.be\/)([^&?/]+)/);
+    c.innerHTML=m
+      ? `${dropdownHTML}<iframe class="youtube-embed" src="https://www.youtube.com/embed/${m[1]}?rel=0" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`
+      : `${dropdownHTML}<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">Video available — open on YouTube</div></div>`;
+  }else{
+    const volData=getVolumeData(selectedVol);
+    c.innerHTML=`${dropdownHTML}<div class="youtube-placeholder"><div class="yt-play-icon">▶</div><div class="yt-coming-label">${volData.label} — coming soon</div></div>`;
+  }
 }
+
+function switchVolume(volCode, protocolCode){
+  const p=ALL_PROTOCOLS[protocolCode];
+  if(!p) return;
+  CURRENT_RESULT_VOL = volCode;
+  renderYoutube(p, volCode);
+  const surveyData = getSurveyForVolume(p, volCode);
+  const surveyLink = document.getElementById('survey-quick');
+  if(surveyLink){
+    surveyLink.href = surveyData && surveyData.survey1s
+      ? surveyData.survey1s.replace('src=site','src=adviser')
+      : '#';
+  }
+}
+
 
 function switchCommentaryTab(tab){
   document.getElementById('tab-plain').classList.toggle('active', tab==='plain');
@@ -1084,34 +1142,29 @@ function renderRelated(currentCode,sk){
   list.innerHTML=html;
 }
 
-function loadRelated(code){const p=ALL_PROTOCOLS[code];if(!p)return;populateResult(p,answers[0]);scrollToPanel();}
+function loadRelated(code){const p=ALL_PROTOCOLS[code];if(!p)return;populateResult(p,answers[0],CURRENT_RESULT_VOL||DEFAULT_VOL);scrollToPanel();}
 
-function buildSurveyUrl(tallyId, code){
-  // Survey opens in a new tab (target=_blank) so adviser stays open behind it.
-  // No redirectUrl needed — user closes the survey tab to return.
-  return `https://tally.so/r/${tallyId}/?ref=${code}&vol=VOL001&src=adviser`;
-}
 
-function populateResult(p,sk){
+function populateResult(p,sk,initialVol){
+  CURRENT_RESULT_CODE = p.code;
+  CURRENT_RESULT_VOL  = (initialVol && VOLUMES[initialVol]) ? initialVol : DEFAULT_VOL;
   document.getElementById('result-name').textContent=p.name;
   document.getElementById('result-meta').textContent=`${p.code} · ${p.meta}`;
   document.getElementById('result-desc').textContent=p.desc;
-  // Build survey URLs with redirectUrl back to adviser.html
-  const url1s=buildSurveyUrl('kd5jxj',p.code);
-  document.getElementById('survey-quick').href=url1s;
+  const surveyData = getSurveyForVolume(p, CURRENT_RESULT_VOL);
+  document.getElementById('survey-quick').href = surveyData && surveyData.survey1s
+    ? surveyData.survey1s.replace('src=site','src=adviser')
+    : '#';
   document.getElementById('result-header').className='result-header '+p.series;
-  // Show adviser recommendation badge only when viewing the originally recommended protocol
   const recCode = sessionStorage.getItem('dp-adviser-rec') || '';
   const badge = document.getElementById('adviser-rec-badge');
   badge.style.display = (recCode && p.code === recCode) ? 'inline-flex' : 'none';
-  // Show AutoGluon strip when AG_RECS is driving recommendations
   const agStrip=document.getElementById('ag-result-strip');
   if(agStrip){
     const hasAG=Object.keys(AG_RECS).length>0;
     agStrip.classList.toggle('visible',hasAG);
   }
-  drawCurve(p);renderStats(p.code);renderYoutube(p);renderCommentary(p.code);renderRelated(p.code,sk);
-  // Ensure AG panels are hydrated (may not have run at bootstrap if AG loaded late)
+  drawCurve(p);renderStats(p.code);renderYoutube(p, CURRENT_RESULT_VOL);renderCommentary(p.code);renderRelated(p.code,sk);
   hydrateAgPanels();
 }
 
@@ -1121,7 +1174,7 @@ function showResult(){
   try { sessionStorage.setItem('dp-adviser-rec', p.code); } catch(e) {}
   document.getElementById('screen-adviser').classList.remove('active');
   document.getElementById('screen-result').classList.add('active');
-  populateResult(p,answers[0]);
+  populateResult(p,answers[0],DEFAULT_VOL);
   scrollToPanel();
 }
 
