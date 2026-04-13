@@ -27,6 +27,8 @@
 
 const ProtocolCard = (function () {
 
+  const TAGLINE = "You've got your rhythm, now find your groove...";
+
   /* ─── Inject shared CSS once ─────────────────────────────────────────────── */
   const STYLE_ID = 'dp-card-styles';
 
@@ -542,6 +544,14 @@ const ProtocolCard = (function () {
 
   <!-- VIDEO -->
   <div class="dp-sec" style="overflow:visible">
+    <div class="dp-tagline" style="
+      padding: 10px 10px 0;
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--dp-gold-light);
+      opacity: 0.75;
+    ">${TAGLINE}</div>
     <div class="dp-video-shell"></div>
     <div class="dp-mob-advisory">
       <div class="dp-mob-advisory-icon">🎧</div>
