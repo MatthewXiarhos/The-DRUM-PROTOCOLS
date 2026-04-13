@@ -1,7 +1,7 @@
 {
   "_meta": {
-    "generated_iso": "2026-04-11T21:45:24.518521+00:00",
-    "run_date": "2026-04-11",
+    "generated_iso": "2026-04-13T15:11:19.791646+00:00",
+    "run_date": "2026-04-13",
     "n_training_rows": 1000,
     "n_training_rows_change": 614,
     "model_path": "autogluon_model",
@@ -21,7 +21,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.991
+      "top_score": 6.859
     },
     "overstim__short__moderate": {
       "primary": [
@@ -33,19 +33,19 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.892
+      "top_score": 6.683
     },
     "overstim__short__mild": {
       "primary": [
-        "H-OS-L1",
         "H-OS-L2",
+        "H-OS-L1",
         "H-OS-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.709
+      "top_score": 6.722
     },
     "overstim__mid__acute": {
       "primary": [
@@ -57,7 +57,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.991
+      "top_score": 6.859
     },
     "overstim__mid__moderate": {
       "primary": [
@@ -69,19 +69,19 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.892
+      "top_score": 6.683
     },
     "overstim__mid__mild": {
       "primary": [
-        "H-OS-L1",
         "H-OS-L2",
+        "H-OS-L1",
         "H-OS-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.709
+      "top_score": 6.722
     },
     "overstim__long__acute": {
       "primary": [
@@ -93,7 +93,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.991
+      "top_score": 6.859
     },
     "overstim__long__moderate": {
       "primary": [
@@ -105,19 +105,19 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.892
+      "top_score": 6.683
     },
     "overstim__long__mild": {
       "primary": [
-        "H-OS-L1",
         "H-OS-L2",
+        "H-OS-L1",
         "H-OS-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.709
+      "top_score": 6.722
     },
     "anxiety__short__acute": {
       "primary": [
@@ -127,9 +127,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.934
+      "top_score": 7.838
     },
     "anxiety__short__moderate": {
       "primary": [
@@ -139,9 +139,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.68
+      "top_score": 7.762
     },
     "anxiety__short__mild": {
       "primary": [
@@ -151,9 +151,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.475
+      "top_score": 7.746
     },
     "anxiety__mid__acute": {
       "primary": [
@@ -163,9 +163,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.934
+      "top_score": 7.838
     },
     "anxiety__mid__moderate": {
       "primary": [
@@ -175,9 +175,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.68
+      "top_score": 7.762
     },
     "anxiety__mid__mild": {
       "primary": [
@@ -187,9 +187,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.475
+      "top_score": 7.746
     },
     "anxiety__long__acute": {
       "primary": [
@@ -199,9 +199,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.934
+      "top_score": 7.838
     },
     "anxiety__long__moderate": {
       "primary": [
@@ -211,9 +211,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.68
+      "top_score": 7.762
     },
     "anxiety__long__mild": {
       "primary": [
@@ -223,9 +223,9 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.475
+      "top_score": 7.746
     },
     "crisis__short__acute": {
       "primary": [
@@ -235,23 +235,11 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-MD-L1"
-      ],
-      "top_score": 7.748
-    },
-    "crisis__short__moderate": {
-      "primary": [
-        "H-CR-L2",
-        "H-CR-L3",
-        "H-CR-L1"
-      ],
-      "cross_bucket": [
-        "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.717
+      "top_score": 7.955
     },
-    "crisis__short__mild": {
+    "crisis__short__moderate": {
       "primary": [
         "H-CR-L2",
         "H-CR-L1",
@@ -259,9 +247,21 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.507
+      "top_score": 7.734
+    },
+    "crisis__short__mild": {
+      "primary": [
+        "H-CR-L2",
+        "H-CR-L3",
+        "H-CR-L1"
+      ],
+      "cross_bucket": [
+        "X-ME-L1",
+        "X-MD-L1"
+      ],
+      "top_score": 7.622
     },
     "crisis__mid__acute": {
       "primary": [
@@ -271,23 +271,11 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-MD-L1"
-      ],
-      "top_score": 7.748
-    },
-    "crisis__mid__moderate": {
-      "primary": [
-        "H-CR-L2",
-        "H-CR-L3",
-        "H-CR-L1"
-      ],
-      "cross_bucket": [
-        "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.717
+      "top_score": 7.955
     },
-    "crisis__mid__mild": {
+    "crisis__mid__moderate": {
       "primary": [
         "H-CR-L2",
         "H-CR-L1",
@@ -295,9 +283,21 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.507
+      "top_score": 7.734
+    },
+    "crisis__mid__mild": {
+      "primary": [
+        "H-CR-L2",
+        "H-CR-L3",
+        "H-CR-L1"
+      ],
+      "cross_bucket": [
+        "X-ME-L1",
+        "X-MD-L1"
+      ],
+      "top_score": 7.622
     },
     "crisis__long__acute": {
       "primary": [
@@ -307,23 +307,11 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-MD-L1"
-      ],
-      "top_score": 7.748
-    },
-    "crisis__long__moderate": {
-      "primary": [
-        "H-CR-L2",
-        "H-CR-L3",
-        "H-CR-L1"
-      ],
-      "cross_bucket": [
-        "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.717
+      "top_score": 7.955
     },
-    "crisis__long__mild": {
+    "crisis__long__moderate": {
       "primary": [
         "H-CR-L2",
         "H-CR-L1",
@@ -331,9 +319,21 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.507
+      "top_score": 7.734
+    },
+    "crisis__long__mild": {
+      "primary": [
+        "H-CR-L2",
+        "H-CR-L3",
+        "H-CR-L1"
+      ],
+      "cross_bucket": [
+        "X-ME-L1",
+        "X-MD-L1"
+      ],
+      "top_score": 7.622
     },
     "low__short__acute": {
       "primary": [
@@ -343,9 +343,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.311
+      "top_score": 8.23
     },
     "low__short__moderate": {
       "primary": [
@@ -355,9 +355,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.281
+      "top_score": 8.197
     },
     "low__short__mild": {
       "primary": [
@@ -367,9 +367,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.195
+      "top_score": 8.133
     },
     "low__mid__acute": {
       "primary": [
@@ -379,9 +379,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.311
+      "top_score": 8.23
     },
     "low__mid__moderate": {
       "primary": [
@@ -391,9 +391,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.281
+      "top_score": 8.197
     },
     "low__mid__mild": {
       "primary": [
@@ -403,9 +403,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.195
+      "top_score": 8.133
     },
     "low__long__acute": {
       "primary": [
@@ -415,9 +415,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.311
+      "top_score": 8.23
     },
     "low__long__moderate": {
       "primary": [
@@ -427,9 +427,9 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.281
+      "top_score": 8.197
     },
     "low__long__mild": {
       "primary": [
@@ -439,144 +439,144 @@
       ],
       "cross_bucket": [
         "X-MD-L1",
-        "H-AX-L1"
+        "X-MD-L2"
       ],
-      "top_score": 8.195
+      "top_score": 8.133
     },
     "focus__short__acute": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.003
+      "top_score": 7.728
     },
     "focus__short__moderate": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.101
+      "top_score": 7.726
     },
     "focus__short__mild": {
       "primary": [
         "T-FC-L3",
         "T-FC-L1",
-        "T-CF-L3",
         "T-FC-L2",
+        "T-CF-L3",
         "T-CF-L1",
         "T-CF-L2"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.158
+      "top_score": 7.563
     },
     "focus__mid__acute": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.003
+      "top_score": 7.728
     },
     "focus__mid__moderate": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.101
+      "top_score": 7.726
     },
     "focus__mid__mild": {
       "primary": [
         "T-FC-L3",
         "T-FC-L1",
-        "T-CF-L3",
         "T-FC-L2",
+        "T-CF-L3",
         "T-CF-L1",
         "T-CF-L2"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.158
+      "top_score": 7.563
     },
     "focus__long__acute": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.003
+      "top_score": 7.728
     },
     "focus__long__moderate": {
       "primary": [
         "T-FC-L3",
-        "T-CF-L3",
         "T-FC-L1",
+        "T-CF-L3",
         "T-FC-L2",
         "T-CF-L2",
         "T-CF-L1"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.101
+      "top_score": 7.726
     },
     "focus__long__mild": {
       "primary": [
         "T-FC-L3",
         "T-FC-L1",
-        "T-CF-L3",
         "T-FC-L2",
+        "T-CF-L3",
         "T-CF-L1",
         "T-CF-L2"
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 7.158
+      "top_score": 7.563
     },
     "maintenance__short__acute": {
       "primary": [
@@ -588,7 +588,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.154
+      "top_score": 7.693
     },
     "maintenance__short__moderate": {
       "primary": [
@@ -600,7 +600,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.039
+      "top_score": 7.633
     },
     "maintenance__short__mild": {
       "primary": [
@@ -612,7 +612,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.78
+      "top_score": 7.433
     },
     "maintenance__mid__acute": {
       "primary": [
@@ -624,7 +624,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.154
+      "top_score": 7.693
     },
     "maintenance__mid__moderate": {
       "primary": [
@@ -636,7 +636,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.039
+      "top_score": 7.633
     },
     "maintenance__mid__mild": {
       "primary": [
@@ -648,7 +648,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.78
+      "top_score": 7.433
     },
     "maintenance__long__acute": {
       "primary": [
@@ -660,7 +660,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.154
+      "top_score": 7.693
     },
     "maintenance__long__moderate": {
       "primary": [
@@ -672,7 +672,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.039
+      "top_score": 7.633
     },
     "maintenance__long__mild": {
       "primary": [
@@ -684,7 +684,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.78
+      "top_score": 7.433
     },
     "motivation__short__acute": {
       "primary": [
@@ -696,7 +696,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.552
+      "top_score": 7.876
     },
     "motivation__short__moderate": {
       "primary": [
@@ -708,7 +708,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.405
+      "top_score": 7.832
     },
     "motivation__short__mild": {
       "primary": [
@@ -720,7 +720,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.191
+      "top_score": 7.802
     },
     "motivation__mid__acute": {
       "primary": [
@@ -732,7 +732,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.552
+      "top_score": 7.876
     },
     "motivation__mid__moderate": {
       "primary": [
@@ -744,7 +744,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.405
+      "top_score": 7.832
     },
     "motivation__mid__mild": {
       "primary": [
@@ -756,7 +756,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.191
+      "top_score": 7.802
     },
     "motivation__long__acute": {
       "primary": [
@@ -768,7 +768,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.552
+      "top_score": 7.876
     },
     "motivation__long__moderate": {
       "primary": [
@@ -780,7 +780,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.405
+      "top_score": 7.832
     },
     "motivation__long__mild": {
       "primary": [
@@ -792,19 +792,19 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.191
+      "top_score": 7.802
     },
     "mindclarity__short__acute": {
       "primary": [
-        "X-MC-L1",
         "X-MC-L2",
+        "X-MC-L1",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.964
+      "top_score": 7.538
     },
     "mindclarity__short__moderate": {
       "primary": [
@@ -816,31 +816,31 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.772
+      "top_score": 7.48
     },
     "mindclarity__short__mild": {
       "primary": [
-        "X-MC-L2",
         "X-MC-L1",
+        "X-MC-L2",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.613
+      "top_score": 7.454
     },
     "mindclarity__mid__acute": {
       "primary": [
-        "X-MC-L1",
         "X-MC-L2",
+        "X-MC-L1",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.964
+      "top_score": 7.538
     },
     "mindclarity__mid__moderate": {
       "primary": [
@@ -852,31 +852,31 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.772
+      "top_score": 7.48
     },
     "mindclarity__mid__mild": {
       "primary": [
-        "X-MC-L2",
         "X-MC-L1",
+        "X-MC-L2",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.613
+      "top_score": 7.454
     },
     "mindclarity__long__acute": {
       "primary": [
-        "X-MC-L1",
         "X-MC-L2",
+        "X-MC-L1",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.964
+      "top_score": 7.538
     },
     "mindclarity__long__moderate": {
       "primary": [
@@ -888,19 +888,19 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.772
+      "top_score": 7.48
     },
     "mindclarity__long__mild": {
       "primary": [
-        "X-MC-L2",
         "X-MC-L1",
+        "X-MC-L2",
         "X-MC-L3"
       ],
       "cross_bucket": [
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 6.613
+      "top_score": 7.454
     },
     "sleep__short__acute": {
       "primary": [
@@ -912,7 +912,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.088
+      "top_score": 7.539
     },
     "sleep__short__moderate": {
       "primary": [
@@ -922,21 +922,21 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 6.924
+      "top_score": 7.454
     },
     "sleep__short__mild": {
       "primary": [
         "H-SL-L1",
-        "H-SL-L3",
-        "H-SL-L2"
+        "H-SL-L2",
+        "H-SL-L3"
       ],
       "cross_bucket": [
-        "X-ME-L1",
-        "H-AX-L1"
+        "X-MD-L1",
+        "X-ME-L1"
       ],
-      "top_score": 6.756
+      "top_score": 7.37
     },
     "sleep__mid__acute": {
       "primary": [
@@ -948,7 +948,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.088
+      "top_score": 7.539
     },
     "sleep__mid__moderate": {
       "primary": [
@@ -958,21 +958,21 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 6.924
+      "top_score": 7.454
     },
     "sleep__mid__mild": {
       "primary": [
         "H-SL-L1",
-        "H-SL-L3",
-        "H-SL-L2"
+        "H-SL-L2",
+        "H-SL-L3"
       ],
       "cross_bucket": [
-        "X-ME-L1",
-        "H-AX-L1"
+        "X-MD-L1",
+        "X-ME-L1"
       ],
-      "top_score": 6.756
+      "top_score": 7.37
     },
     "sleep__long__acute": {
       "primary": [
@@ -984,7 +984,7 @@
         "X-ME-L1",
         "X-ME-L2"
       ],
-      "top_score": 7.088
+      "top_score": 7.539
     },
     "sleep__long__moderate": {
       "primary": [
@@ -994,128 +994,128 @@
       ],
       "cross_bucket": [
         "X-ME-L1",
-        "X-ME-L2"
+        "X-MD-L1"
       ],
-      "top_score": 6.924
+      "top_score": 7.454
     },
     "sleep__long__mild": {
       "primary": [
         "H-SL-L1",
-        "H-SL-L3",
-        "H-SL-L2"
+        "H-SL-L2",
+        "H-SL-L3"
       ],
       "cross_bucket": [
-        "X-ME-L1",
-        "H-AX-L1"
+        "X-MD-L1",
+        "X-ME-L1"
       ],
-      "top_score": 6.756
+      "top_score": 7.37
     }
   },
   "feature_importance": {
-    "avg_view_percentage": 0.439,
-    "avg_view_duration": 0.4133,
-    "entry": 0.2507,
-    "zone": 0.2441,
-    "level": 0.2426,
-    "dur": 0.1581,
-    "startHz": 0.1479,
-    "endHz": 0.1329,
-    "series": 0.0897,
-    "delta": 0.0804,
-    "hz_abs": 0.0723,
-    "adviser_driven": 0.0223,
-    "move": 0.0213
+    "avg_view_percentage": 0.2771,
+    "avg_view_duration": 0.2212,
+    "dur": 0.1481,
+    "hz_abs": 0.1387,
+    "delta": 0.135,
+    "series": 0.1239,
+    "level": 0.1135,
+    "startHz": 0.1056,
+    "endHz": 0.1027,
+    "entry": 0.0771,
+    "zone": 0.0754,
+    "move": 0.0327,
+    "adviser_driven": 0.0246
   },
   "leaderboard": [
     {
       "model": "WeightedEnsemble_L3",
-      "score_val": -0.9556627963239754,
-      "pred_time_val": 0.34773802757263184
-    },
-    {
-      "model": "NeuralNetTorch_BAG_L2",
-      "score_val": -0.9793730225190816,
-      "pred_time_val": 0.24505925178527832
+      "score_val": -1.0267044896640694,
+      "pred_time_val": 0.5599713325500488
     },
     {
       "model": "RandomForest_BAG_L2",
-      "score_val": -1.06593731070216,
-      "pred_time_val": 0.26715731620788574
+      "score_val": -1.0656073637438708,
+      "pred_time_val": 0.3872668743133545
     },
     {
       "model": "LightGBM_BAG_L2",
-      "score_val": -1.0859942427677642,
-      "pred_time_val": 0.20155930519104004
+      "score_val": -1.0756153047818888,
+      "pred_time_val": 0.31972289085388184
     },
     {
       "model": "CatBoost_BAG_L2",
-      "score_val": -1.10374487925755,
-      "pred_time_val": 0.20624494552612305
+      "score_val": -1.097514947370893,
+      "pred_time_val": 0.31572580337524414
     },
     {
       "model": "XGBoost_BAG_L2",
-      "score_val": -1.1061983031494946,
-      "pred_time_val": 0.23622345924377441
+      "score_val": -1.1217839465721637,
+      "pred_time_val": 0.3210334777832031
+    },
+    {
+      "model": "NeuralNetTorch_BAG_L2",
+      "score_val": -1.2360911136717299,
+      "pred_time_val": 0.36554408073425293
     },
     {
       "model": "WeightedEnsemble_L2",
-      "score_val": -1.752646927625376,
-      "pred_time_val": 0.06229662895202637
+      "score_val": -1.7538753627950872,
+      "pred_time_val": 0.1033785343170166
     },
     {
       "model": "CatBoost_BAG_L1",
-      "score_val": -1.7543713413063529,
-      "pred_time_val": 0.020200252532958984
+      "score_val": -1.7548885537941121,
+      "pred_time_val": 0.026675701141357422
     }
   ],
   "feature_importance_change": {
-    "activity": 0.0492,
-    "entry": 0.0229,
-    "settle_time": 0.0227,
-    "listen_method": 0.0151,
-    "listener_type": 0.015,
-    "avg_view_duration": 0.0118,
-    "avg_view_percentage": 0.0097,
-    "endHz": 0.0068,
-    "startHz": 0.0058,
-    "level": 0.005,
-    "delta": 0.0049,
-    "dur": 0.0039,
-    "hz_abs": 0.0034,
-    "zone": 0.0025,
-    "series": 0.0019,
+    "activity": 0.0531,
+    "settle_time": 0.0268,
+    "entry": 0.0246,
+    "listener_type": 0.0205,
+    "listen_method": 0.0195,
+    "endHz": 0.0122,
+    "avg_view_percentage": 0.0113,
+    "startHz": 0.0085,
+    "avg_view_duration": 0.008,
+    "delta": 0.0073,
+    "level": 0.0063,
+    "dur": 0.005,
+    "hz_abs": 0.0037,
+    "zone": 0.003,
+    "series": 0.001,
     "move": 0.0
   },
   "leaderboard_change": [
     {
       "model": "WeightedEnsemble_L2",
-      "score_val": -2.554695810473874,
-      "pred_time_val": 0.09056997299194336
+      "score_val": -2.5522230006156397,
+      "pred_time_val": 0.1394193172454834
     },
     {
       "model": "XGBoost_BAG_L1",
-      "score_val": -2.5733255783591233,
-      "pred_time_val": 0.039197683334350586
+      "score_val": -2.5715013060848553,
+      "pred_time_val": 0.05545449256896973
     },
     {
       "model": "NeuralNetTorch_BAG_L1",
-      "score_val": -2.573368940494381,
-      "pred_time_val": 0.05037188529968262
+      "score_val": -2.5732699212490076,
+      "pred_time_val": 0.08346104621887207
     },
     {
       "model": "CatBoost_BAG_L1",
-      "score_val": -2.5805750530643725,
-      "pred_time_val": 0.024423837661743164
+      "score_val": -2.581591118862069,
+      "pred_time_val": 0.03891777992248535
     },
     {
       "model": "LightGBM_BAG_L1",
-      "score_val": -2.588657172295396,
-      "pred_time_val": 0.021508216857910156
+      "score_val": -2.58842991911011,
+      "pred_time_val": 0.028598546981811523
     },
     {
       "model": "RandomForest_BAG_L1",
-      "score_val": -2.9472858080076163,
-      "pred_time_val": 0.07781243324279785
+      "score_val": -2.956238097651766,
+      "pred_time_val": 0.09662675857543945
     }
   ]
 }
