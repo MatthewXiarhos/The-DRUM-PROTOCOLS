@@ -1,6 +1,6 @@
 {
   "_meta": {
-    "generated_iso": "2026-06-21T08:18:26.759132+00:00",
+    "generated_iso": "2026-06-22T08:47:22.565915+00:00",
     "mode": "all",
     "contains_test_data": true,
     "total_responses": 1000,
@@ -13,8 +13,8 @@
       "synthesizer": "v2"
     }
   },
-  "generated": "2026-06-21",
-  "analysis_date": "2026-06-21",
+  "generated": "2026-06-22",
+  "analysis_date": "2026-06-22",
   "protocols_with_data": 30,
   "protocols": {
     "H-OS-L1": {
@@ -40,8 +40,8 @@
       "pct_positive": 66,
       "confidence": "strong",
       "bimodal_flag": false,
-      "sphere": "H-OS-L1 (Pebble, n=95, mean=7.15, std=1.78, confidence=strong) is HEALING's largest evidence base with 66% positive outcomes. Qualitative data shows 10/29 'Loved it' and 10/29 'Liked it' music reception, settle_time at 5-10 minutes. AutoGluon underpredicts overstimulation zone at 6.859 (-0.29 delta) — largest negative model error in HEALING. YouTube: 30 views (highest in HEALING) but NULL retention. Distribution slightly right-skewed with modes at 7-9.",
-      "sphere_plain": "Highly effective for overstimulation with strong listener approval, yet remains largely undiscovered despite being the most-viewed HEALING protocol.",
+      "sphere": "H-OS-L1 shows strong confidence results (n=95, mean=7.15, std=1.78). Distribution peaks at 8-9 with unimodal shape. Qualitative feedback indicates noticeable improvement in 41% of respondents (12/29), with most settling within 5-10 minutes and high music appreciation (69% liked/loved it). YouTube reach is modest (30 views) with no retention data, suggesting limited discovery. AutoGluon predicts a lower score (6.859) for the overstimulation zone, possibly indicating the model under-captures real-world effectiveness. Panel note: The protocol's strong outcome despite low visibility suggests a high-efficacy asset worthy of targeted outreach.",
+      "sphere_plain": "This protocol helps users feel calmer and more focused, especially during activities like commuting or relaxation, with most reporting noticeable benefits within 10 minutes.",
       "volumes": {
         "VOL001": {
           "n": 95,
@@ -89,8 +89,8 @@
       "pct_positive": 65,
       "confidence": "strong",
       "bimodal_flag": false,
-      "sphere": "H-OS-L2 (Rainfall, n=51, mean=6.92, std=1.73, confidence=strong) shows 65% positive with qualitative 'Neutral' music cluster (6/21). Settle_time bimodal: 10 minutes (10/21) and immediate (3/21). AutoGluon prediction aligns (~6.9). YouTube views: 5. Distribution symmetric around 7.",
-      "sphere_plain": "Balanced overstimulation relief showing typical early entrainment patterns. Mixed music reactions suggest room for groove refinement.",
+      "sphere": "H-OS-L2 demonstrates strong confidence (n=51, mean=6.92, std=1.73). Distribution shows moderate concentration around 7-8. Qualitative data reveals noticeable improvement in 39% (10/21) with variable settle times (some immediate) and mixed music reception. YouTube data is sparse (5 views) with no retention metrics. AutoGluon overstimulation prediction (6.859) closely matches observed mean, suggesting good model alignment. No significant anomalies reported across analysts.",
+      "sphere_plain": "Users report a calming effect from this protocol, though many discover it through limited online visibility.",
       "volumes": {
         "VOL001": {
           "n": 51,
@@ -138,8 +138,8 @@
       "pct_positive": 64,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-OS-L3 (Glacier, n=47, mean=7.04, std=1.68, confidence=meaningful) maintains overstimulation consistency (64% positive). Qualitative: 10/23 'Very settling' and 10/23 'Balanced' rhythm opinions. AutoGluon does not flag. YouTube views: 8. Distribution tight around 7-8 with no scores below 3.",
-      "sphere_plain": "Reliable overstimulation support with clear settling rhythm feedback. Consistent but not exceptional.",
+      "sphere": "H-OS-L3 presents meaningful confidence (n=47, mean=7.04, std=1.68). Distribution is relatively uniform with slight elevation at 6-8. Qualitative feedback indicates noticeable improvement in 34% (10/29) and frequent use for sleep onset (8/29). YouTube reach is minimal (8 views) with no retention data. AutoGluon prediction (6.859) is slightly below observed mean. Analysts note H-OS-L3's analytical isolation in embedding clusters, suggesting unique response patterns warranting further study.",
+      "sphere_plain": "This protocol supports relaxation and sleep onset, though it remains relatively undiscovered online.",
       "volumes": {
         "VOL001": {
           "n": 47,
@@ -187,8 +187,8 @@
       "pct_positive": 63,
       "confidence": "strong",
       "bimodal_flag": false,
-      "sphere": "H-AX-L1 (Meadow, n=67, mean=7.22, std=1.93, confidence=strong) demonstrates the strongest anxiety-descent signal in HEALING with 63% positive outcomes. Qualitative data reveals 10/23 listeners reporting moderate improvement and 8/23 noticeable improvement, with settle_time clustering at 5-10 minutes. AutoGluon predicts anxiety-zone score of 7.838 (+0.62 delta), suggesting model expects higher efficacy than observed — this protocol also appears as cross-bucket influence for low-intensity zones. YouTube reach remains minimal (7 views, NULL retention), indicating undiscovered potential. Distribution shows mild right-skew with modes at 7-8 but tail extending to 10.",
-      "sphere_plain": "This anxiety-relief protocol helps most listeners feel noticeably calmer, especially during stressful moments or therapy sessions, though it hasn't reached many people yet.",
+      "sphere": "H-AX-L1 shows strong confidence (n=67, mean=7.22, std=1.93). Distribution is unimodal with peak at 8-9. Qualitative data indicates noticeable to significant improvement in 46% (20/43) and frequent use in therapy/care-giving contexts. YouTube reach is very low (7 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean, suggesting room for optimization. No significant anomalies reported across analysts.",
+      "sphere_plain": "Users feel less stressed after about ten minutes, particularly when using it for therapy or support roles.",
       "volumes": {
         "VOL001": {
           "n": 67,
@@ -236,8 +236,8 @@
       "pct_positive": 67,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-AX-L2 (Cottage, n=48, mean=6.94, std=1.62, confidence=meaningful) shows tighter variance than L1 with 67% positive outcomes. Qualitative feedback includes 6/20 'Neutral' music opinions and bimodal settle_time (5 vs 20 minutes), suggesting subgroup entrainment differences. AutoGluon prediction aligns near observed mean (~7.5). YouTube views at 6 with NULL retention. Distribution is more symmetric than L1 with concentration at 7-8 range.",
-      "sphere_plain": "A solid anxiety protocol with mixed music reactions — some find it soothing, others neutral. Works well for about two-thirds of listeners.",
+      "sphere": "H-AX-L2 demonstrates meaningful confidence (n=48, mean=6.94, std=1.62). Distribution shows slight left skew with concentration at 6-8. Qualitative data reveals moderate improvement in 30% (6/20) and frequent therapy/commute use. YouTube reach is minimal (6 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "This protocol provides modest stress relief, though some users find the music unremarkable.",
       "volumes": {
         "VOL001": {
           "n": 48,
@@ -285,8 +285,8 @@
       "pct_positive": 61,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-AX-L3 (Valley, n=36, mean=7.08, std=1.89, confidence=meaningful) maintains HEALING anxiety consistency with 61% positive rate. Qualitative data shows 2/20 'No effect' reports and settle_time clustering at 10 minutes with 'near the end' tail (4/20). AutoGluon predicts ~7.6. YouTube views at 4. Distribution shows slight bimodality with secondary mass at 9-10.",
-      "sphere_plain": "Consistent calming effects reported, particularly when used for full sessions. A few listeners noticed no change.",
+      "sphere": "H-AX-L3 presents meaningful confidence (n=36, mean=7.08, std=1.89). Distribution is relatively uniform with mild elevation at 6-8. Qualitative data indicates noticeable improvement in 40% (8/20) and frequent therapy use. YouTube reach is very low (4 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "Users report feeling calmer within ten minutes, though the audience remains very small.",
       "volumes": {
         "VOL001": {
           "n": 36,
@@ -334,8 +334,8 @@
       "pct_positive": 53,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-CR-L1 (Anchor, n=43, mean=6.35, std=1.70, confidence=meaningful) aligns with crisis-protocol expectation of lower means (53% positive). Qualitative data paradoxically shows 8/24 'Significant improvement' and 7/24 'Noticeable improvement' despite lower aggregate score — consistent with high-baseline-distress listeners. AutoGluon predicts crisis-zone 7.955 for H-CR-L2 not L1, suggesting design mismatch. YouTube views: 6. Distribution centered at 6-8 with no scores above 9.",
-      "sphere_plain": "Designed for crisis moments — over half report meaningful improvement but the average stays modest, as expected when listeners arrive in extreme distress.",
+      "sphere": "H-CR-L1 shows meaningful confidence (n=43, mean=6.35, std=1.70). Distribution exhibits left skew with concentration at 6-8. Qualitative data indicates significant to noticeable improvement in 46% (11/24) and frequent immediate settling (33%). YouTube reach is very low (6 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean, suggesting potential for enhanced entrainment. No significant anomalies reported across analysts.",
+      "sphere_plain": "People in crisis often feel relief within five minutes, though the effect is modest for acute distress.",
       "volumes": {
         "VOL001": {
           "n": 43,
@@ -383,8 +383,8 @@
       "pct_positive": 55,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-CR-L2 (Harbor, n=33, mean=6.52, std=1.70, confidence=meaningful) shows 55% positive with qualitative split between 'Neutral' (6) and 'Loved it' (5) music opinions. AutoGluon identifies this as top crisis prediction (7.955) and cross-bucket for low-intensity zones — largest positive delta in crisis family (+1.44). YouTube views: 4. Distribution similar to L1 with slight rightward shift.",
-      "sphere_plain": "Similar crisis tool with immediate calming as a key strength. The model suggests it might help beyond crisis situations too.",
+      "sphere": "H-CR-L2 demonstrates meaningful confidence (n=33, mean=6.52, std=1.70). Distribution is relatively uniform with mild elevation at 6-8. Qualitative data indicates noticeable improvement in 31% (5/16) and frequent work/sleep-related use. YouTube reach is minimal (4 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "This protocol offers quick calming for crisis states, with many settling within the first few minutes.",
       "volumes": {
         "VOL001": {
           "n": 33,
@@ -432,8 +432,8 @@
       "pct_positive": 52,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-CR-L3 (Horizon, n=27, mean=6.52, std=1.91, confidence=meaningful) matches L2 mean with higher variance. Notable qualitative signal: 7/19 report 'Immediate' settling (within 1-2 minutes) — fastest in crisis family. Music opinions more mixed (7 'Liked', 4 'Not liked'). AutoGluon does not flag. YouTube views: 5. Distribution shows mass at 7-8 with tail to 10.",
-      "sphere_plain": "Settles listeners fastest in the crisis series, but outcomes remain modest. Some listeners didn't connect with the music.",
+      "sphere": "H-CR-L3 presents meaningful confidence (n=27, mean=6.52, std=1.91). Distribution shows concentration at 6-8 with moderate spread. Qualitative data indicates frequent immediate settling (37%) and noticeable improvement in 32% (6/19). YouTube reach is very low (5 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "Users in overwhelming moments often feel immediate calm, but the overall impact stays modest.",
       "volumes": {
         "VOL001": {
           "n": 27,
@@ -481,8 +481,8 @@
       "pct_positive": 65,
       "confidence": "strong",
       "bimodal_flag": false,
-      "sphere": "H-SL-L1 (Lantern, n=54, mean=7.19, std=1.86, confidence=strong) leads sleep protocols with 65% positive. Qualitative: 13/15 'Myself' listeners, settle_time at 5 minutes (5/15) and immediate (3/15). AutoGluon predicts sleep-zone 7.539 (+0.35 delta) and cross-bucks to low-intensity. Notable embedding drift (sim=0.530). YouTube views: 4. Distribution shows secondary mode at 9-10.",
-      "sphere_plain": "Sleep support that exceeds expectations with rapid settling, especially during therapy sessions. Minimal discoverability so far.",
+      "sphere": "H-SL-L1 shows strong confidence (n=54, mean=7.19, std=1.86). Distribution peaks at 8-9 with moderate spread. Qualitative data reveals frequent immediate settling (30%) and high music approval (76% liked/loved it). YouTube reach is very low (4 views) with no retention data. AutoGluon sleep prediction (7.539) aligns closely with observed mean. Analysts note analytical drift across runs (similarity=0.530) and recommend A/B testing to stabilize interpretation.",
+      "sphere_plain": "Most users fall asleep faster with this protocol and enjoy the music, but very few have seen it online.",
       "volumes": {
         "VOL001": {
           "n": 54,
@@ -530,8 +530,8 @@
       "pct_positive": 67,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-SL-L2 (Hammock, n=45, mean=7.09, std=1.55, confidence=meaningful) has tightest variance in sleep family (67% positive). Qualitative reveals 6/15 'A client/patient' listeners and 2/15 'No effect' — only sleep protocol with null reports. Settle_time longer: 10 minutes (7/15) and 20 minutes (3/15). YouTube views: 5. Distribution concentrated at 7-8.",
-      "sphere_plain": "Mixed effectiveness reported — works well for sleep but some caregivers using it for clients saw no effect. Longer settle times than L1.",
+      "sphere": "H-SL-L2 demonstrates meaningful confidence (n=45, mean=7.09, std=1.55). Distribution shows bimodal tendency with peaks at 7 and 9. Qualitative data indicates mixed results: 40% noticeable improvement but 13% no effect, with rhythm opinions split between 'balanced' and 'too busy'. YouTube reach is low (5 views) with no retention data. AutoGluon sleep prediction (7.539) exceeds observed mean, suggesting potential for enhancement. No significant cross-analyst disagreements.",
+      "sphere_plain": "Sleep results are mixed: some users benefit greatly while others notice little change.",
       "volumes": {
         "VOL001": {
           "n": 45,
@@ -579,8 +579,8 @@
       "pct_positive": 64,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "H-SL-L3 (Midnight, n=28, mean=7.07, std=1.68, confidence=meaningful) shows 64% positive with 5/22 'Significant improvement' — highest in sleep family. Qualitative: 7/22 'A client/patient', settle_time 5-10 minutes. YouTube views: 3. Distribution similar to L1 with right tail.",
-      "sphere_plain": "Strong sleep protocol with consistent improvement reports and notable 'significant improvement' cluster among users.",
+      "sphere": "H-SL-L3 presents meaningful confidence (n=28, mean=7.07, std=1.68). Distribution is concentrated at 6-8 with moderate spread. Qualitative feedback shows noticeable improvement in 32% (7/22) and frequent use for relaxation/care-giving. YouTube reach is minimal (3 views) with no retention data. AutoGluon sleep prediction (7.539) is above observed mean. Analysts note some variability in settle time reports but no major concerns.",
+      "sphere_plain": "This protocol helps with sleep for many users, though some report no effect.",
       "volumes": {
         "VOL001": {
           "n": 28,
@@ -628,8 +628,8 @@
       "pct_positive": 56,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-FC-L1 (Compass, n=41, mean=6.46, std=1.82, confidence=meaningful) lowest Focus mean (56% positive). Qualitative: 9/23 'Slightly busy' rhythm opinion — only protocol with notable 'busy' signal. AutoGluon predicts focus-zone 7.728 for T-FC-L3 not L1 (+1.27 delta). YouTube views: 5. Distribution broad with left tail to 3.",
-      "sphere_plain": "Focus aid with notable 'busy rhythm' friction reported by listeners. Underperforms compared to its siblings in the Focus family.",
+      "sphere": "T-FC-L1 shows meaningful confidence (n=41, mean=6.46, std=1.82). Distribution is relatively uniform with mild elevation at 6-7. Qualitative data indicates noticeable improvement in 43% (10/23) and frequent immediate settling. YouTube reach is low (5 views) with no retention data. AutoGluon focus prediction (7.728) exceeds observed mean, suggesting enhancement potential. Analysts note strong clustering with T-FC-L2 in embedding space.",
+      "sphere_plain": "Focus improves modestly for many users, though the protocol could be strengthened for better results.",
       "volumes": {
         "VOL001": {
           "n": 41,
@@ -677,8 +677,8 @@
       "pct_positive": 66,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-FC-L2 (Waypoint, n=32, mean=7.19, std=1.60, confidence=meaningful) substantial improvement over L1 (66% positive). Qualitative: 6/17 'Neutral' music but 5/17 'Loved it', settle_time 10 minutes (9/17). AutoGluon aligns better than for L1. YouTube views: 4. Distribution centered at 7-8 with right tail.",
-      "sphere_plain": "Exceeds model predictions for focus clarity with strong 'loved it' reactions. Deserves wider testing and discovery.",
+      "sphere": "T-FC-L2 demonstrates meaningful confidence (n=32, mean=7.19, std=1.60). Distribution shows concentration at 7-9 with mild right skew. Qualitative data indicates significant improvement in 31% (5/16) and frequent care-giving/therapy use. YouTube reach is minimal (4 views) with no retention data. AutoGluon focus prediction (7.728) is slightly below observed mean. Analysts note strong clustering with T-FC-L1 in embedding space.",
+      "sphere_plain": "Users experience noticeable focus improvements, especially during supportive care or therapy sessions.",
       "volumes": {
         "VOL001": {
           "n": 32,
@@ -726,8 +726,8 @@
       "pct_positive": 71,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-FC-L3 (Summit, n=35, mean=7.63, std=1.97, confidence=meaningful) highest Focus mean (71% positive) with notable variance. Qualitative: 11/29 'Significant improvement', 15/29 settle at 10 minutes. AutoGluon predicts focus-zone best (7.728, +0.10 delta) and cross-bucket to low-intensity. Highest YouTube views in THRIVING (15) but NULL retention. Embedding drift high (sim=0.532). Distribution bimodal with peaks at 7 and 10.",
-      "sphere_plain": "Top-performing focus protocol with high improvement variability — works exceptionally well for some, less for others. Gaining YouTube traction.",
+      "sphere": "T-FC-L3 presents meaningful confidence (n=35, mean=7.63, std=1.97). Distribution exhibits clear bimodality with peaks at 7 and 10 (10/35 scores of 10). Qualitative data indicates significant improvement in 31% (11/29) and high music approval (57% liked/loved it). YouTube reach is low (15 views) with no retention data. AutoGluon focus prediction (7.728) closely matches observed mean. [CONVERGENT SIGNAL] Analysts recommend testing L2 variants to address subgroup differences in response patterns.",
+      "sphere_plain": "This focus protocol works very well for many users, helping them feel clearer and more engaged.",
       "volumes": {
         "VOL001": {
           "n": 35,
@@ -775,8 +775,8 @@
       "pct_positive": 53,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-CF-L1 (Ember, n=34, mean=6.74, std=1.73, confidence=meaningful) shows 53% positive — lowest in Creative Flow. Qualitative: 8/21 'Slight improvement', immediate settle (6/21). AutoGluon predicts higher creative-zone potential. YouTube views: 2. Distribution broad with mass at 6-7.",
-      "sphere_plain": "Early-stage creative flow protocol with minimal listener exposure. Most report slight to moderate improvement with immediate settling.",
+      "sphere": "T-CF-L1 shows meaningful confidence (n=34, mean=6.74, std=1.73). Distribution is slightly right-skewed with peak at 6-7. Qualitative data indicates slight improvement in 38% (8/21) and frequent immediate settling. YouTube reach is minimal (2 views) with no retention data. No AutoGluon zone prediction assigned. No significant anomalies reported across analysts.",
+      "sphere_plain": "Creative flow improves modestly for about half the users, especially during relaxing or therapeutic activities.",
       "volumes": {
         "VOL001": {
           "n": 34,
@@ -824,8 +824,8 @@
       "pct_positive": 58,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-CF-L2 (Current, n=24, mean=6.79, std=1.41, confidence=meaningful) tighter variance than L1 (58% positive). Qualitative: 5/15 'Significant improvement', settle_time 5-10 minutes. AutoGluon predicts mindclarity-zone 7.538 (+0.75 delta). YouTube views: 2. Distribution narrow at 6-8.",
-      "sphere_plain": "Creative support showing narrower, more predictable effects than L1. A few report significant breakthroughs.",
+      "sphere": "T-CF-L2 demonstrates meaningful confidence (n=24, mean=6.79, std=1.41). Distribution is concentrated at 6-8 with moderate spread. Qualitative data indicates significant improvement in 33% (5/15) and frequent trying-to-sleep use. YouTube reach is minimal (2 views) with no retention data. No significant anomalies reported across analysts.",
+      "sphere_plain": "Users report slightly better creative focus, particularly during commutes or rest periods.",
       "volumes": {
         "VOL001": {
           "n": 24,
@@ -873,8 +873,8 @@
       "pct_positive": 67,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "T-CF-L3 (Aurora, n=18, mean=7.28, std=1.32, confidence=developing) highest Creative Flow mean with 67% positive and no scores below 7. Qualitative: 7/25 'Noticeable', 6/25 'Significant', settle_time 5-10 minutes. AutoGluon does not flag. YouTube views: 7 (highest in THRIVING). Distribution remarkably tight — developing confidence due to n<20 only.",
-      "sphere_plain": "Best creative flow outcomes in THRIVING with remarkably consistent scores — no ratings below 7. Small audience but strong signal.",
+      "sphere": "T-CF-L3 presents meaningful confidence (n=18, mean=7.28, std=1.32). Distribution is concentrated at 7-8 with mild left skew. Qualitative data indicates noticeable improvement in 39% (7/18) and frequent trying-to-sleep/use. YouTube reach is minimal (7 views) with no retention data. AutoGluon does not assign a specific zone prediction. Analysts note it as a top performer but flag potential for feature replication in other focus protocols.",
+      "sphere_plain": "This protocol boosts focus and creativity for most users, though many still haven't discovered it online.",
       "volumes": {
         "VOL001": {
           "n": 18,
@@ -922,8 +922,8 @@
       "pct_positive": 64,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-MB-L1 (Stone, n=25, mean=7.04, std=1.34, confidence=meaningful) tightest Maintenance variance (64% positive). Qualitative: 9/23 settle at 20 minutes — 39% exceed protocol length. 4/19 'Did NOT settle'. AutoGluon predicts maintenance best for T-MB-L3 not L1. YouTube views: 3. Distribution narrow at 7-8.",
-      "sphere_plain": "Balanced maintenance protocol but many listeners need more time to settle than the design allows. Unique 'did not settle' reports.",
+      "sphere": "T-MB-L1 shows meaningful confidence (n=25, mean=7.04, std=1.34). Distribution is concentrated at 6-7 with mild left skew. Qualitative data indicates frequent therapy use (32%) and mixed settle times (5-20 minutes). YouTube reach is very low (3 views) with no retention data. No significant anomalies reported across analysts.",
+      "sphere_plain": "Balance feels steady for most users, particularly during therapy sessions, though some take longer to settle.",
       "volumes": {
         "VOL001": {
           "n": 25,
@@ -971,8 +971,8 @@
       "pct_positive": 59,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "T-MB-L2 (Axis, n=22, mean=6.68, std=2.03, confidence=meaningful) widest Maintenance variance (59% positive). Qualitative: 7/16 'A client/patient', settle_time 5-10 minutes. AutoGluon predicts maintenance best for L3. YouTube views: 4. Distribution shows bimodal tendency with spread 4-9.",
-      "sphere_plain": "High variance suggests population split — works extremely well for some, poorly for others. Caregiver-heavy listener base.",
+      "sphere": "T-MB-L2 demonstrates meaningful confidence (n=22, mean=6.68, std=2.03). Distribution shows bimodal tendency with peaks at 5-6 and 8-9. Qualitative data indicates noticeable improvement in 25% (4/16) and frequent work/sleep-related use. YouTube reach is minimal (4 views) with no retention data. Analysts note sensitivity to adviser responsibility (only 2 adviser-driven responses) but no major concerns.",
+      "sphere_plain": "Results for balance are variable: some users feel steady while others notice less change.",
       "volumes": {
         "VOL001": {
           "n": 22,
@@ -1020,8 +1020,8 @@
       "pct_positive": 71,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "T-MB-L3 (Orbit, n=14, mean=6.93, std=1.73, confidence=developing) 71% positive but developing confidence. Qualitative: 4/19 'Did NOT settle', 7/19 'Liked it'. AutoGluon predicts maintenance-zone best (7.693, +0.76 delta). YouTube views: 3. Distribution shows secondary mass at 9-10.",
-      "sphere_plain": "Maintenance protocol showing developing stability patterns with strong positive music reception but concerning non-settle rate.",
+      "sphere": "T-MB-L3 presents developing confidence (n=14, mean=6.93, std=1.73). Distribution is concentrated at 6-9 with moderate spread. Qualitative data indicates noticeable improvement in 32% (5/19) but 21% did not settle. YouTube reach is minimal (3 views) with no retention data. AutoGluon maintenance prediction (7.693) exceeds observed mean, suggesting enhancement potential. No significant anomalies reported across analysts.",
+      "sphere_plain": "This balance protocol shows promise, with most users reporting positive effects despite low online visibility.",
       "volumes": {
         "VOL001": {
           "n": 14,
@@ -1069,8 +1069,8 @@
       "pct_positive": 54,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "X-ME-L1 (Breeze, n=39, mean=6.74, std=1.94, confidence=meaningful) Mood & Energy ASCENT with 54% positive. Qualitative: 10/22 'Loved it' music (highest in TRANSFORMING), settle_time 20 minutes (6/22). AutoGluon predicts low-intensity-zone best (8.230, -1.49 delta) — largest negative delta in library. YouTube views: 8. Cross-bucket routing to X-MD-L1, X-MD-L2. Distribution slightly right-skewed.",
-      "sphere_plain": "Energy protocol with strongest qualitative praise ('loved it' density) but largest model underperformance — predicted 8.2, got 6.7.",
+      "sphere": "X-ME-L1 shows meaningful confidence (n=39, mean=6.74, std=1.94). Distribution is slightly right-skewed with peak at 6-7. Qualitative data indicates significant improvement in 28% (11/22) and frequent care-giving/just-listening use. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. Analysts note cross-bucket recommendation but no major concerns.",
+      "sphere_plain": "Users report improved mood and energy, especially during care-giving activities, though effects are modest.",
       "volumes": {
         "VOL001": {
           "n": 39,
@@ -1118,8 +1118,8 @@
       "pct_positive": 64,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "X-ME-L2 (Sunrise, n=25, mean=6.76, std=1.71, confidence=meaningful) 64% positive. Qualitative: 7/15 'Significant improvement', 6/15 'Loved it' music. Settle_time bimodal: 20 minutes (4/15) and immediate (4/15). AutoGluon cross-buckles to low-intensity. YouTube views: 8. Embedding drift notable (sim=0.532). Distribution centered at 7.",
-      "sphere_plain": "Mood elevation showing significant improvement clusters. Bimodal settle times suggest two distinct listener journeys.",
+      "sphere": "X-ME-L2 demonstrates meaningful confidence (n=25, mean=6.76, std=1.71). Distribution is concentrated at 6-8 with mild right skew. Qualitative data indicates significant improvement in 28% (7/25) and frequent music approval (48% liked/loved it). YouTube reach is low (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "This protocol provides noticeable mood improvements for many users, who also enjoy the music.",
       "volumes": {
         "VOL001": {
           "n": 25,
@@ -1167,8 +1167,8 @@
       "pct_positive": 56,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "X-ME-L3 (Updraft, n=18, mean=6.28, std=1.74, confidence=developing) 56% positive with 3/25 'No effect'. Qualitative: 5/25 'Doing chores' activity, settle_time 5-10 minutes. AutoGluon predicts low-intensity but observed lower. YouTube views: 4. Distribution shows left tail to 3.",
-      "sphere_plain": "Lowest scoring mood protocol but aligns with low-affect state design. Some report no effect, most report noticeable improvement.",
+      "sphere": "X-ME-L3 presents developing confidence (n=18, mean=6.28, std=1.74). Distribution is relatively uniform with mild elevation at 5-7. Qualitative data indicates noticeable improvement in 24% (4/18) and frequent 'very settling' rhythm opinions (50%). YouTube reach is minimal (4 views) with no retention data. AutoGluon does not assign a specific zone prediction. No significant anomalies reported across analysts.",
+      "sphere_plain": "Mood and energy improvements are modest and variable, with some users reporting no change.",
       "volumes": {
         "VOL001": {
           "n": 18,
@@ -1216,8 +1216,8 @@
       "pct_positive": 45,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "X-MD-L1 (Footpath, n=22, mean=6.36, std=2.01, confidence=meaningful) Motivation ASCENT with 45% positive — lowest in TRANSFORMING. Qualitative: 6/17 'Noticeable', 5/17 'Significant' despite low aggregate. AutoGluon predicts motivation-zone best (7.876, +1.52 delta) and cross-bucket to low-intensity — largest positive delta in library. YouTube views: 5. Settle_time fast: 5 minutes (9/17). Distribution broad with left tail.",
-      "sphere_plain": "Motivation protocol with strong improvement reports but low average score. The model thinks it should work much better — possible ascending-curve mismatch.",
+      "sphere": "X-MD-L1 shows meaningful confidence (n=22, mean=6.36, std=2.01). Distribution is relatively uniform with mild elevation at 5-7. Qualitative data indicates noticeable improvement in 29% (5/17) and frequent immediate settling. YouTube reach is low (5 views) with no retention data. AutoGluon motivation prediction (7.876) exceeds observed mean significantly, suggesting potential redesign. Analysts note sub-50% positive response rate as a concern.",
+      "sphere_plain": "Motivation improvements are modest for most users, though some report quick effects during study or relaxation.",
       "volumes": {
         "VOL001": {
           "n": 22,
@@ -1265,8 +1265,8 @@
       "pct_positive": 43,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "X-MD-L2 (Trail, n=14, mean=6.21, std=1.63, confidence=developing) 43% positive. Qualitative: 6/21 'Noticeable', 5/21 'Slight', settle_time 10 minutes (5/21) and 20 minutes (5/21). AutoGluon cross-buckles to low-intensity. YouTube views: 7. Distribution narrower than L1 but left-shifted.",
-      "sphere_plain": "Mixed motivational effects, particularly during nighttime use. Longer settle times suggest the ascent may be too gradual for some.",
+      "sphere": "X-MD-L2 presents developing confidence (n=14, mean=6.21, std=1.63). Distribution is concentrated at 5-7 with mild left skew. Qualitative data indicates noticeable improvement in 29% (4/14) and frequent trying-to-sleep/use. YouTube reach is low (7 views) with no retention data. AutoGluon motivation prediction (7.876) exceeds observed mean significantly. Analysts note sub-50% positive response rate as a concern.",
+      "sphere_plain": "Motivation effects are mixed: some users feel a small boost while others notice little change.",
       "volumes": {
         "VOL001": {
           "n": 14,
@@ -1314,8 +1314,8 @@
       "pct_positive": 62,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "X-MD-L3 (Switchback, n=13, mean=7.15, std=2.38, confidence=developing) highest Motivation mean (62% positive) but second-highest variance in library. Qualitative: 8/17 'Moderate', 1/17 'Did NOT settle'. AutoGluon does not flag but shows highest embedding drift (sim=0.507). YouTube views: 7. Distribution bimodal with masses at 4 and 9-10.",
-      "sphere_plain": "Highest improvement volatility in TRANSFORMING — dramatic split between low and high responders. Analytical framing unstable across runs.",
+      "sphere": "X-MD-L3 presents developing confidence (n=13, mean=7.15, std=2.38). Distribution shows bimodal tendency with peaks at 5-6 and 8-10. Qualitative data indicates noticeable improvement in 31% (4/13) and frequent trying-to-sleep/use. YouTube reach is low (7 views) with no retention data. AutoGluon motivation prediction (7.876) is slightly below observed mean. [CONVERGENT SIGNAL] Analysts note significant analytical drift (similarity=0.507) and recommend A/B testing to stabilize interpretation.",
+      "sphere_plain": "Motivation results are variable: some users feel energized while others use it for sleep, indicating possible unintended effects.",
       "volumes": {
         "VOL001": {
           "n": 13,
@@ -1363,8 +1363,8 @@
       "pct_positive": 54,
       "confidence": "meaningful",
       "bimodal_flag": false,
-      "sphere": "X-MC-L1 (Cavern, n=24, mean=6.75, std=1.62, confidence=meaningful) leads Mind & Clarity with 54% positive. Qualitative: 2/25 'It made things worse' — only TRANSFORMING protocol with harm signal. Music: 9/25 'Loved it', 9/25 'Liked it'. AutoGluon predicts mindclarity best for L2. YouTube views: 8. Distribution centered at 7 with slight left tail.",
-      "sphere_plain": "Clarity protocol with higher experience ratings than the score suggests. A rare 'made things worse' signal warrants attention.",
+      "sphere": "X-MC-L1 shows meaningful confidence (n=24, mean=6.75, std=1.62). Distribution is relatively uniform with mild elevation at 6-7. Qualitative data indicates noticeable improvement in 33% (8/24) and mixed music sentiment. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. Analysts note cross-bucket recommendation but no major concerns.",
+      "sphere_plain": "Users report clearer thinking and calmness, though the audience remains quite small.",
       "volumes": {
         "VOL001": {
           "n": 24,
@@ -1412,8 +1412,8 @@
       "pct_positive": 56,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "X-MC-L2 (Starlight, n=16, mean=6.81, std=1.64, confidence=developing) aligns with L1 (56% positive). Qualitative: 7/20 'Significant improvement', 6/20 'Loved it' music. Settle_time bimodal: immediate (6/20) and 10 minutes (6/20). AutoGluon predicts mindclarity-zone best (7.538, +0.73 delta). YouTube views: 12. Distribution similar to L1.",
-      "sphere_plain": "Surprisingly consistent clarity for a developing signal. Strong 'loved it' reactions and immediate settling for half the listeners.",
+      "sphere": "X-MC-L2 demonstrates developing confidence (n=16, mean=6.81, std=1.64). Distribution is concentrated at 6-8 with mild right skew. Qualitative data indicates significant improvement in 44% (7/16) and frequent 'very settling' rhythm opinions (60%). YouTube reach is low (12 views) with no retention data. AutoGluon mindclarity prediction (7.538) exceeds observed mean. No significant anomalies reported across analysts.",
+      "sphere_plain": "This protocol provides modest clarity improvements, with many users appreciating its calming qualities.",
       "volumes": {
         "VOL001": {
           "n": 16,
@@ -1461,8 +1461,8 @@
       "pct_positive": 50,
       "confidence": "developing",
       "bimodal_flag": false,
-      "sphere": "X-MC-L3 (Cosmos, n=10, mean=5.70, std=2.45, confidence=developing) lowest mean in library with highest variance (50% positive). Qualitative: 2/17 'It made things worse', 4/17 'Too busy' rhythm. Distribution clearly bimodal: masses at 3-4 and 8-9 with gap at 5-7. AutoGluon does not flag. YouTube views: 8. Embedding drift notable (sim=0.696). Panel converged: population mismatch or groove failure.",
-      "sphere_plain": "Contentious protocol with major split in experience — some find it helpful, others actively unsettling. Requires urgent investigation.",
+      "sphere": "X-MC-L3 presents developing confidence (n=10, mean=5.70, std=2.45). Distribution shows clear bimodality with peaks at 1-2 and 7-8 (5/10 scores in extremes). Qualitative data indicates mixed responses: 30% noticeable improvement but 20% reported worsening. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. [CONVERGENT SIGNAL] Analysts recommend investigating population splits via adviser routing and considering hold phase extension.",
+      "sphere_plain": "Results for mental clarity are inconsistent: some users benefit while others feel worse, suggesting a need for refinement.",
       "volumes": {
         "VOL001": {
           "n": 10,
@@ -1509,76 +1509,76 @@
     }
   },
   "sphere_commentary": {
-    "run_date": "2026-06-21",
-    "overview": "The data suggests a coherent efficacy gradient across the three series with HEALING and THRIVING converging near 7.0 mean scores while TRANSFORMING trails at 6.59, consistent with its ascending-arc design for low-affect states.\n• HEALING protocols show the strongest consistency (std 1.77) and largest evidence base (n=574), supporting their regulatory function.\n• THRIVING matches HEALING's mean (6.96) with tighter spread (std 1.72), reflecting optimization intent through HOLD-type stabilization.\n• TRANSFORMING exhibits 23% greater variance than HEALING (std 1.87) and lower average outcomes, structurally expected for population entering in diverse low-affect states.\n• AutoGluon feature importance ranks engagement metrics (avg_view_percentage 0.277, avg_view_duration 0.221) above protocol design parameters, suggesting listener exposure quality may mediate efficacy more than Hz architecture alone.",
-    "cross_series": "Series efficacy profiles align with design intent but reveal nuanced boundary-crossing effects.\n• HEALING DESCENT protocols cluster tightly around 7.0-7.2 mean with 61-67% positive outcomes, supporting gradual entrainment for regulation.\n• THRIVING HOLD protocols diverge within category — Focus & Clarity L3 (7.63) substantially outperforms L1 (6.46), while Maintenance protocols show wider spread (6.68-7.04).\n• TRANSFORMING ASCENT protocols (Motivation & Drive, Mood & Energy) underperform AutoGluon predictions by 0.5-1.5 points, with X-ME-L1 showing largest delta (predicted 8.23 vs observed 6.74).\n• Cross-bucket routing anomalies persist: AutoGluon routes crisis to H-CR-L2 (7.96), low-affect to X-ME-L1 (8.23), and focus to T-FC-L3 (7.73) — all exceeding their design zones.",
-    "anomalies": "Several protocols exhibit distributional or predictive anomalies warranting targeted investigation.\n• X-MC-L3 (n=10, mean=5.70, std=2.45) shows bimodal distribution with 50% positive rate — highest variance in library, suggesting population mismatch or groove-style failure.\n• X-MD-L3 (n=13, mean=7.15, std=2.38) carries second-highest variance with developing confidence — qualitative 'Did NOT settle' reports (4/19) contradict its high mean.\n• T-FC-L3 (n=35, mean=7.63, std=1.97) outperforms AutoGluon prediction (7.73) while exhibiting notable embedding drift (sim=0.532) — efficacy signal may be evolving.\n• H-OS-L1 (n=95, mean=7.15) exceeds AutoGluon prediction (6.86) by 0.29 points — largest positive delta in HEALING series, suggesting model underestimates overstimulation efficacy.\n• X-ME-L1 (n=39, mean=6.74) underperforms AutoGluon low-intensity prediction (8.23) by 1.49 points — largest negative delta in library, indicating potential ascending-arc miscalibration.",
-    "development_signals": "Convergent signals point to specific protocol refinements and architectural investigations.\n• [CONVERGENT SIGNAL] X-MC-L3 (n=10, mean=5.70): Investigate groove-style mismatch and subgroup effects — bimodal distribution with 50% positive rate suggests population split; consider L3 redesign with steeper clarity curve before scaling.\n• [CONVERGENT SIGNAL] H-OS-L1 (n=95, mean=7.15): AutoGluon underpredicts by 0.29 despite strongest HEALING evidence base; audit feature weighting for overstimulation zone and test discovery interventions (YouTube: 30 views, NULL retention).\n• [CONVERGENT SIGNAL] T-FC-L3 (n=35, mean=7.63): Highest Focus efficacy with cross-bucket routing to low-intensity zones; develop L2 variant to test parameter transferability and monitor embedding drift (sim=0.532).\n• [CONVERGENT SIGNAL] X-ME-L1 (n=39, mean=6.74): Largest AutoGluon negative delta (-1.49) in low-intensity routing; adjust ASCENT curve steepness or extend hold phase to improve entrainment before ascent.\n• X-MD-L1 (n=22, mean=6.36): Motivation protocol underperforms prediction (7.88) by 1.52 points; test segmented routing by initial motivation level per qualitative 'Slight improvement' cluster.\n• T-MB-L1 (n=25, mean=7.04): 36% report 20+ minute settle times vs 15-minute design; extend hold phase or add L2 variant with slower ease-out.\n• H-CR-L2 (n=33, mean=6.52): AutoGluon predicts crisis-zone best (7.96) and cross-bucket for low-intensity; validate as dual-purpose protocol with advisers routing acute and low-affect listeners.\n• T-CF-L3 (n=18, mean=7.28): Highest Creative Flow score with developing confidence; create L2 variant with slightly faster pacing to test amplification potential.",
-    "embedding_analysis": "Semantic stability analysis reveals concerning drift in key protocols and clustering that transcends series boundaries.\n• CROSS-RUN DRIFT: 26 of 30 protocols show cosine similarity <0.85 between earliest and latest runs — X-MD-L3 (0.507), H-SL-L1 (0.530), T-FC-L3 (0.532), X-ME-L2 (0.532) indicate substantial analytical reinterpretation, likely driven by accumulating qualitative data and small-n instability.\n• CROSS-PROTOCOL SEMANTIC CLUSTERS: Strongest pairs are T-FC-L1↔T-FC-L2 (0.878) and H-SL-L1↔H-SL-L2 (0.869), confirming design-consistent framing within Focus and Sleep families; H-OS-L3 is most analytically isolated (mean_sim=0.677), suggesting unique acoustic or contextual features.\n• Confidence note: Drift analysis spans only 79 days (2026-04-02 to 2026-06-20) with single-volume data — insufficient for longitudinal stability claims; treat drift signals as hypothesis-generating only.",
-    "combo_string": "INTELLECT-3|GLM-5.2|gemma-3-27b-it|Qwen3-32B|gpt-oss-120b:Nemotron-3-Ultra-550b-a55b",
+    "run_date": "2026-06-22",
+    "overview": "The three series demonstrate comparable central efficacy with meaningful variability, reflecting their distinct therapeutic designs.\n• HEALING and THRIVING show similar mean outcomes (~6.9-7.0) with moderate consistency across protocols.\n• TRANSFORMING exhibits greater outcome variance and lower mean, aligned with its ascending-arc intent for low-affect states.\n• Most protocols reach 'meaningful' confidence thresholds; 'developing' labels primarily reflect limited sample sizes (n<50).",
+    "cross_series": "Each series expresses efficacy patterns consistent with its intended therapeutic arc, with notable domain-specific variations.\n• HEALING protocols deliver reliable regulation effects across stress, crisis, overstimulation, and sleep domains.\n• THRIVING cognitive protocols (e.g., focus, creative flow) achieve higher peak outcomes than other subtypes.\n• TRANSFORMING ascent protocols display the widest outcome spread, with some exceeding expectations despite lower mean.",
+    "anomalies": "Several protocols deviate from expected patterns, suggesting potential design or population mismatches.\n• X-MC-L3: Low mean (5.70), high variance (2.45), and 50% positive response — anomalous for a mind-clarity descent.\n• T-FC-L3: Bimodal response distribution (peaks at 7 and 10) despite high mean (7.63), indicating subgroup effects.\n• X-MD-L1/X-MD-L2: Sub-50% positive response rates (45%, 43%) suggest limited efficacy in motivation ascent protocols.\n• These patterns warrant investigation into protocol design nuances or listener subgroup characteristics.",
+    "development_signals": "Targeted refinements could enhance protocol efficacy and address observed response patterns.\n• [CONVERGENT SIGNAL] T-FC-L3 (n=35) – High performer with bimodal response; test L2 variants to balance subgroup differences.\n• X-MC-L3 (n=10) – Low mean and high variance; consider extending hold phase or adjusting Hz sweep to improve consistency.\n• H-OS-L1 (n=95) – Strong outcome but low YouTube reach (30 views); boost discoverability via curated playlists or algorithmic optimization.\n• H-SL-L1 (n=54) – Analytical drift across runs; run A/B tests to stabilize protocol interpretation and reduce variability.",
+    "embedding_analysis": "Embedding analyses reveal analytical instability in key protocols alongside consistent design clustering.\n• CROSS-RUN DRIFT: Multiple protocols (e.g., X-MD-L3 at 0.507, H-SL-L1 at 0.530) show similarity <0.70, indicating potential shifts in listener response patterns or analytical variability.\n• CROSS-PROTOCOL SEMANTIC CLUSTERS: High similarity pairs (T-FC-L1 ↔ T-FC-L2 at 0.878, H-SL-L1 ↔ H-SL-L2 at 0.869) validate design consistency; H-OS-L3 remains analytically isolated (mean_sim=0.677).\n• Confidence in drift analysis is MODERATE due to limited run history (2-4 observations per protocol), but clustering patterns are robust and reproducible.",
+    "combo_string": "INTELLECT-3|Hermes-4-70B|Llama-3.3-70B-Instruct|Kimi-K2.5|gpt-oss-120b:nemotron-3-super-120b-a12b",
     "by_protocol": {
-      "H-AX-L1": "H-AX-L1 (Meadow, n=67, mean=7.22, std=1.93, confidence=strong) demonstrates the strongest anxiety-descent signal in HEALING with 63% positive outcomes. Qualitative data reveals 10/23 listeners reporting moderate improvement and 8/23 noticeable improvement, with settle_time clustering at 5-10 minutes. AutoGluon predicts anxiety-zone score of 7.838 (+0.62 delta), suggesting model expects higher efficacy than observed — this protocol also appears as cross-bucket influence for low-intensity zones. YouTube reach remains minimal (7 views, NULL retention), indicating undiscovered potential. Distribution shows mild right-skew with modes at 7-8 but tail extending to 10.",
-      "H-AX-L2": "H-AX-L2 (Cottage, n=48, mean=6.94, std=1.62, confidence=meaningful) shows tighter variance than L1 with 67% positive outcomes. Qualitative feedback includes 6/20 'Neutral' music opinions and bimodal settle_time (5 vs 20 minutes), suggesting subgroup entrainment differences. AutoGluon prediction aligns near observed mean (~7.5). YouTube views at 6 with NULL retention. Distribution is more symmetric than L1 with concentration at 7-8 range.",
-      "H-AX-L3": "H-AX-L3 (Valley, n=36, mean=7.08, std=1.89, confidence=meaningful) maintains HEALING anxiety consistency with 61% positive rate. Qualitative data shows 2/20 'No effect' reports and settle_time clustering at 10 minutes with 'near the end' tail (4/20). AutoGluon predicts ~7.6. YouTube views at 4. Distribution shows slight bimodality with secondary mass at 9-10.",
-      "H-CR-L1": "H-CR-L1 (Anchor, n=43, mean=6.35, std=1.70, confidence=meaningful) aligns with crisis-protocol expectation of lower means (53% positive). Qualitative data paradoxically shows 8/24 'Significant improvement' and 7/24 'Noticeable improvement' despite lower aggregate score — consistent with high-baseline-distress listeners. AutoGluon predicts crisis-zone 7.955 for H-CR-L2 not L1, suggesting design mismatch. YouTube views: 6. Distribution centered at 6-8 with no scores above 9.",
-      "H-CR-L2": "H-CR-L2 (Harbor, n=33, mean=6.52, std=1.70, confidence=meaningful) shows 55% positive with qualitative split between 'Neutral' (6) and 'Loved it' (5) music opinions. AutoGluon identifies this as top crisis prediction (7.955) and cross-bucket for low-intensity zones — largest positive delta in crisis family (+1.44). YouTube views: 4. Distribution similar to L1 with slight rightward shift.",
-      "H-CR-L3": "H-CR-L3 (Horizon, n=27, mean=6.52, std=1.91, confidence=meaningful) matches L2 mean with higher variance. Notable qualitative signal: 7/19 report 'Immediate' settling (within 1-2 minutes) — fastest in crisis family. Music opinions more mixed (7 'Liked', 4 'Not liked'). AutoGluon does not flag. YouTube views: 5. Distribution shows mass at 7-8 with tail to 10.",
-      "H-OS-L1": "H-OS-L1 (Pebble, n=95, mean=7.15, std=1.78, confidence=strong) is HEALING's largest evidence base with 66% positive outcomes. Qualitative data shows 10/29 'Loved it' and 10/29 'Liked it' music reception, settle_time at 5-10 minutes. AutoGluon underpredicts overstimulation zone at 6.859 (-0.29 delta) — largest negative model error in HEALING. YouTube: 30 views (highest in HEALING) but NULL retention. Distribution slightly right-skewed with modes at 7-9.",
-      "H-OS-L2": "H-OS-L2 (Rainfall, n=51, mean=6.92, std=1.73, confidence=strong) shows 65% positive with qualitative 'Neutral' music cluster (6/21). Settle_time bimodal: 10 minutes (10/21) and immediate (3/21). AutoGluon prediction aligns (~6.9). YouTube views: 5. Distribution symmetric around 7.",
-      "H-OS-L3": "H-OS-L3 (Glacier, n=47, mean=7.04, std=1.68, confidence=meaningful) maintains overstimulation consistency (64% positive). Qualitative: 10/23 'Very settling' and 10/23 'Balanced' rhythm opinions. AutoGluon does not flag. YouTube views: 8. Distribution tight around 7-8 with no scores below 3.",
-      "H-SL-L1": "H-SL-L1 (Lantern, n=54, mean=7.19, std=1.86, confidence=strong) leads sleep protocols with 65% positive. Qualitative: 13/15 'Myself' listeners, settle_time at 5 minutes (5/15) and immediate (3/15). AutoGluon predicts sleep-zone 7.539 (+0.35 delta) and cross-bucks to low-intensity. Notable embedding drift (sim=0.530). YouTube views: 4. Distribution shows secondary mode at 9-10.",
-      "H-SL-L2": "H-SL-L2 (Hammock, n=45, mean=7.09, std=1.55, confidence=meaningful) has tightest variance in sleep family (67% positive). Qualitative reveals 6/15 'A client/patient' listeners and 2/15 'No effect' — only sleep protocol with null reports. Settle_time longer: 10 minutes (7/15) and 20 minutes (3/15). YouTube views: 5. Distribution concentrated at 7-8.",
-      "H-SL-L3": "H-SL-L3 (Midnight, n=28, mean=7.07, std=1.68, confidence=meaningful) shows 64% positive with 5/22 'Significant improvement' — highest in sleep family. Qualitative: 7/22 'A client/patient', settle_time 5-10 minutes. YouTube views: 3. Distribution similar to L1 with right tail.",
-      "T-CF-L1": "T-CF-L1 (Ember, n=34, mean=6.74, std=1.73, confidence=meaningful) shows 53% positive — lowest in Creative Flow. Qualitative: 8/21 'Slight improvement', immediate settle (6/21). AutoGluon predicts higher creative-zone potential. YouTube views: 2. Distribution broad with mass at 6-7.",
-      "T-CF-L2": "T-CF-L2 (Current, n=24, mean=6.79, std=1.41, confidence=meaningful) tighter variance than L1 (58% positive). Qualitative: 5/15 'Significant improvement', settle_time 5-10 minutes. AutoGluon predicts mindclarity-zone 7.538 (+0.75 delta). YouTube views: 2. Distribution narrow at 6-8.",
-      "T-CF-L3": "T-CF-L3 (Aurora, n=18, mean=7.28, std=1.32, confidence=developing) highest Creative Flow mean with 67% positive and no scores below 7. Qualitative: 7/25 'Noticeable', 6/25 'Significant', settle_time 5-10 minutes. AutoGluon does not flag. YouTube views: 7 (highest in THRIVING). Distribution remarkably tight — developing confidence due to n<20 only.",
-      "T-FC-L1": "T-FC-L1 (Compass, n=41, mean=6.46, std=1.82, confidence=meaningful) lowest Focus mean (56% positive). Qualitative: 9/23 'Slightly busy' rhythm opinion — only protocol with notable 'busy' signal. AutoGluon predicts focus-zone 7.728 for T-FC-L3 not L1 (+1.27 delta). YouTube views: 5. Distribution broad with left tail to 3.",
-      "T-FC-L2": "T-FC-L2 (Waypoint, n=32, mean=7.19, std=1.60, confidence=meaningful) substantial improvement over L1 (66% positive). Qualitative: 6/17 'Neutral' music but 5/17 'Loved it', settle_time 10 minutes (9/17). AutoGluon aligns better than for L1. YouTube views: 4. Distribution centered at 7-8 with right tail.",
-      "T-FC-L3": "T-FC-L3 (Summit, n=35, mean=7.63, std=1.97, confidence=meaningful) highest Focus mean (71% positive) with notable variance. Qualitative: 11/29 'Significant improvement', 15/29 settle at 10 minutes. AutoGluon predicts focus-zone best (7.728, +0.10 delta) and cross-bucket to low-intensity. Highest YouTube views in THRIVING (15) but NULL retention. Embedding drift high (sim=0.532). Distribution bimodal with peaks at 7 and 10.",
-      "T-MB-L1": "T-MB-L1 (Stone, n=25, mean=7.04, std=1.34, confidence=meaningful) tightest Maintenance variance (64% positive). Qualitative: 9/23 settle at 20 minutes — 39% exceed protocol length. 4/19 'Did NOT settle'. AutoGluon predicts maintenance best for T-MB-L3 not L1. YouTube views: 3. Distribution narrow at 7-8.",
-      "T-MB-L2": "T-MB-L2 (Axis, n=22, mean=6.68, std=2.03, confidence=meaningful) widest Maintenance variance (59% positive). Qualitative: 7/16 'A client/patient', settle_time 5-10 minutes. AutoGluon predicts maintenance best for L3. YouTube views: 4. Distribution shows bimodal tendency with spread 4-9.",
-      "T-MB-L3": "T-MB-L3 (Orbit, n=14, mean=6.93, std=1.73, confidence=developing) 71% positive but developing confidence. Qualitative: 4/19 'Did NOT settle', 7/19 'Liked it'. AutoGluon predicts maintenance-zone best (7.693, +0.76 delta). YouTube views: 3. Distribution shows secondary mass at 9-10.",
-      "X-MC-L1": "X-MC-L1 (Cavern, n=24, mean=6.75, std=1.62, confidence=meaningful) leads Mind & Clarity with 54% positive. Qualitative: 2/25 'It made things worse' — only TRANSFORMING protocol with harm signal. Music: 9/25 'Loved it', 9/25 'Liked it'. AutoGluon predicts mindclarity best for L2. YouTube views: 8. Distribution centered at 7 with slight left tail.",
-      "X-MC-L2": "X-MC-L2 (Starlight, n=16, mean=6.81, std=1.64, confidence=developing) aligns with L1 (56% positive). Qualitative: 7/20 'Significant improvement', 6/20 'Loved it' music. Settle_time bimodal: immediate (6/20) and 10 minutes (6/20). AutoGluon predicts mindclarity-zone best (7.538, +0.73 delta). YouTube views: 12. Distribution similar to L1.",
-      "X-MC-L3": "X-MC-L3 (Cosmos, n=10, mean=5.70, std=2.45, confidence=developing) lowest mean in library with highest variance (50% positive). Qualitative: 2/17 'It made things worse', 4/17 'Too busy' rhythm. Distribution clearly bimodal: masses at 3-4 and 8-9 with gap at 5-7. AutoGluon does not flag. YouTube views: 8. Embedding drift notable (sim=0.696). Panel converged: population mismatch or groove failure.",
-      "X-MD-L1": "X-MD-L1 (Footpath, n=22, mean=6.36, std=2.01, confidence=meaningful) Motivation ASCENT with 45% positive — lowest in TRANSFORMING. Qualitative: 6/17 'Noticeable', 5/17 'Significant' despite low aggregate. AutoGluon predicts motivation-zone best (7.876, +1.52 delta) and cross-bucket to low-intensity — largest positive delta in library. YouTube views: 5. Settle_time fast: 5 minutes (9/17). Distribution broad with left tail.",
-      "X-MD-L2": "X-MD-L2 (Trail, n=14, mean=6.21, std=1.63, confidence=developing) 43% positive. Qualitative: 6/21 'Noticeable', 5/21 'Slight', settle_time 10 minutes (5/21) and 20 minutes (5/21). AutoGluon cross-buckles to low-intensity. YouTube views: 7. Distribution narrower than L1 but left-shifted.",
-      "X-MD-L3": "X-MD-L3 (Switchback, n=13, mean=7.15, std=2.38, confidence=developing) highest Motivation mean (62% positive) but second-highest variance in library. Qualitative: 8/17 'Moderate', 1/17 'Did NOT settle'. AutoGluon does not flag but shows highest embedding drift (sim=0.507). YouTube views: 7. Distribution bimodal with masses at 4 and 9-10.",
-      "X-ME-L1": "X-ME-L1 (Breeze, n=39, mean=6.74, std=1.94, confidence=meaningful) Mood & Energy ASCENT with 54% positive. Qualitative: 10/22 'Loved it' music (highest in TRANSFORMING), settle_time 20 minutes (6/22). AutoGluon predicts low-intensity-zone best (8.230, -1.49 delta) — largest negative delta in library. YouTube views: 8. Cross-bucket routing to X-MD-L1, X-MD-L2. Distribution slightly right-skewed.",
-      "X-ME-L2": "X-ME-L2 (Sunrise, n=25, mean=6.76, std=1.71, confidence=meaningful) 64% positive. Qualitative: 7/15 'Significant improvement', 6/15 'Loved it' music. Settle_time bimodal: 20 minutes (4/15) and immediate (4/15). AutoGluon cross-buckles to low-intensity. YouTube views: 8. Embedding drift notable (sim=0.532). Distribution centered at 7.",
-      "X-ME-L3": "X-ME-L3 (Updraft, n=18, mean=6.28, std=1.74, confidence=developing) 56% positive with 3/25 'No effect'. Qualitative: 5/25 'Doing chores' activity, settle_time 5-10 minutes. AutoGluon predicts low-intensity but observed lower. YouTube views: 4. Distribution shows left tail to 3."
+      "H-OS-L1": "H-OS-L1 shows strong confidence results (n=95, mean=7.15, std=1.78). Distribution peaks at 8-9 with unimodal shape. Qualitative feedback indicates noticeable improvement in 41% of respondents (12/29), with most settling within 5-10 minutes and high music appreciation (69% liked/loved it). YouTube reach is modest (30 views) with no retention data, suggesting limited discovery. AutoGluon predicts a lower score (6.859) for the overstimulation zone, possibly indicating the model under-captures real-world effectiveness. Panel note: The protocol's strong outcome despite low visibility suggests a high-efficacy asset worthy of targeted outreach.",
+      "H-OS-L2": "H-OS-L2 demonstrates strong confidence (n=51, mean=6.92, std=1.73). Distribution shows moderate concentration around 7-8. Qualitative data reveals noticeable improvement in 39% (10/21) with variable settle times (some immediate) and mixed music reception. YouTube data is sparse (5 views) with no retention metrics. AutoGluon overstimulation prediction (6.859) closely matches observed mean, suggesting good model alignment. No significant anomalies reported across analysts.",
+      "H-OS-L3": "H-OS-L3 presents meaningful confidence (n=47, mean=7.04, std=1.68). Distribution is relatively uniform with slight elevation at 6-8. Qualitative feedback indicates noticeable improvement in 34% (10/29) and frequent use for sleep onset (8/29). YouTube reach is minimal (8 views) with no retention data. AutoGluon prediction (6.859) is slightly below observed mean. Analysts note H-OS-L3's analytical isolation in embedding clusters, suggesting unique response patterns warranting further study.",
+      "H-SL-L1": "H-SL-L1 shows strong confidence (n=54, mean=7.19, std=1.86). Distribution peaks at 8-9 with moderate spread. Qualitative data reveals frequent immediate settling (30%) and high music approval (76% liked/loved it). YouTube reach is very low (4 views) with no retention data. AutoGluon sleep prediction (7.539) aligns closely with observed mean. Analysts note analytical drift across runs (similarity=0.530) and recommend A/B testing to stabilize interpretation.",
+      "H-SL-L2": "H-SL-L2 demonstrates meaningful confidence (n=45, mean=7.09, std=1.55). Distribution shows bimodal tendency with peaks at 7 and 9. Qualitative data indicates mixed results: 40% noticeable improvement but 13% no effect, with rhythm opinions split between 'balanced' and 'too busy'. YouTube reach is low (5 views) with no retention data. AutoGluon sleep prediction (7.539) exceeds observed mean, suggesting potential for enhancement. No significant cross-analyst disagreements.",
+      "H-SL-L3": "H-SL-L3 presents meaningful confidence (n=28, mean=7.07, std=1.68). Distribution is concentrated at 6-8 with moderate spread. Qualitative feedback shows noticeable improvement in 32% (7/22) and frequent use for relaxation/care-giving. YouTube reach is minimal (3 views) with no retention data. AutoGluon sleep prediction (7.539) is above observed mean. Analysts note some variability in settle time reports but no major concerns.",
+      "H-AX-L1": "H-AX-L1 shows strong confidence (n=67, mean=7.22, std=1.93). Distribution is unimodal with peak at 8-9. Qualitative data indicates noticeable to significant improvement in 46% (20/43) and frequent use in therapy/care-giving contexts. YouTube reach is very low (7 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean, suggesting room for optimization. No significant anomalies reported across analysts.",
+      "H-AX-L2": "H-AX-L2 demonstrates meaningful confidence (n=48, mean=6.94, std=1.62). Distribution shows slight left skew with concentration at 6-8. Qualitative data reveals moderate improvement in 30% (6/20) and frequent therapy/commute use. YouTube reach is minimal (6 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean. No significant anomalies reported across analysts.",
+      "H-AX-L3": "H-AX-L3 presents meaningful confidence (n=36, mean=7.08, std=1.89). Distribution is relatively uniform with mild elevation at 6-8. Qualitative data indicates noticeable improvement in 40% (8/20) and frequent therapy use. YouTube reach is very low (4 views) with no retention data. AutoGluon anxiety prediction (7.838) exceeds observed mean. No significant anomalies reported across analysts.",
+      "H-CR-L1": "H-CR-L1 shows meaningful confidence (n=43, mean=6.35, std=1.70). Distribution exhibits left skew with concentration at 6-8. Qualitative data indicates significant to noticeable improvement in 46% (11/24) and frequent immediate settling (33%). YouTube reach is very low (6 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean, suggesting potential for enhanced entrainment. No significant anomalies reported across analysts.",
+      "H-CR-L2": "H-CR-L2 demonstrates meaningful confidence (n=33, mean=6.52, std=1.70). Distribution is relatively uniform with mild elevation at 6-8. Qualitative data indicates noticeable improvement in 31% (5/16) and frequent work/sleep-related use. YouTube reach is minimal (4 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean. No significant anomalies reported across analysts.",
+      "H-CR-L3": "H-CR-L3 presents meaningful confidence (n=27, mean=6.52, std=1.91). Distribution shows concentration at 6-8 with moderate spread. Qualitative data indicates frequent immediate settling (37%) and noticeable improvement in 32% (6/19). YouTube reach is very low (5 views) with no retention data. AutoGluon crisis prediction (7.955) exceeds observed mean. No significant anomalies reported across analysts.",
+      "T-CF-L1": "T-CF-L1 shows meaningful confidence (n=34, mean=6.74, std=1.73). Distribution is slightly right-skewed with peak at 6-7. Qualitative data indicates slight improvement in 38% (8/21) and frequent immediate settling. YouTube reach is minimal (2 views) with no retention data. No AutoGluon zone prediction assigned. No significant anomalies reported across analysts.",
+      "T-CF-L2": "T-CF-L2 demonstrates meaningful confidence (n=24, mean=6.79, std=1.41). Distribution is concentrated at 6-8 with moderate spread. Qualitative data indicates significant improvement in 33% (5/15) and frequent trying-to-sleep use. YouTube reach is minimal (2 views) with no retention data. No significant anomalies reported across analysts.",
+      "T-CF-L3": "T-CF-L3 presents meaningful confidence (n=18, mean=7.28, std=1.32). Distribution is concentrated at 7-8 with mild left skew. Qualitative data indicates noticeable improvement in 39% (7/18) and frequent trying-to-sleep/use. YouTube reach is minimal (7 views) with no retention data. AutoGluon does not assign a specific zone prediction. Analysts note it as a top performer but flag potential for feature replication in other focus protocols.",
+      "T-FC-L1": "T-FC-L1 shows meaningful confidence (n=41, mean=6.46, std=1.82). Distribution is relatively uniform with mild elevation at 6-7. Qualitative data indicates noticeable improvement in 43% (10/23) and frequent immediate settling. YouTube reach is low (5 views) with no retention data. AutoGluon focus prediction (7.728) exceeds observed mean, suggesting enhancement potential. Analysts note strong clustering with T-FC-L2 in embedding space.",
+      "T-FC-L2": "T-FC-L2 demonstrates meaningful confidence (n=32, mean=7.19, std=1.60). Distribution shows concentration at 7-9 with mild right skew. Qualitative data indicates significant improvement in 31% (5/16) and frequent care-giving/therapy use. YouTube reach is minimal (4 views) with no retention data. AutoGluon focus prediction (7.728) is slightly below observed mean. Analysts note strong clustering with T-FC-L1 in embedding space.",
+      "T-FC-L3": "T-FC-L3 presents meaningful confidence (n=35, mean=7.63, std=1.97). Distribution exhibits clear bimodality with peaks at 7 and 10 (10/35 scores of 10). Qualitative data indicates significant improvement in 31% (11/29) and high music approval (57% liked/loved it). YouTube reach is low (15 views) with no retention data. AutoGluon focus prediction (7.728) closely matches observed mean. [CONVERGENT SIGNAL] Analysts recommend testing L2 variants to address subgroup differences in response patterns.",
+      "T-MB-L1": "T-MB-L1 shows meaningful confidence (n=25, mean=7.04, std=1.34). Distribution is concentrated at 6-7 with mild left skew. Qualitative data indicates frequent therapy use (32%) and mixed settle times (5-20 minutes). YouTube reach is very low (3 views) with no retention data. No significant anomalies reported across analysts.",
+      "T-MB-L2": "T-MB-L2 demonstrates meaningful confidence (n=22, mean=6.68, std=2.03). Distribution shows bimodal tendency with peaks at 5-6 and 8-9. Qualitative data indicates noticeable improvement in 25% (4/16) and frequent work/sleep-related use. YouTube reach is minimal (4 views) with no retention data. Analysts note sensitivity to adviser responsibility (only 2 adviser-driven responses) but no major concerns.",
+      "T-MB-L3": "T-MB-L3 presents developing confidence (n=14, mean=6.93, std=1.73). Distribution is concentrated at 6-9 with moderate spread. Qualitative data indicates noticeable improvement in 32% (5/19) but 21% did not settle. YouTube reach is minimal (3 views) with no retention data. AutoGluon maintenance prediction (7.693) exceeds observed mean, suggesting enhancement potential. No significant anomalies reported across analysts.",
+      "X-MC-L1": "X-MC-L1 shows meaningful confidence (n=24, mean=6.75, std=1.62). Distribution is relatively uniform with mild elevation at 6-7. Qualitative data indicates noticeable improvement in 33% (8/24) and mixed music sentiment. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. Analysts note cross-bucket recommendation but no major concerns.",
+      "X-MC-L2": "X-MC-L2 demonstrates developing confidence (n=16, mean=6.81, std=1.64). Distribution is concentrated at 6-8 with mild right skew. Qualitative data indicates significant improvement in 44% (7/16) and frequent 'very settling' rhythm opinions (60%). YouTube reach is low (12 views) with no retention data. AutoGluon mindclarity prediction (7.538) exceeds observed mean. No significant anomalies reported across analysts.",
+      "X-MC-L3": "X-MC-L3 presents developing confidence (n=10, mean=5.70, std=2.45). Distribution shows clear bimodality with peaks at 1-2 and 7-8 (5/10 scores in extremes). Qualitative data indicates mixed responses: 30% noticeable improvement but 20% reported worsening. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. [CONVERGENT SIGNAL] Analysts recommend investigating population splits via adviser routing and considering hold phase extension.",
+      "X-MD-L1": "X-MD-L1 shows meaningful confidence (n=22, mean=6.36, std=2.01). Distribution is relatively uniform with mild elevation at 5-7. Qualitative data indicates noticeable improvement in 29% (5/17) and frequent immediate settling. YouTube reach is low (5 views) with no retention data. AutoGluon motivation prediction (7.876) exceeds observed mean significantly, suggesting potential redesign. Analysts note sub-50% positive response rate as a concern.",
+      "X-MD-L2": "X-MD-L2 presents developing confidence (n=14, mean=6.21, std=1.63). Distribution is concentrated at 5-7 with mild left skew. Qualitative data indicates noticeable improvement in 29% (4/14) and frequent trying-to-sleep/use. YouTube reach is low (7 views) with no retention data. AutoGluon motivation prediction (7.876) exceeds observed mean significantly. Analysts note sub-50% positive response rate as a concern.",
+      "X-MD-L3": "X-MD-L3 presents developing confidence (n=13, mean=7.15, std=2.38). Distribution shows bimodal tendency with peaks at 5-6 and 8-10. Qualitative data indicates noticeable improvement in 31% (4/13) and frequent trying-to-sleep/use. YouTube reach is low (7 views) with no retention data. AutoGluon motivation prediction (7.876) is slightly below observed mean. [CONVERGENT SIGNAL] Analysts note significant analytical drift (similarity=0.507) and recommend A/B testing to stabilize interpretation.",
+      "X-ME-L1": "X-ME-L1 shows meaningful confidence (n=39, mean=6.74, std=1.94). Distribution is slightly right-skewed with peak at 6-7. Qualitative data indicates significant improvement in 28% (11/22) and frequent care-giving/just-listening use. YouTube reach is minimal (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. Analysts note cross-bucket recommendation but no major concerns.",
+      "X-ME-L2": "X-ME-L2 demonstrates meaningful confidence (n=25, mean=6.76, std=1.71). Distribution is concentrated at 6-8 with mild right skew. Qualitative data indicates significant improvement in 28% (7/25) and frequent music approval (48% liked/loved it). YouTube reach is low (8 views) with no retention data. AutoGluon low-affect prediction (8.230) exceeds observed mean. No significant anomalies reported across analysts.",
+      "X-ME-L3": "X-ME-L3 presents developing confidence (n=18, mean=6.28, std=1.74). Distribution is relatively uniform with mild elevation at 5-7. Qualitative data indicates noticeable improvement in 24% (4/18) and frequent 'very settling' rhythm opinions (50%). YouTube reach is minimal (4 views) with no retention data. AutoGluon does not assign a specific zone prediction. No significant anomalies reported across analysts."
     },
     "by_protocol_plain": {
-      "H-AX-L1": "This anxiety-relief protocol helps most listeners feel noticeably calmer, especially during stressful moments or therapy sessions, though it hasn't reached many people yet.",
-      "H-AX-L2": "A solid anxiety protocol with mixed music reactions — some find it soothing, others neutral. Works well for about two-thirds of listeners.",
-      "H-AX-L3": "Consistent calming effects reported, particularly when used for full sessions. A few listeners noticed no change.",
-      "H-CR-L1": "Designed for crisis moments — over half report meaningful improvement but the average stays modest, as expected when listeners arrive in extreme distress.",
-      "H-CR-L2": "Similar crisis tool with immediate calming as a key strength. The model suggests it might help beyond crisis situations too.",
-      "H-CR-L3": "Settles listeners fastest in the crisis series, but outcomes remain modest. Some listeners didn't connect with the music.",
-      "H-OS-L1": "Highly effective for overstimulation with strong listener approval, yet remains largely undiscovered despite being the most-viewed HEALING protocol.",
-      "H-OS-L2": "Balanced overstimulation relief showing typical early entrainment patterns. Mixed music reactions suggest room for groove refinement.",
-      "H-OS-L3": "Reliable overstimulation support with clear settling rhythm feedback. Consistent but not exceptional.",
-      "H-SL-L1": "Sleep support that exceeds expectations with rapid settling, especially during therapy sessions. Minimal discoverability so far.",
-      "H-SL-L2": "Mixed effectiveness reported — works well for sleep but some caregivers using it for clients saw no effect. Longer settle times than L1.",
-      "H-SL-L3": "Strong sleep protocol with consistent improvement reports and notable 'significant improvement' cluster among users.",
-      "T-CF-L1": "Early-stage creative flow protocol with minimal listener exposure. Most report slight to moderate improvement with immediate settling.",
-      "T-CF-L2": "Creative support showing narrower, more predictable effects than L1. A few report significant breakthroughs.",
-      "T-CF-L3": "Best creative flow outcomes in THRIVING with remarkably consistent scores — no ratings below 7. Small audience but strong signal.",
-      "T-FC-L1": "Focus aid with notable 'busy rhythm' friction reported by listeners. Underperforms compared to its siblings in the Focus family.",
-      "T-FC-L2": "Exceeds model predictions for focus clarity with strong 'loved it' reactions. Deserves wider testing and discovery.",
-      "T-FC-L3": "Top-performing focus protocol with high improvement variability — works exceptionally well for some, less for others. Gaining YouTube traction.",
-      "T-MB-L1": "Balanced maintenance protocol but many listeners need more time to settle than the design allows. Unique 'did not settle' reports.",
-      "T-MB-L2": "High variance suggests population split — works extremely well for some, poorly for others. Caregiver-heavy listener base.",
-      "T-MB-L3": "Maintenance protocol showing developing stability patterns with strong positive music reception but concerning non-settle rate.",
-      "X-MC-L1": "Clarity protocol with higher experience ratings than the score suggests. A rare 'made things worse' signal warrants attention.",
-      "X-MC-L2": "Surprisingly consistent clarity for a developing signal. Strong 'loved it' reactions and immediate settling for half the listeners.",
-      "X-MC-L3": "Contentious protocol with major split in experience — some find it helpful, others actively unsettling. Requires urgent investigation.",
-      "X-MD-L1": "Motivation protocol with strong improvement reports but low average score. The model thinks it should work much better — possible ascending-curve mismatch.",
-      "X-MD-L2": "Mixed motivational effects, particularly during nighttime use. Longer settle times suggest the ascent may be too gradual for some.",
-      "X-MD-L3": "Highest improvement volatility in TRANSFORMING — dramatic split between low and high responders. Analytical framing unstable across runs.",
-      "X-ME-L1": "Energy protocol with strongest qualitative praise ('loved it' density) but largest model underperformance — predicted 8.2, got 6.7.",
-      "X-ME-L2": "Mood elevation showing significant improvement clusters. Bimodal settle times suggest two distinct listener journeys.",
-      "X-ME-L3": "Lowest scoring mood protocol but aligns with low-affect state design. Some report no effect, most report noticeable improvement."
+      "H-OS-L1": "This protocol helps users feel calmer and more focused, especially during activities like commuting or relaxation, with most reporting noticeable benefits within 10 minutes.",
+      "H-OS-L2": "Users report a calming effect from this protocol, though many discover it through limited online visibility.",
+      "H-OS-L3": "This protocol supports relaxation and sleep onset, though it remains relatively undiscovered online.",
+      "H-SL-L1": "Most users fall asleep faster with this protocol and enjoy the music, but very few have seen it online.",
+      "H-SL-L2": "Sleep results are mixed: some users benefit greatly while others notice little change.",
+      "H-SL-L3": "This protocol helps with sleep for many users, though some report no effect.",
+      "H-AX-L1": "Users feel less stressed after about ten minutes, particularly when using it for therapy or support roles.",
+      "H-AX-L2": "This protocol provides modest stress relief, though some users find the music unremarkable.",
+      "H-AX-L3": "Users report feeling calmer within ten minutes, though the audience remains very small.",
+      "H-CR-L1": "People in crisis often feel relief within five minutes, though the effect is modest for acute distress.",
+      "H-CR-L2": "This protocol offers quick calming for crisis states, with many settling within the first few minutes.",
+      "H-CR-L3": "Users in overwhelming moments often feel immediate calm, but the overall impact stays modest.",
+      "T-CF-L1": "Creative flow improves modestly for about half the users, especially during relaxing or therapeutic activities.",
+      "T-CF-L2": "Users report slightly better creative focus, particularly during commutes or rest periods.",
+      "T-CF-L3": "This protocol boosts focus and creativity for most users, though many still haven't discovered it online.",
+      "T-FC-L1": "Focus improves modestly for many users, though the protocol could be strengthened for better results.",
+      "T-FC-L2": "Users experience noticeable focus improvements, especially during supportive care or therapy sessions.",
+      "T-FC-L3": "This focus protocol works very well for many users, helping them feel clearer and more engaged.",
+      "T-MB-L1": "Balance feels steady for most users, particularly during therapy sessions, though some take longer to settle.",
+      "T-MB-L2": "Results for balance are variable: some users feel steady while others notice less change.",
+      "T-MB-L3": "This balance protocol shows promise, with most users reporting positive effects despite low online visibility.",
+      "X-MC-L1": "Users report clearer thinking and calmness, though the audience remains quite small.",
+      "X-MC-L2": "This protocol provides modest clarity improvements, with many users appreciating its calming qualities.",
+      "X-MC-L3": "Results for mental clarity are inconsistent: some users benefit while others feel worse, suggesting a need for refinement.",
+      "X-MD-L1": "Motivation improvements are modest for most users, though some report quick effects during study or relaxation.",
+      "X-MD-L2": "Motivation effects are mixed: some users feel a small boost while others notice little change.",
+      "X-MD-L3": "Motivation results are variable: some users feel energized while others use it for sleep, indicating possible unintended effects.",
+      "X-ME-L1": "Users report improved mood and energy, especially during care-giving activities, though effects are modest.",
+      "X-ME-L2": "This protocol provides noticeable mood improvements for many users, who also enjoy the music.",
+      "X-ME-L3": "Mood and energy improvements are modest and variable, with some users reporting no change."
     },
     "by_protocol_volumes": {}
   }
